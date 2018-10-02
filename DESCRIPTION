@@ -1,0 +1,13 @@
+Package: BiocProject
+Title: Project and SummarizedExperiment interface
+Version: 0.0.0.9000
+Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu", role = c("aut", "cre")), c(person("Nathan", "Sheffield", email = "nathan@code.databio.org",role = c("aut"))))
+Description: This package implements a class that provides an interface for the `Project` and `SummarizedExperiment` classes. This way the users of `SummarizedExperiment` can benefit from the utilties and ideology of the PEP toolkit. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: SummarizedExperiment, pepr
+RoxygenNote: 6.1.0
+VignetteBuilder: knitr
+
+
