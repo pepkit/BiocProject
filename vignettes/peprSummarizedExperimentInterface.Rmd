@@ -36,14 +36,7 @@ library(BiocProject)
 ```
 Let's create an `BiocProject` object with just the one required argument (PEP config file) and see how it looks like
 ```{r}
-projectConfig = system.file(
-"extdata",
-"example_peps-master",
-"example_implied",
-"project_config.yaml",
-package = "pepr"
-)
-bp = BiocProject(file=projectConfig)
+bp = BiocProject()
 bp
 slotNames(bp)
 ```
@@ -51,7 +44,7 @@ As you can see, `bp` the object of class `BiocProject` consists of the slots of 
 
 Obviously, an empty object of `BiocProject` class is useless, so let's consider the following example:
 
-1. Generate the data for `SummarizedExperiment`
+1. Generate the data for `SummarizedExperiment` and `Project`
 gitcgit 
 ```{r}
 nrows = 200
@@ -63,6 +56,14 @@ rowRanges = GRanges(rep(c("chr1", "chr2"), c(50, 150)),
                     feature_id=sprintf("ID%03d", 1:200))
 colData = DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
                     row.names=LETTERS[1:6])
+
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_implied",
+"project_config.yaml",
+package = "pepr"
+)
 
 ```
 

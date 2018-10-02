@@ -4,7 +4,7 @@ setMethod(
   signature = "BiocProject",
   definition = function(.Object, file, ...) {
     ellipsisArgs = list(...)
-    .Object = callNextMethod(.Object, file)
+    .Object = callNextMethod(.Object, file = file)
     argsNames = names(ellipsisArgs)
     # Adds slots depending on the provided arguments in the constructor call
     if (any(argsNames == "assays"))

@@ -20,6 +20,6 @@ setClass("BiocProject",
 #' @param file a string with a path to the config file as in \linkS4class{Project}
 #'
 #' @export BiocProject
-BiocProject <- function(file, ...) {
-  new("BiocProject", file, ...)
+BiocProject <- function(file=character(), ...) {
+  new("BiocProject", file=file, ...)
 }
