@@ -94,7 +94,13 @@ setMethod(
   }
 )
 
-
+#' Display the metadata
+#'
+#' This method displays the metadata associated with hthe \code{BiocProject} object.
+#'
+#' @param x An object of \code{BiocProject} class
+#'
+#' @export metadata
 setMethod("metadata",
           signature = "BiocProject",
           definition = function(x) {
@@ -114,4 +120,5 @@ setMethod("metadata",
               # if no metadata, print empty list
               do.call(selectMethod(f = "metadata",signature = "SummarizedExperiment"),list(x))
             }
+            invisible(NULL)
           })

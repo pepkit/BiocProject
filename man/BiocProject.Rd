@@ -2,15 +2,21 @@
 % Please edit documentation in R/class.R
 \name{BiocProject}
 \alias{BiocProject}
-\title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface
-This is a helper that creates the BiocProject with empty Project and SummarizedExperiment objects included}
+\title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface}
 \usage{
 BiocProject(file = character(), ...)
 }
 \arguments{
-\item{file}{a string with a path to the config file as in \linkS4class{Project}}
+\item{file}{project configuration yaml file}
+
+\item{...}{For \code{SummarizedExperiment}, S4 methods \code{list}
+    and \code{matrix}, arguments identical to those of the
+    \code{SimpleList} method.
+
+    For \code{rowRanges}, ignored.
+
+  }
 }
 \description{
-A class representing a Portable Encapsulated Project and Summarized Experiment objects interface
-This is a helper that creates the BiocProject with empty Project and SummarizedExperiment objects included
+This is a helper that creates the `BiocProject` with empty \linkS4class{Project} and \linkS4class{SummarizedExperiment} objects included
 }

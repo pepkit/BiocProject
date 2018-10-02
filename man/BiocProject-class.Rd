@@ -10,5 +10,13 @@ configuration and sample annotation values for a PEP as well as functions concer
 Additionally, this class privides an interfece that connects them.
 }
 \details{
-This class inherits frusom classes \linkS4class{Project} and \linkS4class{RangedSummarizedExperiment}
+This class inherits from classes \linkS4class{pepr::Project} and \linkS4class{SummarizedExperiment::RangedSummarizedExperiment}
 }
+\section{Slots}{
+
+\describe{
+\item{\code{ProjectSlots}}{see \link[pepr]{Project} class for details}
+
+\item{\code{SummarizedExperimentSlots}}{see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details}
+}}
+
