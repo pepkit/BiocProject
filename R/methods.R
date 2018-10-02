@@ -27,7 +27,6 @@ setMethod(
     do.call(selectMethod(f = "show", signature = "RangedSummarizedExperiment"),
             list(.Object))
     cat("\n")
-    #message
     do.call(selectMethod(f = "show", signature = "Project"), list(.Object))
   }
 )
