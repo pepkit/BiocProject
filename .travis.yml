@@ -3,5 +3,6 @@
 language: R
 sudo: false
 cache: packages
+warnings_are_errors: false
 before_install:
-	- Rscript -e "devtools::install_github(repo = "pepkit/pepr",ref = "dev")"
+ - Rscript -e "install.packages('devtools');devtools::install_github(repo = 'pepkit/pepr',ref = 'dev');source('https://bioconductor.org/biocLite.R');biocLite('SummarizedExperiment')"

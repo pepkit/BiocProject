@@ -8,6 +8,8 @@ Encoding: UTF-8
 LazyData: true
 Depends: SummarizedExperiment, pepr
 Imports: SummarizedExperiment, pepr
+Suggests:
+    knitr,
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr
 
