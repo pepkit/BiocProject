@@ -5,7 +5,7 @@
 \title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface
 This is a helper that creates the BiocProject with empty Project and SummarizedExperiment objects included}
 \usage{
-BiocProject(file, ...)
+BiocProject(file = character(), ...)
 }
 \arguments{
 \item{file}{a string with a path to the config file as in \linkS4class{Project}}
