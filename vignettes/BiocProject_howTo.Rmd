@@ -1,5 +1,5 @@
 ---
-title: "pepr - SummarizedExperiment interface"
+title: "BiocProject: Project - SummarizedExperiment interface"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
