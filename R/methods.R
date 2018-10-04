@@ -1,4 +1,5 @@
 
+
 setMethod(
   f = "initialize",
   signature = "BiocProject",
@@ -24,9 +25,51 @@ setMethod(
   f = "show",
   signature = "BiocProject",
   definition = function(.Object) {
-    do.call(selectMethod(f = "show", signature = "RangedSummarizedExperiment"),
-            list(.Object))
+    # the sction below is a modified show method of SummarizedExperiment class. It displays the SummarizedExperiment part of the BiocProject object
+    selectSome <- S4Vectors:::selectSome
+    scat <- function(fmt,
+                     vals = character(),
+                     exdent = 2,
+                     ...) {
+      vals <- ifelse(nzchar(vals), vals, "''")
+      lbls <- paste(S4Vectors:::selectSome(vals), collapse = " ")
+      txt <- sprintf(fmt, length(vals), lbls)
+      cat(strwrap(txt, exdent = exdent, ...), sep = "\n")
+    }
+    cat("class:", class(.Object), "\n")
+    cat("dim:", dim(.Object), "\n")
+    expt <-
+      names(do.call(
+        selectMethod(f = "metadata", signature = "RangedSummarizedExperiment"),
+        list(.Object)
+      ))
+    if (is.null(expt))
+      expt <-
+      character(length(do.call(
+        selectMethod(f = "metadata", signature = "RangedSummarizedExperiment"),
+        list(.Object)
+      )))
+    scat("metadata(%d): %s\n", expt)
+    nms <- assayNames(.Object)
+    if (is.null(nms))
+      nms <-
+      character(length(assays(.Object, withDimnames = FALSE)))
+    scat("assays(%d): %s\n", nms)
+    dimnames <- dimnames(.Object)
+    dlen <- sapply(dimnames, length)
+    if (dlen[[1]])
+      scat("rownames(%d): %s\n", dimnames[[1]])
+    else
+      scat("rownames: NULL\n")
+    scat("rowData names(%d): %s\n", names(rowData(.Object)))
+    if (dlen[[2]])
+      scat("colnames(%d): %s\n", dimnames[[2]])
+    else
+      cat("colnames: NULL\n")
+    scat("colData names(%d): %s\n", names(colData(.Object)))
+    
     cat("\n")
+    # calls the parent method of Project class. Displays the project part of the BiocProject object
     do.call(selectMethod(f = "show", signature = "Project"), list(.Object))
   }
 )
@@ -76,12 +119,12 @@ setMethod(
   signature = "BiocProject",
   definition = function(.Object) {
     # Check if MIAME object exists in the metadata section of SummarizedExperiment, create new if not
-    if (is.list(metadata(.Object)) &
-        length(metadata(.Object)) == 0) {
-      metadata(.Object) = list(MIAME(other = list(`PEP config file` = .Object@config)))
+    if (is.list(.Object@metadata) &
+        length(.Object@metadata) == 0) {
+      .Object@metadata = list(MIAME(other = list(`PEP config file` = .Object@config)))
       # Otherwise append existing one with the PEP file info
     } else{
-      metadata(.Object) = lapply(metadata(.Object), function(x) {
+      .Object@metadata = lapply(.Object@metadata, function(x) {
         x = tryCatch({
           combine(x, MIAME(other = list(`PEP config file` = .Object@config)))
         }, error = function(e) {
@@ -101,24 +144,33 @@ setMethod(
 #' @param x An object of \code{BiocProject} class
 #'
 #' @export metadata
-setMethod("metadata",
-          signature = "BiocProject",
-          definition = function(x) {
-            # gets the metadata into variable
-            met=do.call(selectMethod(f = "metadata",signature = "SummarizedExperiment"),list(x))
-            # if there is any metadata
-            if(length(met)>0){
-              # extract the PEP config data
-              met=met[[1]]
-              config=met@other$`PEP config file`
-              met@other=list()
-              # print the remaining part
-              show(met)
-              # print the config
-              printNestedList(config)
-            }else{
-              # if no metadata, print empty list
-              do.call(selectMethod(f = "metadata",signature = "SummarizedExperiment"),list(x))
-            }
-            invisible(NULL)
-          })
+setMethod(
+  "metadata",
+  signature = "BiocProject",
+  definition = function(x) {
+    # gets the metadata into variable
+    metOri = do.call(selectMethod(f = "metadata", signature = "SummarizedExperiment"),
+                     list(x))
+    # if there is any metadata
+    if (length(metOri) > 0) {
+      # extract the PEP config data
+      for (iMetadata in seq_along(metOri)) {
+        met = metOri[[iMetadata]]
+        if (!is.null(met@other$`PEP config file`))
+          pepConfig = met@other$`PEP config file`
+        met@other = list()
+        # print the remaining part
+        show(met)
+      }
+      # print the config
+      cat("\nPEP config data\n")
+      printNestedList(pepConfig)
+    } else{
+      # if no metadata, print empty list
+      do.call(selectMethod(f = "metadata", signature = "SummarizedExperiment"),
+              list(x))
+      cat("No metadata to display, empty list returned.")
+    }
+    invisible(metOri)
+  }
+)

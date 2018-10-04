@@ -5,7 +5,7 @@
 #' configuration and sample annotation values for a PEP as well as functions concerning experimental results organization provided by the \linkS4class{RangedSummarizedExperiment} class.
 #' Additionally, this class privides an interfece that connects them.
 #'
-#' This class inherits from classes \linkS4class{pepr::Project} and \linkS4class{SummarizedExperiment::RangedSummarizedExperiment}
+#' This class inherits from classes \linkS4class{Project} and \linkS4class{RangedSummarizedExperiment}
 #'
 #' @slot ProjectSlots see \link[pepr]{Project} class for details
 #' @slot SummarizedExperimentSlots see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details
