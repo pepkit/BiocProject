@@ -3,5 +3,4 @@
 export(BiocProject)
 export(getColData)
 export(getMetadata)
-export(metadata)
 exportClasses(BiocProject)

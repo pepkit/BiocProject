@@ -8,11 +8,11 @@
 \S4method{getMetadata}{BiocProject}(.Object)
 }
 \arguments{
-\item{.Object}{An object of BiocProject class}
+\item{.Object}{An object of \linkS4class{BiocProject} class}
 }
 \value{
-.Object An object of BiocProject class. The metadata slot of \code{BiocProject} is enriched with data from \linkS4class{Project} object as an additional \code{PEP config file} field in the MIAME object.
+.Object An object of \linkS4class{BiocProject} class. The metadata slot of \linkS4class{BiocProject} is enriched with data from \linkS4class{Project} object as an additional \code{PEP config file} field list in metadata slot.
 }
 \description{
-This method copies metadata from \linkS4class{Project} object to \linkS4class{MIAME} in the \code{BiocProject} object.
+This method copies the \href{https://pepkit.github.io/docs/project_config/}{TEST} data from \linkS4class{Project} object to a list in the metadata slot of the \code{BiocProject} object.
 }

@@ -8,10 +8,10 @@
 \S4method{getColData}{BiocProject}(.Object)
 }
 \arguments{
-\item{.Object}{An object of BiocProject class}
+\item{.Object}{An object of \linkS4class{BiocProject} class}
 }
 \value{
-.Object An object of \code{BiocProject} class. The colData slot is derived from samples attribute of \linkS4class{Project}
+.Object An object of \linkS4class{BiocProject} class. The colData slot is derived from samples attribute of \linkS4class{Project}
 }
 \description{
 This method copies info about samples from \linkS4class{Project} object to \code{colData} slot on the \code{BiocProject} object.
