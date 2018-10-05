@@ -14,5 +14,5 @@
 .Object An object of \linkS4class{BiocProject} class. The metadata slot of \linkS4class{BiocProject} is enriched with data from \linkS4class{Project} object as an additional \code{PEP config file} field list in metadata slot.
 }
 \description{
-This method copies the \href{https://pepkit.github.io/docs/project_config/}{TEST} data from \linkS4class{Project} object to a list in the metadata slot of the \code{BiocProject} object.
+This method copies the \href{https://pepkit.github.io/docs/project_config/}{PEP config file} data from \linkS4class{Project} object to a list in the metadata slot of the \code{BiocProject} object.
 }

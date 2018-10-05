@@ -16,3 +16,11 @@
 \description{
 This method copies info about samples from \linkS4class{Project} object to \code{colData} slot on the \code{BiocProject} object.
 }
+\details{
+There are 3 cases:
+\itemize{
+  \item The DataFrame in the samples slot is copied to the colData (when there is not colData and the number of columns in assays match the number of rows in samples)
+  \item The DataFrame in the samples slot in merged with the colData DataFrame (when the colData slot is populate and their row numbers match)
+  \item An error is thrown (when the number of rows in samples DataFrame does not match the number of columns in asssays or the number of rows in already populated colData)
+}
+}

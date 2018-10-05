@@ -22,11 +22,11 @@ knitr::opts_chunk$set(
 
 The `BiocProject` package implements a class that provides an interface for the `Project` and [`SummarizedExperiment`](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) classes. This way the users of `SummarizedExperiment` can benefit from the utilties and ideology of the [PEP](https://pepkit.github.io/) toolkit. Such as: 
 
-* description of all projects the same way, so you only have to learn one metadata structure
-* collaborative work, since the organization is standardized
-* sharing the project with others, who are already familiar with the standard
-* employment of a variety of tools or pipelines without restructuring the metadata
-* analyis attributes of your project in the data analysis environment of your choice (R/python).
+* description of all projects the same way, so you only have to learn one metadata structure,
+* collaborative work, since the organization is standardized,
+* sharing the project with others, who are already familiar with the standard,
+* employment of a variety of tools or pipelines without restructuring the metadata,
+* analyis attributes of the project in the data analysis environment of one's choice (R/python).
 
 ### How to create the interface?
 
@@ -34,7 +34,7 @@ Load the package
 ```{r echo=T,message=FALSE,warning=FALSE}
 library(BiocProject)
 ```
-Let's create an `BiocProject` object with just the one required argument (PEP config file) and see how it looks like
+Let's create an empty `BiocProject` and see how it looks like
 ```{r}
 bp = BiocProject()
 bp
@@ -79,13 +79,13 @@ bp
 Currently, there are 2 new methods that can integrate the data from `Project` object with the `SummarizedExperiment` within the `BiocProject` objects: 
 <dl>
   <dt>`getColData()`</dt>
-  <dd>It copies the data about samples from `samples` slot in objects of `Project` class to the `colData` slot in the `SummarizedExperiment` objects.</dd>
+  <dd>It copies the data about samples from `samples` slot (previously associated with the `Project` class) of `BiocProject` class to the `colData` slot (previously associated with the `SummarizedExperiment` class).</dd>
 
   <dt>`getMetadata()`</dt>
-  <dd>It enriches the current `metadata` section of `SummarizedExperiment` with the config file that was used to create the `Project` obejct (PEP).</dd>
+  <dd>It enriches the current `metadata` section of `SummarizedExperiment` with the [config file](https://pepkit.github.io/docs/project_config/) content that was used to create the `Project` obejct (PEP).</dd>
   
   <dt>All inherited methods</dt>
-  <dd>Please note, that the "getters and setters" methods associated with the `SummarizedExperiment` class (`rowRanges()`, `rowData()`, `colData()` etc.) as well as ones associate with the `Project` class (`samples()`, `config()` etc.) are inherited and work with the `BiocProject` class objects.</dd>
+  <dd>Please note, that the "getters and setters" methods associated with the `SummarizedExperiment` class (`rowRanges()`, `rowData()`, `colData()` etc.) as well as ones associated with the `Project` class (`samples()`, `config()` etc.) are inherited and work with the `BiocProject` class objects.</dd>
 </dl>
 
 To see the above-mentioned methods in use, see the section below:
@@ -117,4 +117,5 @@ bpModified = getMetadata(bp)
 metadata(bpModified)
 ```
 
+Now the `metadata` is a list that always consists of two elements `SummarizedExperiment metadata` that consists of the metadata associated with the `SummarizedExperiment` (in a MIAME format) and `PEP config file` that consists of the content of the YAML config file used to create the PEP.
 
