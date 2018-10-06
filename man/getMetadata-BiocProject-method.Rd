@@ -16,3 +16,10 @@
 \description{
 This method copies the \href{https://pepkit.github.io/docs/project_config/}{PEP config file} data from \linkS4class{Project} object to a list in the metadata slot of the \code{BiocProject} object.
 }
+\examples{
+projectConfig = system.file("extdata","example_peps-master","example_implied","project_config.yaml",package = "pepr")
+bp = BiocProject(file = projectConfig)
+bpm = getMetadata(bp)
+metadata(bp)
+metadata(bpm)
+}

@@ -28,7 +28,6 @@ setMethod(
     do.call(selectMethod(f = "show", signature = "RangedSummarizedExperiment"),
             list(.Object))
     cat("\n")
-    #message
     do.call(selectMethod(f = "show", signature = "Project"), list(.Object))
   }
 )
@@ -50,6 +49,21 @@ setGeneric("getColData", function(.Object, ...)
 #' @param .Object An object of \linkS4class{BiocProject} class
 #'
 #' @return An object of \linkS4class{BiocProject} class. The colData slot is derived from samples attribute of \linkS4class{Project}
+#' @examples 
+#' projectConfig = system.file("extdata","example_peps-master","example_implied","project_config.yaml",package = "pepr")
+#' nrows = 200
+#' ncols = 6
+#' counts = matrix(runif(nrows * ncols, 1, 1e4), nrows)
+#' rowRanges = GRanges(rep(c("chr1", "chr2"), c(50, 150)),
+#'                     IRanges(floor(runif(200, 1e5, 1e6)), width=100),
+#'                     strand=sample(c("+", "-"), 200, TRUE),
+#'                     feature_id=sprintf("ID%03d", 1:200))
+#' colData = DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
+#'                     row.names=LETTERS[1:6])
+#' bp = BiocProject(file=projectConfig, assays=list(counts=counts), rowRanges=rowRanges, colData=colData)
+#' bpc = getColData(bp)
+#' colData(bp)
+#' colData(bpc)
 #' @export getColData
 setMethod(
   "getColData",
@@ -79,6 +93,12 @@ setGeneric("getMetadata", function(.Object, ...)
 #' @param .Object An object of \linkS4class{BiocProject} class
 #'
 #' @return .Object An object of \linkS4class{BiocProject} class. The metadata slot of \linkS4class{BiocProject} is enriched with data from \linkS4class{Project} object as an additional \code{PEP config file} field list in metadata slot.
+#' @examples 
+#' projectConfig = system.file("extdata","example_peps-master","example_implied","project_config.yaml",package = "pepr")
+#' bp = BiocProject(file = projectConfig)
+#' bpm = getMetadata(bp)
+#' metadata(bp)
+#' metadata(bpm)
 #' @export getMetadata
 setMethod(
   "getMetadata",
