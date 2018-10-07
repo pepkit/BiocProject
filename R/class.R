@@ -10,7 +10,9 @@
 #' @slot ProjectSlots see \link[pepr]{Project} class for details
 #' @slot SummarizedExperimentSlots see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details
 #'
-#'
+#' @importClassesFrom pepr Project
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' 
 #' @exportClass BiocProject
 setClass("BiocProject",
          # Inherits from Project and SummarizedExperiment objects
