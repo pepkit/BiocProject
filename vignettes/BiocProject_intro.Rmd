@@ -20,19 +20,62 @@ Get project config file path
 projectConfig = system.file(
 "extdata",
 "example_peps-master",
-"example_subannotation1",
+"example_basic",
 "project_config.yaml",
 package = "pepr"
 )
 ```
 Create a `BiocProject` object with Portable Encapsulated Project (PEP) loaded to the the `metadata` slot as an object of `Project` class
 ```{r}
-bpl = BiocProject(file = projectConfig)
-bpl
+bp = BiocProject(file = projectConfig)
+bp
 ```
-Use the methods to inspect the object
+Use the accessor methods to inspect the object:
 ```{r}
-samples(bpl)
-config(bpl)
-getSubsample(bpl,"frog_1","sub_a")
+samples(bp)
+config(bp)
+```
+Get the sample project config for samples subannotation functionality presentation
+```{r}
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_subannotation1",
+"project_config.yaml",
+package = "pepr"
+)
+```
+Create a `BiocProject` object:
+```{r}
+bp = BiocProject(file = projectConfig)
+bp
+```
+Get the desired subsample:
+```{r}
+getSubsample(bp,"frog_1","sub_a")
+```
+Get the sample project config for samples subproject functionality presentation
+```{r}
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_subprojects2",
+"project_config.yaml",
+package = "pepr"
+)
+```
+Create a `BiocProject` object:
+```{r}
+bp = BiocProject(file = projectConfig)
+bp
+```
+Find out what subprojects are available:
+```{r}
+pepr::listSubprojects(config(bp))
+```
+Activate the desired subproject and view the samples:
+```{r}
+
+subBp = activateSubproject(.Object = bp,sp = "noFrog")
+samples(subBp)
 ```

@@ -16,7 +16,6 @@ setMethod(
 #'
 #' @param .Object object of class \code{\link{BiocProject}}
 #' @param file a string with a path to the config file
-#' @param ... 
 #' 
 #' @seealso \url{https://pepkit.github.io/} 
 #'
@@ -81,6 +80,20 @@ setMethod(
         sampleName = sampleName,
         subsampleName = subsampleName
       )
+      return(ret)
+    } else{
+      return()
+    }
+  }
+)
+
+#' @export
+setMethod(
+  f="activateSubproject",
+  signature = signature(.Object="Annotated",sp="character"),
+  definition = function(.Object,sp){
+    if (methods::is(.Object, "BiocProject")) {
+      ret=pepr::activateSubproject(.Object = .Object@metadata$PEP, sp=sp)
       return(ret)
     } else{
       return()

@@ -16,5 +16,5 @@ an object of \code{\link{BiocProject}} class
 This is a helper that creates the \code{\link{BiocProject}} object
 }
 \seealso{
-\url[PEPKIT webiste & docs]{https://pepkit.github.io/}
+\url{https://pepkit.github.io/}
 }

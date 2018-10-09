@@ -10,8 +10,6 @@ loadPEP(.Object, file, ...)
 \item{.Object}{object of class \code{\link{BiocProject}}}
 
 \item{file}{a string with a path to the config file}
-
-\item{...}{}
 }
 \value{
 object of class \code{\link{BiocProject}} with the metadata slot populated with the Project object
@@ -23,5 +21,5 @@ This function loads the PEP into the metadata slot of the \code{\link{BiocProjec
 This funciton is used in the \code{\link{BiocProject}} initialize method and should not be used outside
 }
 \seealso{
-\url[PEPKIT webiste & docs]{https://pepkit.github.io/}
+\url{https://pepkit.github.io/}
 }
