@@ -2,6 +2,8 @@
 
 export(BiocProject)
 exportClasses(BiocProject)
-exportMethods(loadPEP)
+exportMethods(config)
+exportMethods(getSubsample)
+exportMethods(initialize)
 exportMethods(samples)
 importClassesFrom(S4Vectors,Annotated)

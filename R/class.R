@@ -15,9 +15,15 @@ setClass("BiocProject",
 
 #' Portable Encapsulated Project (PEP) class for biological applications
 #'
-#' This is a helper that creates the `BiocProject`
+#' This is a helper that creates the \code{\link{BiocProject}} object
+#' 
+#' @param file a path to the config file
+#' 
+#' @return an object of \code{\link{BiocProject}} class
+#' 
+#' @seealso \url{https://pepkit.github.io/} 
 #'
 #' @export BiocProject
-BiocProject <- function(...) {
-  new("BiocProject", ...)
+BiocProject <- function(file=character(), ...) {
+  methods::new("BiocProject", file, ...)
 }

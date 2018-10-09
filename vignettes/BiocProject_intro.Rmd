@@ -9,18 +9,30 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+Load libraries and create an empty `BiocProject` object
 ```{r ,collapse=TRUE,message=F}
 library(BiocProject)
 bp=BiocProject()
 bp
+```
+Get project config file path
+```{r}
 projectConfig = system.file(
 "extdata",
 "example_peps-master",
-"example_derived",
+"example_subannotation1",
 "project_config.yaml",
 package = "pepr"
 )
-bpl = loadPEP(bp,file = projectConfig)
+```
+Create a `BiocProject` object with Portable Encapsulated Project (PEP) loaded to the the `metadata` slot as an object of `Project` class
+```{r}
+bpl = BiocProject(file = projectConfig)
 bpl
+```
+Use the methods to inspect the object
+```{r}
 samples(bpl)
+config(bpl)
+getSubsample(bpl,"frog_1","sub_a")
 ```

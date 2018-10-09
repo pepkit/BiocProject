@@ -4,8 +4,17 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(...)
+BiocProject(file = character(), ...)
+}
+\arguments{
+\item{file}{a path to the config file}
+}
+\value{
+an object of \code{\link{BiocProject}} class
 }
 \description{
-This is a helper that creates the `BiocProject`
+This is a helper that creates the \code{\link{BiocProject}} object
+}
+\seealso{
+\url[PEPKIT webiste & docs]{https://pepkit.github.io/}
 }
