@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Portable Encapsulated Project (PEP) class for biological applications — BiocProject-class • BiocProject</title>
+<title>Load the PEP into the <code>BiocProject</code> — loadPEP • BiocProject</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Portable Encapsulated Project (PEP) class for biological applications — BiocProject-class" />
+<meta property="og:title" content="Load the PEP into the <code>BiocProject</code> — loadPEP" />
 
-<meta property="og:description" content="This class provides a link between PEP and biological data structures" />
+<meta property="og:description" content="This function loads the PEP into the metadata slot of the BiocProject object using the Project constructor of the pepr package" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,32 +109,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Portable Encapsulated Project (PEP) class for biological applications</h1>
+    <h1>Load the PEP into the <code>BiocProject</code></h1>
     
-    <div class="hidden name"><code>BiocProject-class.Rd</code></div>
+    <div class="hidden name"><code>loadPEP.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This class provides a link between PEP and biological data structures</p>
+    <p>This function loads the PEP into the metadata slot of the <code><a href='BiocProject.html'>BiocProject</a></code> object using the <code><a href='http://www.rdocumentation.org/packages/pepr/topics/Project'>Project</a></code> constructor of the pepr package</p>
     
     </div>
 
-        
-    <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
-
+    <pre class="usage"><span class='fu'>loadPEP</span>(<span class='no'>.Object</span>, <span class='no'>file</span>, <span class='no'>subproject</span>, <span class='no'>...</span>)</pre>
     
-    <dl class='dl-horizontal'>
-<dt><code>metadata</code></dt><dd><p>see <a href='http://www.rdocumentation.org/packages/S4Vectors/topics/Annotated-class'>Annotated</a> class for details. Meant to store an object of class <a href='http://www.rdocumentation.org/packages/pepr/topics/Project'>Project</a></p></dd>
-</dl>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>.Object</th>
+      <td><p>object of class <code><a href='BiocProject.html'>BiocProject</a></code></p></td>
+    </tr>
+    <tr>
+      <th>file</th>
+      <td><p>a character vecotr with a path to the config file</p></td>
+    </tr>
+    <tr>
+      <th>subproject</th>
+      <td><p>a character vector with a name of the subproject to be activated</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>object of class <code><a href='BiocProject.html'>BiocProject</a></code> with the metadata slot populated with the Project object</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This funciton is used in the <code><a href='BiocProject.html'>BiocProject</a></code> initialize method and should not be used outside</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://pepkit.github.io/'>https://pepkit.github.io/</a></p></div>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#slots">Slots</a></li>
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>

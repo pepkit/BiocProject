@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A class representing a Portable Encapsulated Project and Summarized Experiment objects interface — BiocProject • BiocProject</title>
+<title>Portable Encapsulated Project (PEP) class for biological applications — BiocProject • BiocProject</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="A class representing a Portable Encapsulated Project and Summarized Experiment objects interface — BiocProject" />
+<meta property="og:title" content="Portable Encapsulated Project (PEP) class for biological applications — BiocProject" />
 
-<meta property="og:description" content="This is a helper that creates the `BiocProject` with empty Project and SummarizedExperiment objects included" />
+<meta property="og:description" content="This is a helper that creates the BiocProject object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -109,35 +109,39 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A class representing a Portable Encapsulated Project and Summarized Experiment objects interface</h1>
+    <h1>Portable Encapsulated Project (PEP) class for biological applications</h1>
     
     <div class="hidden name"><code>BiocProject.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>This is a helper that creates the `BiocProject` with empty Project and SummarizedExperiment objects included</p>
+    <p>This is a helper that creates the <code>BiocProject</code> object</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>BiocProject</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'>character</span>(), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>BiocProject</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'>character</span>(), <span class='kw'>subproject</span> <span class='kw'>=</span> <span class='fu'>character</span>(), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>file</th>
-      <td><p>project configuration yaml file</p></td>
+      <td><p>a character vecotr with a path to the config file</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>For <code>SummarizedExperiment</code>, S4 methods <code>list</code>
-    and <code>matrix</code>, arguments identical to those of the
-    <code>SimpleList</code> method.</p>
-<p>For <code>rowRanges</code>, ignored.</p>
-<p></p></td>
+      <th>subproject</th>
+      <td><p>a character vector with a name of the subproject to be activated</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>an object of <code>BiocProject</code> class</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://pepkit.github.io/'>https://pepkit.github.io/</a></p></div>
     
 
   </div>
@@ -145,7 +149,11 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+          </ul>
 
   </div>
 </div>

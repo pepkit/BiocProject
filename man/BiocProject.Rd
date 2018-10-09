@@ -4,10 +4,12 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), ...)
+BiocProject(file = character(), subproject = character(), ...)
 }
 \arguments{
-\item{file}{a path to the config file}
+\item{file}{a character vecotr with a path to the config file}
+
+\item{subproject}{a character vector with a name of the subproject to be activated}
 }
 \value{
 an object of \code{\link{BiocProject}} class

@@ -4,12 +4,14 @@
 \alias{loadPEP}
 \title{Load the PEP into the \code{BiocProject}}
 \usage{
-loadPEP(.Object, file, ...)
+loadPEP(.Object, file, subproject, ...)
 }
 \arguments{
 \item{.Object}{object of class \code{\link{BiocProject}}}
 
-\item{file}{a string with a path to the config file}
+\item{file}{a character vecotr with a path to the config file}
+
+\item{subproject}{a character vector with a name of the subproject to be activated}
 }
 \value{
 object of class \code{\link{BiocProject}} with the metadata slot populated with the Project object

@@ -75,7 +75,6 @@ pepr::listSubprojects(config(bp))
 ```
 Activate the desired subproject and view the samples:
 ```{r}
-
-subBp = activateSubproject(.Object = bp,sp = "noFrog")
+subBp = BiocProject(file = projectConfig, subproject = "noFrog")
 samples(subBp)
 ```
