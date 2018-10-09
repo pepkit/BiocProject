@@ -3,20 +3,13 @@
 \docType{class}
 \name{BiocProject-class}
 \alias{BiocProject-class}
-\title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface}
+\title{Portable Encapsulated Project (PEP) class for biological applications}
 \description{
-Provides a representation and functions to access project
-configuration and sample annotation values for a PEP as well as functions concerning experimental results organization provided by the \linkS4class{RangedSummarizedExperiment} class.
-Additionally, this class privides an interfece that connects them.
-}
-\details{
-This class inherits from classes \linkS4class{Project} and \linkS4class{RangedSummarizedExperiment}
+This class provides a link between PEP and biological data structures
 }
 \section{Slots}{
 
 \describe{
-\item{\code{ProjectSlots}}{see \link[pepr]{Project} class for details}
-
-\item{\code{SummarizedExperimentSlots}}{see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details}
+\item{\code{metadata}}{see see \link[S4Vectors]{Annotated} class for details. Meant to store an object of class \link[pepr]{Project}}
 }}
 

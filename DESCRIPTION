@@ -1,12 +1,12 @@
 Package: BiocProject
-Title: Project and SummarizedExperiment interface
+Title: Portable Encapsulated Project (PEP) for biological applications
 Version: 0.0.0.9000
 Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu", role = c("aut", "cre")), c(person("Nathan", "Sheffield", email = "nathan@code.databio.org",role = c("aut"))))
-Description: This package implements a class that provides an interface for the `Project` and `SummarizedExperiment` classes. This way the users of `SummarizedExperiment` can benefit from the utilties and ideology of the PEP toolkit. 
+Description: provides a link between Portable Encapsulated Project (PEP) and biological data structures 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: SummarizedExperiment, pepr
+Depends: S4Vectors, pepr
 Suggests:
     knitr,
 RoxygenNote: 6.1.0

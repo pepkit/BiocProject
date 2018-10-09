@@ -45,7 +45,7 @@ As you can see, `bp` the object of class `BiocProject` consists of the slots of 
 Obviously, an empty object of `BiocProject` class is useless, so let's consider the following example:
 
 1. Generate the data for `SummarizedExperiment` and `Project`
-gitcgit 
+
 ```{r}
 nrows = 200
 ncols = 6
