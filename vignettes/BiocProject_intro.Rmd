@@ -1,0 +1,19 @@
+---
+title: "BiocProject - PEP for biological applications"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r ,collapse=TRUE,message=F}
+library(BiocProject)
+bp=BiocProject()
+bp
+bpl = loadPEP(bp,file = "~/Uczelnia/UVA/example_peps/example_derived_implied/project_config.yaml")
+bpl
+samples(bpl)
+```

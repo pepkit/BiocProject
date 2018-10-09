@@ -10,6 +10,6 @@ This class provides a link between PEP and biological data structures
 \section{Slots}{
 
 \describe{
-\item{\code{metadata}}{see see \link[S4Vectors]{Annotated} class for details. Meant to store an object of class \link[pepr]{Project}}
+\item{\code{metadata}}{see \link[S4Vectors]{Annotated} class for details. Meant to store an object of class \link[pepr]{Project}}
 }}
 

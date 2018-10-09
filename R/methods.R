@@ -1,6 +1,7 @@
 setGeneric("loadPEP", function(.Object, file=character(), ...)
   standardGeneric("loadPEP"))
 
+#' @export
 setMethod(f = "loadPEP",
           signature = "BiocProject",
           definition = function(.Object, file, ...){
@@ -12,6 +13,7 @@ setMethod(f = "loadPEP",
             return(.Object)
           })
 
+#' @export
 setMethod(f = "samples",
           signature = "Annotated",
           definition = function(object){
