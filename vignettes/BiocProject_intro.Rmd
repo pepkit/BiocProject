@@ -13,7 +13,14 @@ vignette: >
 library(BiocProject)
 bp=BiocProject()
 bp
-bpl = loadPEP(bp,file = "~/Uczelnia/UVA/example_peps/example_derived_implied/project_config.yaml")
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_derived",
+"project_config.yaml",
+package = "pepr"
+)
+bpl = loadPEP(bp,file = projectConfig)
 bpl
 samples(bpl)
 ```
