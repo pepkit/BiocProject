@@ -32,7 +32,7 @@ setMethod(
     if (!identical(file, character(0))) {
       .Object@metadata = list(PEP = pepr::Project(file = file, subproject = subproject))
     } else{
-      message("No config file provided. Creating empty BiocProject object metadata...")
+      message("\nNo config file provided. Creating empty BiocProject object metadata...\n")
     }
     return(.Object)
   }
@@ -47,6 +47,7 @@ setMethod(
       ret = pepr::samples(object = object@metadata$PEP)
       invisible(ret)
     } else{
+      message("TEST")
       return()
     }
   }
@@ -101,3 +102,49 @@ setMethod(
     }
   }
 )
+
+
+#' Read any biological data to the BiocProject object
+#' 
+#' This function allows for reading of any biological data into the \code{\link{BiocProject}} object based on the metadata enclosed in the \code{\link[pepr]{Project}} object. 
+#' 
+#' @param project an object of class \code{\link[pepr]{Project}}
+#' @param func a boolean or a name of the function to use. See Details for more information
+#'
+#' @details If the \code{func} parameter is set to \code{TRUE} then the function name that will be used to read the data in is taken from the config slot in \code{\link[pepr]{Project}} (specifically: \code{config(project)$bioconductor$parse_code}). \cr If the \code{func} is set to string then the function of this name from the environment will be used to read the data in.\cr If the \code{func} is set to \code{FALSE} then an \code{\link{BiocProject}} object with no data is created. 
+#'
+#' @return object of the class that is returned with the provided function or an empty \code{\link{BiocProject}} object if no function was provided
+#' @export
+#'
+#' @examples
+readBiocData <- function(project, func = FALSE) {
+  if (!is(project, "Project"))
+    stop("The project argument is not a pepr::Project object.")
+  if (is(func, "logical")) {
+    if (func) {
+      funcName = config(project)$bioconductor$parse_code
+    } else{
+      message("No data was read. Creating an empty BiocProject object...")
+      return(BiocProject(file = project@file))
+    }
+  }
+  if (is(func, "character")) {
+    funcName = func
+  }
+  if (!is.null(funcName)) {
+    if (exists(funcName)) {
+      message("The function ", funcName, " will be used to read the data in.")
+      data = do.call(funcName,list(project))
+      if (is(data,"Annotated")){
+        data@metadata = list(PEP = project)
+      }else{
+        message("The object read with the function", funcName, " (" ,class(data)[1],") does not extend the class Annotated. The Project could not be added to the metadata.")
+      }
+      return(data)
+    } else{
+      # Should this function try to look for it in the CWD? (source(paste0(funcName,".R")))
+      message("The function ", funcName, " does not exist. Read in it.") 
+    }
+  }
+}
+
