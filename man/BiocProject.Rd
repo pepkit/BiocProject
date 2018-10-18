@@ -4,7 +4,7 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), subproject = character(), ...)
+BiocProject(file = character(), subproject = character(), object, ...)
 }
 \arguments{
 \item{file}{a character vecotr with a path to the config file}

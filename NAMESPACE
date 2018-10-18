@@ -3,7 +3,6 @@
 export(BiocProject)
 export(readBiocData)
 exportClasses(BiocProject)
-exportMethods(activateSubproject)
 exportMethods(config)
 exportMethods(getSubsample)
 exportMethods(initialize)

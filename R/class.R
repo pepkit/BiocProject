@@ -1,5 +1,6 @@
 
 
+
 #' Portable Encapsulated Project (PEP) class for biological applications
 #'
 #' This class provides a link between PEP and biological data structures
@@ -13,6 +14,17 @@
 setClass("BiocProject",
          #Inherits from the Annotated class
          contains = "Annotated")
+
+validBiocProject <- function(.Object) {
+  ifelse(
+    methods::is(.Object@metadata$PEP, "Project"),
+    TRUE,
+    "The first element of the list in the metadata slot is not of Project class."
+  )
+}
+
+setValidity("BiocProject", validBiocProject)
+
 
 #' Portable Encapsulated Project (PEP) class for biological applications
 #'
@@ -28,7 +40,6 @@ setClass("BiocProject",
 #' @export BiocProject
 BiocProject <-
   function(file = character(),
-           subproject = character(),
-           ...) {
-    methods::new("BiocProject", file, subproject, ...)
+           subproject = character()) {
+    methods::new("BiocProject", file, subproject)
   }
