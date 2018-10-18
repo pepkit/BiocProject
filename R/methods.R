@@ -103,6 +103,7 @@ setMethod(
 #' @export
 #'
 #' @examples 
+#' \dontrun{
 #' projectConfig = system.file(
 #' "extdata",
 #' "example_peps-master",
@@ -119,6 +120,7 @@ setMethod(
 #' ))
 #' PEP = Project(projectConfig)
 #' readBiocData(PEP,TRUE)
+#' }
 readBiocData <- function(project, func = FALSE) {
   if (!methods::is(project, "Project"))
     stop("The project argument is not a pepr::Project object.")

@@ -4,7 +4,7 @@
 \alias{loadPEP}
 \title{Load the PEP into the \code{BiocProject}}
 \usage{
-loadPEP(.Object, file, subproject, ...)
+loadPEP(.Object, file, subproject)
 }
 \arguments{
 \item{.Object}{object of class \code{\link{BiocProject}}}

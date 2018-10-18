@@ -1,3 +1,4 @@
+library(GenomicRanges)
 parseEncodeRegions = function(project) {
   # get the data from the Project config
   url = samples(project)$remote_url[[1]]

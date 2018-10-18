@@ -23,6 +23,7 @@ If the \code{func} parameter is set to \code{TRUE} then the function name that w
 The \code{readBiocData} function will try to find the function in the environment or will source it from the file named as the \code{func} argument specifies (with the \code{.R} extension).
 }
 \examples{
+\dontrun{
 projectConfig = system.file(
 "extdata",
 "example_peps-master",
@@ -39,4 +40,5 @@ package = "BiocProject"
 ))
 PEP = Project(projectConfig)
 readBiocData(PEP,TRUE)
+}
 }
