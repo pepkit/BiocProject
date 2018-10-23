@@ -80,43 +80,11 @@
 <div id="biocproject" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#biocproject" class="anchor"></a>BiocProject</h1></div>
-<p>R package that implements an interface class for the <a href="http://code.databio.org/pepr/"><code>Project</code></a> and <a href="https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html"><code>SummarizedExperiment</code></a> classes</p>
-<div id="install" class="section level2">
+<p>R package that implements a class type for the <a href="http://code.databio.org/pepr/"><code>Project</code></a> class to be used with the <strong>biological data</strong></p>
+<div id="usage" class="section level2">
 <h2 class="hasAnchor">
-<a href="#install" class="anchor"></a>Install</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"pepkit/BiocProject"</span>)</code></pre></div>
-</div>
-<div id="quick-start" class="section level2">
-<h2 class="hasAnchor">
-<a href="#quick-start" class="anchor"></a>Quick start</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">'BiocProject'</span>)
-
-<span class="co"># Get a sample PEP project_config</span>
-projectConfig =<span class="st"> </span><span class="kw">system.file</span>(
-<span class="st">"extdata"</span>,
-<span class="st">"example_peps-master"</span>,
-<span class="st">"example_implied"</span>,
-<span class="st">"project_config.yaml"</span>,
-<span class="dt">package =</span> <span class="st">"pepr"</span>
-)
-
-<span class="co"># Get a sample data for SummarizedExperiment</span>
-nrows =<span class="st"> </span><span class="dv">200</span>
-ncols =<span class="st"> </span><span class="dv">6</span>
-counts =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(nrows <span class="op">*</span><span class="st"> </span>ncols, <span class="dv">1</span>, <span class="fl">1e4</span>), nrows)
-rowRanges =<span class="st"> </span><span class="kw">GRanges</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">"chr1"</span>, <span class="st">"chr2"</span>), <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">150</span>)),
-                    <span class="kw">IRanges</span>(<span class="kw">floor</span>(<span class="kw">runif</span>(<span class="dv">200</span>, <span class="fl">1e5</span>, <span class="fl">1e6</span>)), <span class="dt">width=</span><span class="dv">100</span>),
-                    <span class="dt">strand=</span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">"+"</span>, <span class="st">"-"</span>), <span class="dv">200</span>, <span class="ot">TRUE</span>),
-                    <span class="dt">feature_id=</span><span class="kw">sprintf</span>(<span class="st">"ID%03d"</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">200</span>))
-colData =<span class="st"> </span><span class="kw">DataFrame</span>(<span class="dt">Treatment=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">"ChIP"</span>, <span class="st">"Input"</span>), <span class="dv">3</span>),
-                    <span class="dt">row.names=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>])
-                    
-                    
-<span class="co"># Create simple BiocProject object</span>
-bp =<span class="st"> </span><span class="kw"><a href="reference/BiocProject.html">BiocProject</a></span>(<span class="dt">file=</span>projectConfig, <span class="dt">assays=</span><span class="kw">list</span>(<span class="dt">counts=</span>counts), <span class="dt">rowRanges=</span>rowRanges, <span class="dt">colData=</span>colData)
-
-<span class="co"># Inspect it!</span>
-bp</code></pre></div>
+<a href="#usage" class="anchor"></a>Usage</h2>
+<p>See the package vignette for usage instructions</p>
 </div>
 </div>
 
