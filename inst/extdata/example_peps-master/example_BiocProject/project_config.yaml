@@ -11,7 +11,7 @@ attributes:
 derived_columns: remote_url
 
 data_sources:
-  ucsc: hgdownload.cse.ucsc.edu/goldenpath/hg19/database/{sample_name}
+  ucsc: http://hgdownload.cse.ucsc.edu/goldenpath/hg19/database/{sample_name}
 
 implied_columns:
   organism:
