@@ -4,21 +4,28 @@
 \alias{readBiocData}
 \title{Read any biological data to the BiocProject format}
 \usage{
-readBiocData(project, func = FALSE)
+readBiocData(file = character(), subproject = character(),
+  func = FALSE, ...)
 }
 \arguments{
-\item{project}{an object of class \code{\link[pepr]{Project}}}
+\item{file}{a character containing a path to the PEP config file (see \url{https://pepkit.github.io/docs/project_config/} for more details)}
+
+\item{subproject}{a character containing the name of the subproject that should be activated}
 
 \item{func}{a boolean or a name of the function to use. See Details for more information}
+
+\item{project}{an object of class \code{\link[pepr]{Project}}}
 }
 \value{
-object of the class that is returned with the provided function or an empty \code{\link{BiocProject}} object if no function was provided
+object of the class that is returned with the provided function or an empty \code{\link[pepr]{Project}} object if no function was provided (\code{func} parameter was \code{FALSE})
 }
 \description{
 This function allows for reading of any biological data into the \code{\link{BiocProject}} format based on the metadata enclosed in the \code{\link[pepr]{Project}} object.
 }
 \details{
 If the \code{func} parameter is set to \code{TRUE} then the function name that will be used to read the data in is taken from the config slot in \code{\link[pepr]{Project}} (specifically: \code{config(project)$bioconductor$parse_code}). \cr If the \code{func} is set to string then the function of this name will be used to read the data in.\cr If the \code{func} is set to \code{FALSE} then an \code{\link{BiocProject}} object with no data is created.
+
+The pepr::Project component of the returned object is constructed from the provided \code{file} argument with the path to the PEP config file (and \code{subproject}, optionally). Alternatively, the \code{\link[pepr]{Project}} can be provided as a \code{project} argument.
 
 The \code{readBiocData} function will try to find the function in the environment or will source it from the file named as the \code{func} argument specifies (with the \code{.R} extension).
 }

@@ -1,4 +1,5 @@
 library(GenomicRanges)
+library(BiocFileCache)
 parseEncodeRegions = function(project) {
   # get the data from the Project config
   url = samples(project)$remote_url[[1]]
@@ -11,9 +12,10 @@ parseEncodeRegions = function(project) {
     dir.create(file.path(workDir))
   }
   # download the file
-  download.file(url = url,destfile = file.path(workDir,fileName),method = "wget")
+  bfc = BiocFileCache(cache = workDir,ask = F)
+  path = bfcrpath(bfc,url)
   # read it in
-  df=read.table(file.path(workDir,fileName))
+  df=read.table(path)
   # formatting
   colnames(df) = c('chr', 'start', 'end', 'name')
   # convert to GRanges object
