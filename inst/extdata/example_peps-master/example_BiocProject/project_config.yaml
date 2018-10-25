@@ -1,6 +1,6 @@
 metadata:
   pipeline_interfaces: pipeline_interface.yaml
-  output_dir: ${HOME}/datadir
+  output_dir: $HOME/datadir
   sample_annotation: anno.csv
 
 attributes:
