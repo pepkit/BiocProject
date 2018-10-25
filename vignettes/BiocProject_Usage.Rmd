@@ -27,7 +27,7 @@ library(S4Vectors)
 className = "Vector"
 any(extends(className)=="Annotated")
 ```
-The workhorse of the `BiocProject` package is the `readBiocData()` function. It creates the `Project` object and uses the user-supplied data processing function to create an object enriched in the metadata from PEP.
+The workhorse of the `BiocProject` package is the `readBiocData()` function. It creates the `Project` object and uses the user-supplied data processing function to create an object enriched with the metadata from PEP.
 
 **This is how to use it:**
 
@@ -68,6 +68,7 @@ bioconductor:
 
 ```{r, collapse=TRUE}
 rbd = readBiocData(file = ProjectConfig, func = TRUE)
+rbd
 ```
 
 The function that was used to process the data [`parseEncodeRegions.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config.yaml).
@@ -76,6 +77,8 @@ In the example below the function name was provided as a `func` argument:
 
 ```{r, collapse=TRUE}
 rbd1 = readBiocData(file = ProjectConfig, func = "parseEncodeRegions")
+rbd1
 ```
 
+As you can see the output of the `readBiocData` function is a `GRanges` object in both cases. However, it is enriched with a `PEP` as a `pepr::Project` object in the metadata slot.
 
