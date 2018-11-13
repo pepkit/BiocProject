@@ -5,11 +5,23 @@
 \alias{BiocProject-class}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \description{
-This class provides a link between PEP and biological data structures
+This class provides a link between PEP and biological data structures.
+}
+\details{
+Thi class can be created with the constructor: \code{\link{BiocProject}}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{metadata}}{see \link[S4Vectors]{Annotated} class for details. Meant to store an object of class \link[pepr]{Project}}
+\item{\code{.Data}}{a list with the data. Can be extracted with \code{\link{getData}}}
+
+\item{\code{file}}{character vector path to config file on disk.}
+
+\item{\code{samples}}{a data table object holding the sample metadata. Can be extracted with \code{\link{samples}}}
+
+\item{\code{config}}{a list object holding contents of the config file. Can be extracted with \code{\link{config}}}
 }}
 
+\seealso{
+\url{https://pepkit.github.io/}
+}

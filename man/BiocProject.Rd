@@ -4,18 +4,32 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), subproject = character())
+BiocProject(file = character(), subproject = character(), func = F)
 }
 \arguments{
 \item{file}{a character vecotr with a path to the config file}
 
-\item{subproject}{a character vector with a name of the subproject to be activated}
+\item{subproject}{a character vector with a name of the subproject 
+to be activated}
+
+\item{func}{a boolean or a name of the function to use. 
+See \code{Details} for more information}
 }
 \value{
-an object of \code{\link{BiocProject}} class
+an object of \code{\link{BiocProject-class}}
 }
 \description{
-This is a helper that creates the \code{\link{BiocProject}} object
+This is a helper that creates the \code{\link{BiocProject-class}} object
+}
+\details{
+If the \code{func} parameter is set to \code{TRUE} then the function name 
+that will be used to read the data in is taken from the config slot 
+in \code{\link[pepr]{Project}} 
+(specifically: \code{config(project)$bioconductor$parse_code}).
+ \cr If the \code{func} is set to string then the function of this name 
+ will be used to read the data in.\cr If the \code{func} is set 
+ to \code{FALSE} then an \code{\link{BiocProject}} object 
+ with no data is created.
 }
 \seealso{
 \url{https://pepkit.github.io/}
