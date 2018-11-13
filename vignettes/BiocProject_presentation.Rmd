@@ -1,0 +1,103 @@
+---
+title: "BiocProject Usage"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The `BiocProject` class formalizes a way how the metadata are presented within the [Bioconductor](https://www.bioconductor.org/) classes. It uses the generic R package [pepr](http://code.databio.org/pepr/) that provides an interface to the Portable Encapsulated Project (PEP) to enclose the metadata to the original Bioconductor objects. 
+
+See the [pepkit.github.io](https://pepkit.github.io/) website to learn more about the PEP environment.
+
+# Usage
+
+In order to use the `BiocProject` package you need two things:
+
+1. a PEP (see [this website](https://pepkit.github.io/docs/simple_example/) for creation instructions and/or use the example provided with this package as guideline)
+
+2. a function that processes your data
+
+## Code
+
+Get paths to the files used in this tutorial
+
+```{r echo=T,message=FALSE}
+library(BiocProject)
+ProjectConfig = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "project_config.yaml",
+  package = "BiocProject"
+)
+
+processFunction =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "parseEncodeRegions.R",
+  package = "BiocProject"
+)
+```
+Read the `parseEncodeRegions` function into the R environment
+```{r}
+source(processFunction)
+```
+
+
+And now there are a few possibilities:
+
+- you can specify the function name in the PEP config file in the key value pair presented below and set the `func` parameter of the `BiocProject` constructor to `TRUE`
+
+```
+bioconductor:
+  parse_code: parseEncodeRegions
+```
+
+- you can set the `func` parameter of the `BiocProject` constructor to the function name (character)
+
+- or you can set the `func` parameter of the `BiocProject` constructor to `FALSE` to get an empty `BiocProject` object
+
+
+Create an empty `BiocProject` object (`func` defaults to `FALSE`)
+```{r}
+bp = BiocProject(file=ProjectConfig)
+#Inspect it
+bp
+```
+Create a `BiocProject` object with `func=TRUE`
+```{r}
+bp1 = BiocProject(file=ProjectConfig,func=TRUE)
+#Inspect it
+bp1
+```
+Create a `BiocProject` object, specify the function name manually. 
+
+The function that was used to process the data [`parseEncodeRegions.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config.yaml).
+```{r}
+bp2 =  BiocProject(file=ProjectConfig, func="parseEncodeRegions")
+#Inspect it
+bp2
+```
+Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
+```{r}
+samples(bp2)
+config(bp2)
+```
+Apply the `list`-related methods
+```{r}
+bp2[[1]]
+```
