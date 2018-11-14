@@ -10,7 +10,7 @@ getData(.Object, ...)
 \item{.Object}{An object of \code{\link{BiocProject-class}}}
 }
 \value{
-a list with the data
+a list with the data elements
 }
 \description{
 This method extracts the data from \code{\link{Project-class}} objects

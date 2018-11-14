@@ -2,7 +2,8 @@
 % Please edit documentation in R/methods.R
 \name{toProject}
 \alias{toProject}
-\title{This method coerces the \code{\link{BiocProject-class}} to \code{\link{Project-class}}}
+\title{This method coerces the \code{\link{BiocProject-class}}
+ to \code{\link{Project-class}}}
 \usage{
 toProject(.Object, ...)
 }
@@ -13,7 +14,8 @@ toProject(.Object, ...)
 an object of \code{\link{Project-class}} object
 }
 \description{
-This method coerces the \code{\link{BiocProject-class}} to \code{\link{Project-class}}
+This method coerces the \code{\link{BiocProject-class}}
+ to \code{\link{Project-class}}
 }
 \examples{
 ProjectConfig = system.file(

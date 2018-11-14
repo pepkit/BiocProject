@@ -22,6 +22,22 @@ The `BiocProject` class formalizes a way how the metadata are presented within t
 
 See the [pepkit.github.io](https://pepkit.github.io/) website to learn more about the PEP environment.
 
+# Installation
+
+The `BiocProject` package is currently availavble only via GitHub install. To get the most recent version of the packae run:
+
+```{r eval=FALSE}
+devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')
+```
+
+to install developement version of `pepr` and 
+
+```{r eval=FALSE}
+devtools::install_github(repo = 'pepkit/BiocProject',ref = 'dev')
+```
+
+to install development version of `BiocProject`
+
 # Usage
 
 In order to use the `BiocProject` package you need two things:
@@ -30,9 +46,9 @@ In order to use the `BiocProject` package you need two things:
 
 2. a function that processes your data
 
-## Code
+# Code
 
-Get paths to the files used in this tutorial
+Get paths to the files used in this vignette
 
 ```{r echo=T,message=FALSE}
 library(BiocProject)
@@ -58,33 +74,22 @@ source(processFunction)
 ```
 
 
-And now there are a few possibilities:
+## `func` argument specifies the data reading function
 
-- you can specify the function name in the PEP config file in the key value pair presented below and set the `func` parameter of the `BiocProject` constructor to `TRUE`
+- *Option 1*: you can specify the function name in the PEP config file in the key value pair presented below and set the `func` parameter of the `BiocProject` constructor to `TRUE`
 
 ```
 bioconductor:
   parse_code: parseEncodeRegions
 ```
 
-- you can set the `func` parameter of the `BiocProject` constructor to the function name (character)
+- *Option 2*: you can set the `func` parameter of the `BiocProject` constructor to the function name (character)
 
-- or you can set the `func` parameter of the `BiocProject` constructor to `FALSE` to get an empty `BiocProject` object
+- *Option 3*: or you can set the `func` parameter of the `BiocProject` constructor to `FALSE` to get an empty `BiocProject` object
 
+## `func` argument in practice
 
-Create an empty `BiocProject` object (`func` defaults to `FALSE`)
-```{r}
-bp = BiocProject(file=ProjectConfig)
-#Inspect it
-bp
-```
-Create a `BiocProject` object with `func=TRUE`
-```{r}
-bp1 = BiocProject(file=ProjectConfig,func=TRUE)
-#Inspect it
-bp1
-```
-Create a `BiocProject` object, specify the function name manually. 
+- ***Option 1*: Create a `BiocProject` object, specify the function name manually.**
 
 The function that was used to process the data [`parseEncodeRegions.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config.yaml).
 ```{r}
@@ -92,6 +97,43 @@ bp2 =  BiocProject(file=ProjectConfig, func="parseEncodeRegions")
 #Inspect it
 bp2
 ```
+
+- ***Option 2*: Create a `BiocProject` object with `func=TRUE`**
+```{r}
+bp1 = BiocProject(file=ProjectConfig,func=TRUE)
+#Inspect it
+bp1
+```
+
+- ***Option 3*: Create an empty `BiocProject` object (`func` defaults to `FALSE`)**
+```{r}
+bp = BiocProject(file=ProjectConfig)
+#Inspect it
+bp
+```
+
+## What if your `func` requires additional arguments?
+
+Use the `funcArgs` argument to provide a list of named arguments for your `func`, like:
+
+```{r}
+processFunctionArgs =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "parseEncodeRegions_args.R",
+  package = "BiocProject"
+)
+source(processFunctionArgs)
+bp3 =  BiocProject(file=ProjectConfig, func="parseEncodeRegions_args",funcArgs = list(arg="TEST"))
+```
+
+The string `"TEST"` which was passed as an argmennt was printed as it was implemented in the `parseEncodeRegions_args.R` function.
+
+The function that was used to process the data and test the addtional args passing [`parseEncodeRegions_args.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions_args.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config_args.yaml).
+
+## Interact with `BiocProject` object
+
 Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
 ```{r}
 samples(bp2)
@@ -101,3 +143,4 @@ Apply the `list`-related methods
 ```{r}
 bp2[[1]]
 ```
+

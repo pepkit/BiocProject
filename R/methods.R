@@ -1,11 +1,13 @@
 
 
+
 #' @export
 setMethod(
   f = "initialize",
   signature = "BiocProject",
-  definition = function(.Object, func = FALSE, ...) {
-    .Object = do.call(selectMethod("initialize",signature = "Project"),list(.Object, ...))
+  definition = function(.Object, func, funcArgs, ...) {
+    .Object = do.call(selectMethod("initialize", signature = "Project"),
+                      list(.Object, ...))
     if (methods::is(func, "logical")) {
       if (func) {
         funcName = pepr::config(.Object)$bioconductor$parse_code
@@ -22,7 +24,8 @@ setMethod(
         stop(
           "The function ",
           funcName,
-          " does not exist. Read it in or move the file with that function to the CWD: ",
+          " does not exist. Read it in or move the file
+          with that function to the CWD: ",
           getwd()
         )
         return(NULL)
@@ -31,18 +34,20 @@ setMethod(
       }
     }
     data = tryCatch({
-      do.call(funcName, list(.Object))
+      do.call(funcName, append(list(.Object), funcArgs))
     }, warning = function(w) {
-      message("There are warnings associated with the ",funcName," execution")
+      message("There are warnings associated with the ",
+              funcName,
+              " execution")
     }, error = function(e) {
-      stop("There are errors associated with the ",funcName," execution")
+      stop("There are errors associated with the ", funcName, " execution")
     }, finally = {
       message("The function ", funcName, " was used to read the data in.")
     })
-    .Object[[length(.Object)+1]] = data
+    .Object[[length(.Object) + 1]] = data
     return(.Object)
   }
-)    
+)
 
 setMethod(
   f = "show",
@@ -50,14 +55,16 @@ setMethod(
   definition = function(object) {
     cat("BiocProject object. Class: ", class(object), fill = T)
     cat("  length: ", length(object), fill = T)
-  })
+  }
+)
 
-#' This method coerces the \code{\link{BiocProject-class}} to \code{\link{Project-class}}
+#' This method coerces the \code{\link{BiocProject-class}}
+#'  to \code{\link{Project-class}}
 #'
 #' @param .Object An object of \code{\link{BiocProject-class}}
 #'
 #' @return an object of \code{\link{Project-class}} object
-#' 
+#'
 #' @examples
 #' ProjectConfig = system.file(
 #' "extdata",
@@ -66,10 +73,10 @@ setMethod(
 #' "project_config.yaml",
 #' package = "BiocProject"
 #' )
-#' 
+#'
 #' bp = BiocProject(file=ProjectConfig)
 #' toProject(bp)
-#' 
+#'
 #' @export
 setGeneric("toProject", function(.Object, ...)
   standardGeneric("toProject"))
@@ -79,17 +86,18 @@ setMethod(
   f = "toProject",
   signature = "BiocProject",
   definition = function(.Object) {
-    file=config(.Object)$file
+    file = config(.Object)$file
     return(pepr::Project(file))
-  })
+  }
+)
 
 
 #' This method extracts the data from \code{\link{Project-class}} objects
 #'
 #' @param .Object An object of \code{\link{BiocProject-class}}
 #'
-#' @return a list with the data
-#' 
+#' @return a list with the data elements
+#'
 #' @examples
 #' ProjectConfig = system.file(
 #' "extdata",
@@ -98,10 +106,10 @@ setMethod(
 #' "project_config.yaml",
 #' package = "BiocProject"
 #' )
-#' 
+#'
 #' bp = BiocProject(file=ProjectConfig)
 #' getData(bp)
-#' 
+#'
 #' @export
 setGeneric("getData", function(.Object, ...)
   standardGeneric("getData"))
@@ -112,6 +120,5 @@ setMethod(
   signature = "BiocProject",
   definition = function(.Object) {
     return(.Object@.Data)
-  })
-
-
+  }
+)
