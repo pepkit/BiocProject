@@ -17,7 +17,7 @@ navbar:
   right:
   - text: GitHub
     icon: fa-github fa-lg
-    href: https://github.com/pepkit/pepr
+    href: https://github.com/pepkit/BiocProject
   - text: Databio.org
     href: http://databio.org
   - text: Software & Data
