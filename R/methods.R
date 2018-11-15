@@ -5,49 +5,54 @@
 setMethod(
   f = "initialize",
   signature = "BiocProject",
-  definition = function(.Object, func, funcArgs, ...) {
+  definition = function(.Object, autoLoad, func, funcArgs, ...) {
     .Object = do.call(selectMethod("initialize", signature = "Project"),
                       list(.Object, ...))
-    if (methods::is(func, "logical")) {
-      if (func) {
-        funcName = pepr::config(.Object)$bioconductor$parse_code
+    if(!is.null(func)){
+      # use the lambda function if provided
+      if(is.function(eval(substitute(func)))){
+        sFunc=substitute(func)
+        readFun = eval(sFunc)
+        data=do.call(readFun,list(.Object))
+        .Object[[length(.Object) + 1]] = data
+        return(.Object)
+      }else{
+        stop("The lambda function you provided is invalid.")
+      }
+    }else{
+      # use config to find it
+      if(autoLoad){
+        funcName = pepr::config(.Object)$bioconductor$read_fun_name
+        if(exists(funcName)){
+          # function from config.yaml in environment
+          readFun=funcName
+          data=do.call(readFun,append(list(.Object),funcArgs))
+          .Object[[length(.Object) + 1]] = data
+          message("Used function ",funcName," from environment")
+          return(.Object)
+        }else{
+          # function from config.yaml in read_fun_name not in environment,
+          # tring to source the file specified in 
+          # the config.yaml read_fun_path
+          funcPath = 
+            pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
+          message("Function read from file: ",funcPath)
+          if(!file.exists(paste0(funcPath))) stop(
+            "The function ",
+            funcName,
+            " does not exist in the environment and file ",funcPath ," does not exist",
+            getwd()
+          )
+          readFun=source(funcPath)$value
+          data=do.call(readFun,append(list(.Object),funcArgs))
+          .Object[[length(.Object) + 1]] = data
+          return(.Object)
+        }
       } else{
         message("No data was read. Creating an empty BiocProject object...")
         return(.Object)
       }
-    } else{
-      if (methods::is(func, "character"))
-        funcName = func
-    }
-    if (!exists(funcName)) {
-      if (!file.exists(paste0(funcName, ".R"))) {
-        stop(
-          "The function ",
-          funcName,
-          " does not exist. Read it in or move the file
-          with that function to the CWD: ",
-          getwd()
-        )
-        return(NULL)
-      } else{
-        source(paste0(funcName, ".R"))
-      }
-    }
-    data = tryCatch({
-      do.call(funcName, append(list(.Object), funcArgs))
-    }, warning = function(w) {
-      message("There are warnings associated with the ",
-              funcName,
-              " execution")
-    }, error = function(e) {
-      stop("There are errors associated with the ", funcName, " execution")
-    }, finally = {
-      message("The function ", funcName, " was used to read the data in.")
-    })
-    .Object[[length(.Object) + 1]] = data
-    return(.Object)
-  }
-)
+    }})
 
 setMethod(
   f = "show",
@@ -58,12 +63,14 @@ setMethod(
   }
 )
 
+#' Get \code{\link[pepr]{Project-class}} object
+#' 
 #' This method coerces the \code{\link{BiocProject-class}}
 #'  to \code{\link{Project-class}}
 #'
 #' @param .Object An object of \code{\link{BiocProject-class}}
 #'
-#' @return an object of \code{\link{Project-class}} object
+#' @return an object of \code{\link[pepr]{Project-class}} object
 #'
 #' @examples
 #' ProjectConfig = system.file(
@@ -78,7 +85,7 @@ setMethod(
 #' toProject(bp)
 #'
 #' @export
-setGeneric("toProject", function(.Object, ...)
+setGeneric("toProject", function(.Object)
   standardGeneric("toProject"))
 
 #' @export
@@ -92,7 +99,9 @@ setMethod(
 )
 
 
-#' This method extracts the data from \code{\link{Project-class}} objects
+#' Extract data from \code{\link[pepr]{Project-class}} objects
+#' 
+#' This method extracts the data from \code{\link[pepr]{Project-class}} objects
 #'
 #' @param .Object An object of \code{\link{BiocProject-class}}
 #'
@@ -111,7 +120,7 @@ setMethod(
 #' getData(bp)
 #'
 #' @export
-setGeneric("getData", function(.Object, ...)
+setGeneric("getData", function(.Object)
   standardGeneric("getData"))
 
 #' @export
