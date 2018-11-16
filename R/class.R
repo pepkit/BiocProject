@@ -56,22 +56,19 @@ BiocProject <-
            autoLoad = TRUE,
            func = NULL,
            funcArgs = list()) {
-
-# basic argument validation -----------------------------------------------------
-
-    if(!is.logical(autoLoad)) stop("The autoLoad argument is not logical.")
-    if(!is.list(funcArgs)) stop("The funcArgs has to be a named list.")
-    if(length(funcArgs)>0 && is.null(names(funcArgs))) 
+    if (!is.logical(autoLoad))
+      stop("The autoLoad argument is not logical.")
+    if (!is.list(funcArgs))
+      stop("The funcArgs has to be a named list.")
+    if (length(funcArgs) > 0 && is.null(names(funcArgs)))
       stop("The funcArgs has to be a named list")
-
-# object creation ---------------------------------------------------------
-
+    
     methods::new(
       "BiocProject",
       file = file,
       subproject = subproject,
       func = func,
       funcArgs = funcArgs,
-      autoLoad= autoLoad
+      autoLoad = autoLoad
     )
   }

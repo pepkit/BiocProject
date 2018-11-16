@@ -74,49 +74,93 @@ source(processFunction)
 ```
 
 
-## `func` argument specifies the data reading function
+## There are multiple options to read the data into the `BiocProject` objects
 
-- *Option 1*: you can specify the function name in the PEP config file in the key value pair presented below and set the `func` parameter of the `BiocProject` constructor to `TRUE`
+- *Option 1*: you can specify the function name in the PEP config file in the key value pair presented below and set the `autoLoad` parameter of the `BiocProject` constructor to `TRUE`
 
 ```
 bioconductor:
-  parse_code: parseEncodeRegions
+  read_fun_name: parseEncodeRegions
 ```
 
-- *Option 2*: you can set the `func` parameter of the `BiocProject` constructor to the function name (character)
+OR
 
-- *Option 3*: or you can set the `func` parameter of the `BiocProject` constructor to `FALSE` to get an empty `BiocProject` object
-
-## `func` argument in practice
-
-- ***Option 1*: Create a `BiocProject` object, specify the function name manually.**
-
-The function that was used to process the data [`parseEncodeRegions.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config.yaml).
-```{r}
-bp2 =  BiocProject(file=ProjectConfig, func="parseEncodeRegions")
-#Inspect it
-bp2
+```
+bioconductor:
+  read_fun_name: package::function
 ```
 
-- ***Option 2*: Create a `BiocProject` object with `func=TRUE`**
+The constructor will look for the function in the R enviornment and it it's not there, it will try to get it from the specified namespace (if `::` or `:::` is detected): `getFromNamespace("package","function")`
+
+- *Option 2*: you can specify the file that the function is saved in in the PEP config file in the key value pair presented below and set the `autoLoad` parameter of the `BiocProject` constructor to `TRUE`
+
+```
+bioconductor:
+  read_fun_path: $CODE/myFun.R
+```
+
+The construcor will source this file and run the function that is implemented there. The names of the function and file do not have to match.
+
+- *Option 3*: or you provide a lambda function in the `func` parameter in the `BiocProject` constructor. This option is given absolute priority.
+
+
+- *Option 4*: set the `autoLoad` parameter of the `BiocProject` constructor to `FALSE`. The constructor will create an empty `BiocProject` object (with no data read)
+
+
+## Data loading in practice
+
+### *Options 1 and 2*: Automatically load the data
+
+**When the function is present in the environment**
 ```{r}
-bp1 = BiocProject(file=ProjectConfig,func=TRUE)
+source(processFunction)
+bp1 = BiocProject(file=ProjectConfig,autoLoad = TRUE)
 #Inspect it
 bp1
 ```
 
-- ***Option 3*: Create an empty `BiocProject` object (`func` defaults to `FALSE`)**
+**When the function is removed from the environment**
 ```{r}
-bp = BiocProject(file=ProjectConfig)
+rm(parseEncodeRegions)
+bp2 = BiocProject(file=ProjectConfig,autoLoad = TRUE)
 #Inspect it
-bp
+bp2
 ```
 
-## What if your `func` requires additional arguments?
 
-Use the `funcArgs` argument to provide a list of named arguments for your `func`, like:
+The function that was used to process the data [`parseEncodeRegions.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config.yaml).
+
+### *Option 3*: Use lambda functio to load the data
 
 ```{r}
+bp3 = BiocProject(file=ProjectConfig, func=function(x){parseEncodeRegions(x)})
+#Inspect it
+bp3
+```
+
+### *Option 4*: Do not load the data
+
+```{r}
+bp4 = BiocProject(file=ProjectConfig,autoLoad = FALSE)
+#Inspect it
+bp4
+```
+
+## What if your function requires additional arguments?
+
+### *Option 1*: Use the `funcArgs` argument
+
+Use `funcArgs` to provide a list of named arguments for your function when using `autoLoad=TRUE`, like:
+
+```{r}
+ProjectConfigArgs = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "project_config_args.yaml",
+  package = "BiocProject"
+)
+
 processFunctionArgs =  system.file(
   "extdata",
   "example_peps-master",
@@ -125,22 +169,30 @@ processFunctionArgs =  system.file(
   package = "BiocProject"
 )
 source(processFunctionArgs)
-bp3 =  BiocProject(file=ProjectConfig, func="parseEncodeRegions_args",funcArgs = list(arg="TEST"))
+bp5 =  BiocProject(file=ProjectConfigArgs, autoLoad=TRUE,funcArgs = list(arg1="TEST1",arg2="TEST2"))
 ```
 
-The string `"TEST"` which was passed as an argmennt was printed as it was implemented in the `parseEncodeRegions_args.R` function.
+The strings `"TEST1"` and `"TEST2"` which were passed as argments were printed as it was implemented in the `parseEncodeRegions_args.R` function.
 
 The function that was used to process the data and test the addtional args passing [`parseEncodeRegions_args.R`](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions_args.R) (click to view it) was specified in the [PEP config file](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/project_config_args.yaml).
+
+### *Option 2*: Provide parameters directly to the lambda function 
+
+```{r}
+bp6 = BiocProject(file=ProjectConfigArgs, func=function(x){parseEncodeRegions_args(x,"TEST1","TEST2")})
+#Inspect it
+bp6
+```
 
 ## Interact with `BiocProject` object
 
 Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
 ```{r}
-samples(bp2)
-config(bp2)
+samples(bp6)
+config(bp6)
 ```
 Apply the `list`-related methods
 ```{r}
-bp2[[1]]
+bp6[[1]]
 ```
 
