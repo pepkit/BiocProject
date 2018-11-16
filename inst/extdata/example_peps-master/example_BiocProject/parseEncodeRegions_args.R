@@ -1,7 +1,8 @@
-library(GenomicRanges)
-library(BiocFileCache)
-parseEncodeRegions_args= function(project, arg) {
-  cat("\n\n",arg,"\n\n")
+parseEncodeRegions_args= function(project, arg1, arg2) {
+  suppressWarnings(suppressMessages(library(GenomicRanges)))
+  suppressWarnings(suppressMessages(library(BiocFileCache)))
+  cat("\narg1:",arg1,"\n")
+  cat("\narg2:",arg2,"\n\n")
   # get the data from the Project config
   url = samples(project)$remote_url[[1]]
   sampleName = samples(project)$sample_name[[1]]

@@ -2,9 +2,9 @@
 % Please edit documentation in R/methods.R
 \name{getData}
 \alias{getData}
-\title{This method extracts the data from \code{\link{Project-class}} objects}
+\title{Extract data from \code{\link[pepr]{Project-class}} objects}
 \usage{
-getData(.Object, ...)
+getData(.Object)
 }
 \arguments{
 \item{.Object}{An object of \code{\link{BiocProject-class}}}
@@ -13,7 +13,7 @@ getData(.Object, ...)
 a list with the data elements
 }
 \description{
-This method extracts the data from \code{\link{Project-class}} objects
+This method extracts the data from \code{\link[pepr]{Project-class}} objects
 }
 \examples{
 ProjectConfig = system.file(

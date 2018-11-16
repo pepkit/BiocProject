@@ -4,8 +4,8 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), subproject = character(), func = F,
-  funcArgs = list())
+BiocProject(file = character(), subproject = character(),
+  autoLoad = TRUE, func = NULL, funcArgs = list())
 }
 \arguments{
 \item{file}{a character vecotr with a path to the config file}
@@ -13,12 +13,15 @@ BiocProject(file = character(), subproject = character(), func = F,
 \item{subproject}{a character vector with a name of the subproject
 to be activated}
 
-\item{func}{a boolean or a name of the function to use.
+\item{autoLoad}{a logical indicating wether the data should be loaded
+automatically. See \code{Details} for more information}
+
+\item{func}{a lambda function that read the data, it should take 
+only \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
 
 \item{funcArgs}{a list with arguments you want to pass to the \code{func}.
-The PEP will be passed automatically.
-This should be used if \code{func} requires any additional arguments}
+The PEP will be passed automatically.}
 }
 \value{
 an object of \code{\link{BiocProject-class}}

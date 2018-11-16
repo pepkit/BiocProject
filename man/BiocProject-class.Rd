@@ -18,10 +18,10 @@ Thi class can be created with the constructor: \code{\link{BiocProject}}
 \item{\code{file}}{character vector path to config file on disk.}
 
 \item{\code{samples}}{a data table object holding the sample metadata.
-Can be extracted with \code{\link{samples}}}
+Can be extracted with \code{\link[pepr]{samples}}}
 
 \item{\code{config}}{a list object holding contents of the config file.
-Can be extracted with \code{\link{config}}}
+Can be extracted with \code{\link[pepr]{config}}}
 }}
 
 \seealso{

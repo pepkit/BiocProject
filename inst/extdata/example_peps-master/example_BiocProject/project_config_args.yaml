@@ -19,4 +19,5 @@ implied_columns:
       genome: hg19
 
 bioconductor:
-  parse_code: parseEncodeRegions_args
+  read_fun_name: parseEncodeRegions_args
+  read_fun_path: ./parseEncodeRegions_args.R

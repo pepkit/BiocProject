@@ -26,13 +26,13 @@ See the [pepkit.github.io](https://pepkit.github.io/) website to learn more abou
 
 The `BiocProject` package is currently availavble only via GitHub install. To get the most recent version of the packae run:
 
-```{r eval=FALSE}
+```
 devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')
 ```
 
 to install developement version of `pepr` and 
 
-```{r eval=FALSE}
+```
 devtools::install_github(repo = 'pepkit/BiocProject',ref = 'dev')
 ```
 
@@ -179,6 +179,9 @@ The function that was used to process the data and test the addtional args passi
 ### *Option 2*: Provide parameters directly to the lambda function 
 
 ```{r}
+source(processFunctionArgs)
+is.function(parseEncodeRegions_args)==TRUE
+parseEncodeRegions_args
 bp6 = BiocProject(file=ProjectConfigArgs, func=function(x){parseEncodeRegions_args(x,"TEST1","TEST2")})
 #Inspect it
 bp6
@@ -193,6 +196,8 @@ config(bp6)
 ```
 Apply the `list`-related methods
 ```{r}
+names(bp6) = c("myDataset")
+names(bp6)
 bp6[[1]]
 ```
 

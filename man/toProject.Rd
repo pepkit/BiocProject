@@ -2,16 +2,15 @@
 % Please edit documentation in R/methods.R
 \name{toProject}
 \alias{toProject}
-\title{This method coerces the \code{\link{BiocProject-class}}
- to \code{\link{Project-class}}}
+\title{Get \code{\link[pepr]{Project-class}} object}
 \usage{
-toProject(.Object, ...)
+toProject(.Object)
 }
 \arguments{
 \item{.Object}{An object of \code{\link{BiocProject-class}}}
 }
 \value{
-an object of \code{\link{Project-class}} object
+an object of \code{\link[pepr]{Project-class}} object
 }
 \description{
 This method coerces the \code{\link{BiocProject-class}}

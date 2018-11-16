@@ -15,11 +15,11 @@ setMethod(
         readData = tryCatch({
           do.call(f, a)
         }, warning = function(w) {
-          message("There are warnings associated with your execution")
+          message("There are warnings associated with your function execution.
+                  \nCreating an empty BiocProject...")
         }, error = function(e) {
-          stop("There are errors associated with the your function execution")
-        }, finally = {
-          message("Your function was used to read the data in.")
+          message("There are errors associated with your function execution.
+                  \nCreating an empty BiocProject...")
         })
         return(readData)
     }
@@ -28,7 +28,7 @@ setMethod(
       # use the lambda function if provided
       if(is.function(func)){
         readData=.callBiocFun(func,list(.Object))
-        .Object[[length(.Object) + 1]] =readData
+        .Object[[length(.Object) + 1]]=readData
         return(.Object)
       }else{
         stop("The lambda function you provided is invalid.")
@@ -80,8 +80,12 @@ setMethod(
   f = "show",
   signature = "BiocProject",
   definition = function(object) {
+    cat("data:\n")
     cat("BiocProject object. Class: ", class(object), fill = T)
     cat("  length: ", length(object), fill = T)
+    cat("\nmetadata:\n")
+    do.call(selectMethod("show", signature = "Project"),
+            list(object))
   }
 )
 
