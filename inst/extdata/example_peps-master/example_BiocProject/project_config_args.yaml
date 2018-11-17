@@ -20,4 +20,4 @@ implied_columns:
 
 bioconductor:
   read_fun_name: parseEncodeRegions_args
-  read_fun_path: ./parseEncodeRegions_args.R
+  read_fun_path: parseEncodeRegions_args.R

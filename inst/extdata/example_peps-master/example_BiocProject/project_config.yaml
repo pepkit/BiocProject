@@ -22,4 +22,4 @@ bioconductor:
   read_fun_name: parseEncodeRegions
   # The read_fun_dir is specific to the machine the BiocProject is run
   # read_fun_path: $HOME/Uczelnia/UVA/example_peps/example_BiocProject/parseEncodeRegions.R
-  read_fun_path: ./parseEncodeRegions.R  
+  read_fun_path: parseEncodeRegions.R

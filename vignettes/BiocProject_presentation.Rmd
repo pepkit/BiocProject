@@ -114,7 +114,7 @@ The construcor will source this file and run the function that is implemented th
 **When the function is present in the environment**
 ```{r}
 source(processFunction)
-bp1 = BiocProject(file=ProjectConfig,autoLoad = TRUE)
+bp1 = BiocProject(file=ProjectConfig, autoLoad=TRUE)
 #Inspect it
 bp1
 ```
@@ -122,7 +122,7 @@ bp1
 **When the function is removed from the environment**
 ```{r}
 rm(parseEncodeRegions)
-bp2 = BiocProject(file=ProjectConfig,autoLoad = TRUE)
+bp2 = BiocProject(file=ProjectConfig, autoLoad=TRUE)
 #Inspect it
 bp2
 ```
@@ -141,7 +141,7 @@ bp3
 ### *Option 4*: Do not load the data
 
 ```{r}
-bp4 = BiocProject(file=ProjectConfig,autoLoad = FALSE)
+bp4 = BiocProject(file=ProjectConfig, autoLoad=FALSE)
 #Inspect it
 bp4
 ```
@@ -169,7 +169,7 @@ processFunctionArgs =  system.file(
   package = "BiocProject"
 )
 source(processFunctionArgs)
-bp5 =  BiocProject(file=ProjectConfigArgs, autoLoad=TRUE,funcArgs = list(arg1="TEST1",arg2="TEST2"))
+bp5 =  BiocProject(file=ProjectConfigArgs, autoLoad=TRUE, funcArgs=list(arg1="TEST1",arg2="TEST2"))
 ```
 
 The strings `"TEST1"` and `"TEST2"` which were passed as argments were printed as it was implemented in the `parseEncodeRegions_args.R` function.
@@ -180,8 +180,6 @@ The function that was used to process the data and test the addtional args passi
 
 ```{r}
 source(processFunctionArgs)
-is.function(parseEncodeRegions_args)==TRUE
-parseEncodeRegions_args
 bp6 = BiocProject(file=ProjectConfigArgs, func=function(x){parseEncodeRegions_args(x,"TEST1","TEST2")})
 #Inspect it
 bp6
