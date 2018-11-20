@@ -1,31 +1,74 @@
 
-#' A class representing a Portable Encapsulated Project and Summarized Experiment objects interface
+
+
+
+#' Portable Encapsulated Project (PEP) class for biological applications
 #'
-#' Provides a representation and functions to access project
-#' configuration and sample annotation values for a PEP as well as functions concerning experimental results organization provided by the \linkS4class{RangedSummarizedExperiment} class.
-#' Additionally, this class privides an interfece that connects them.
+#' This class provides a link between PEP and biological data structures.
 #'
-#' This class inherits from classes \linkS4class{Project} and \linkS4class{RangedSummarizedExperiment}
+#' Thi class can be created with the constructor: \code{\link{BiocProject}}
 #'
-#' @slot ProjectSlots see \link[pepr]{Project} class for details
-#' @slot SummarizedExperimentSlots see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details
+#' @slot .Data a list with the data. Can be extracted with \code{\link{getData}}
+#' @slot file character vector path to config file on disk.
+#' @slot samples a data table object holding the sample metadata.
+#'  Can be extracted with \code{\link[pepr]{samples}}
+#' @slot config a list object holding contents of the config file.
+#'  Can be extracted with \code{\link[pepr]{config}}
 #'
-#' @importClassesFrom pepr Project
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-#' 
+#' @seealso \url{https://pepkit.github.io/}
+#'
 #' @exportClass BiocProject
 setClass("BiocProject",
-         # Inherits from Project and SummarizedExperiment objects
-         contains = c("RangedSummarizedExperiment", "Project"))
+         contains = c("list", "Project"))
 
-#' A class representing a Portable Encapsulated Project and Summarized Experiment objects interface
+#' Portable Encapsulated Project (PEP) class for biological applications
 #'
-#' This is a helper that creates the `BiocProject` with empty \linkS4class{Project} and \linkS4class{SummarizedExperiment} objects included
+#' This is a helper that creates the \code{\link{BiocProject-class}} object
 #'
-#' @inheritParams pepr::Project
-#' @inheritParams SummarizedExperiment::SummarizedExperiment
+#' If the \code{func} parameter is set to \code{TRUE} then the function name
+#' that will be used to read the data in is taken from the config slot
+#' in \code{\link[pepr]{Project}}
+#' (specifically: \code{config(project)$bioconductor$parse_code}).
+#'  \cr If the \code{func} is set to string then the function of this name
+#'  will be used to read the data in.\cr If the \code{func} is set
+#'  to \code{FALSE} then a \code{\link{BiocProject}} object
+#'  with no data is created.
+#'
+#' @param file a character vecotr with a path to the config file
+#' @param subproject a character vector with a name of the subproject
+#' to be activated
+#' @param func a lambda function that read the data, it should take 
+#' only \code{\link[pepr]{Project-class}} as an argument.
+#' See \code{Details} for more information
+#' @param funcArgs a list with arguments you want to pass to the \code{func}.
+#'  The PEP will be passed automatically.
+#' @param autoLoad a logical indicating wether the data should be loaded
+#'  automatically. See \code{Details} for more information
+#'
+#' @return an object of \code{\link{BiocProject-class}}
+#'
+#' @seealso \url{https://pepkit.github.io/}
 #'
 #' @export BiocProject
-BiocProject <- function(file=character(), ...) {
-  new("BiocProject", file=file, ...)
-}
+BiocProject <-
+  function(file = character(),
+           subproject = character(),
+           autoLoad = TRUE,
+           func = NULL,
+           funcArgs = list()) {
+    if (!is.logical(autoLoad))
+      stop("The autoLoad argument is not logical.")
+    if (!is.list(funcArgs))
+      stop("The funcArgs has to be a named list.")
+    if (length(funcArgs) > 0 && is.null(names(funcArgs)))
+      stop("The funcArgs has to be a named list")
+    
+    methods::new(
+      "BiocProject",
+      file = file,
+      subproject = subproject,
+      func = func,
+      funcArgs = funcArgs,
+      autoLoad = autoLoad
+    )
+  }

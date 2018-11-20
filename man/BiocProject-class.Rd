@@ -3,20 +3,27 @@
 \docType{class}
 \name{BiocProject-class}
 \alias{BiocProject-class}
-\title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface}
+\title{Portable Encapsulated Project (PEP) class for biological applications}
 \description{
-Provides a representation and functions to access project
-configuration and sample annotation values for a PEP as well as functions concerning experimental results organization provided by the \linkS4class{RangedSummarizedExperiment} class.
-Additionally, this class privides an interfece that connects them.
+This class provides a link between PEP and biological data structures.
 }
 \details{
-This class inherits from classes \linkS4class{Project} and \linkS4class{RangedSummarizedExperiment}
+Thi class can be created with the constructor: \code{\link{BiocProject}}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{ProjectSlots}}{see \link[pepr]{Project} class for details}
+\item{\code{.Data}}{a list with the data. Can be extracted with \code{\link{getData}}}
 
-\item{\code{SummarizedExperimentSlots}}{see \link[SummarizedExperiment]{SummarizedExperiment} class docs for details}
+\item{\code{file}}{character vector path to config file on disk.}
+
+\item{\code{samples}}{a data table object holding the sample metadata.
+Can be extracted with \code{\link[pepr]{samples}}}
+
+\item{\code{config}}{a list object holding contents of the config file.
+Can be extracted with \code{\link[pepr]{config}}}
 }}
 
+\seealso{
+\url{https://pepkit.github.io/}
+}

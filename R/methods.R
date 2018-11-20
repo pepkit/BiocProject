@@ -1,112 +1,168 @@
 
 
+
+
+#' @export
 setMethod(
   f = "initialize",
   signature = "BiocProject",
-  definition = function(.Object, file, ...) {
-    ellipsisArgs = list(...)
-    .Object = callNextMethod(.Object, file = file)
-    argsNames = names(ellipsisArgs)
-    # Adds slots depending on the provided arguments in the constructor call
-    if (any(argsNames == "assays"))
-      .Object@assays = Assays(ellipsisArgs$assays)
-    if (any(argsNames == "colData"))
-      .Object@colData = ellipsisArgs$colData
-    if (any(argsNames == "rowRanges")) {
-      .Object@rowRanges = ellipsisArgs$rowRanges
-      elementMetadata = S4Vectors:::make_zero_col_DataFrame(length(rowRanges))
-      .Object@elementMetadata = elementMetadata
+  definition = function(.Object, autoLoad, func, funcArgs, ...) {
+    .Object = do.call(selectMethod("initialize", signature="Project"),
+                      list(.Object, ...))
+    
+    # internal function that wraps the external function execution
+    # in tryCatch to indicate problems with the external function execution
+    .callBiocFun = function(f, a) {
+      readData = tryCatch({
+        do.call(f, a)
+      }, warning = function(w) {
+        warning(
+          "There are warnings associated with your function execution.
+          \nCreating an empty BiocProject..."
+        )
+      }, error = function(e) {
+        warning(
+          "There are errors associated with your function execution.
+          \nCreating an empty BiocProject..."
+        )
+      })
+      return(readData)
+      }
+    
+    if (!is.null(func)) {
+      # use the lambda function if provided
+      if (is.function(func)) {
+        readData = .callBiocFun(func, list(.Object))
+        .Object[[length(.Object)+1]] = readData
+        return(.Object)
+      } else{
+        stop("The lambda function you provided is invalid.")
+      }
+    } else{
+      # use config to find it
+      if (autoLoad) {
+        funcName = pepr::config(.Object)$bioconductor$read_fun_name
+        if (exists(funcName)) {
+          # function from config.yaml in environment
+          readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
+          .Object[[length(.Object)+1]] = readData
+          message("Used function ", funcName, " from the environment")
+          return(.Object)
+        } else{
+          if (length(grep("(\\:){2,3}", funcName)) != 0) {
+            # trying to access the function from the namespace that 
+            # was specified in the config.yaml read_fun_name
+            splitted = strsplit(funcName, ":")[[1]]
+            nonEmpty = splitted[which(splitted != "")]
+            funcName = getFromNamespace(nonEmpty[1], nonEmpty[2])
+            readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
+            .Object[[length(.Object)+1]] = readData
+            message("Used function ", funcName, " from the environment")
+            return(.Object)
+          }
+          # function from config.yaml in read_fun_name not in environment,
+          # trying to source the file specified in
+          # the config.yaml read_fun_path
+          funcPath =
+            pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
+          if (!file.exists(funcPath))
+            stop(
+              "The function does not exist in the environment and file ",
+              funcPath ,
+              " does not exist"
+            )
+          readFun = source(funcPath)$value
+          readData = .callBiocFun(readFun, append(list(.Object), funcArgs))
+          .Object[[length(.Object)+1]] = readData
+          message("Function read from file: ", funcPath)
+          return(.Object)
+        }
+      } else{
+        message("No data was read. Creating an empty BiocProject object...")
+        return(.Object)
+      }
     }
-    return(.Object)
   }
 )
 
 setMethod(
   f = "show",
   signature = "BiocProject",
-  definition = function(.Object) {
-    do.call(selectMethod(f = "show", signature = "RangedSummarizedExperiment"),
-            list(.Object))
-    cat("\n")
-    do.call(selectMethod(f = "show", signature = "Project"), list(.Object))
+  definition = function(object) {
+    cat("data:\n")
+    cat("BiocProject object. Class: ", class(object), fill=T)
+    cat("  length: ", length(object), fill=T)
+    cat("\nmetadata:\n")
+    do.call(selectMethod("show", signature="Project"),
+            list(object))
   }
 )
 
-setGeneric("getColData", function(.Object, ...)
-  standardGeneric("getColData"))
+#' Get \code{\link[pepr]{Project-class}} object
+#'
+#' This method coerces the \code{\link{BiocProject-class}}
+#'  to \code{\link{Project-class}}
+#'
+#' @param .Object An object of \code{\link{BiocProject-class}}
+#'
+#' @return an object of \code{\link[pepr]{Project-class}} object
+#'
+#' @examples
+#' ProjectConfig = system.file(
+#' "extdata",
+#' "example_peps-master",
+#' "example_BiocProject",
+#' "project_config.yaml",
+#' package = "BiocProject"
+#' )
+#'
+#' bp = BiocProject(file=ProjectConfig)
+#' toProject(bp)
+#'
+#' @export
+setGeneric("toProject", function(.Object)
+  standardGeneric("toProject"))
 
-#' Get colData from the Project object (PEP)
-#'
-#' This method copies info about samples from \linkS4class{Project} object to \code{colData} slot on the \code{BiocProject} object.
-#' 
-#' There are 3 cases:
-#' \itemize{
-#'   \item The DataFrame in the samples slot is copied to the colData (when there is not colData and the number of columns in assays match the number of rows in samples)
-#'   \item The DataFrame in the samples slot in merged with the colData DataFrame (when the colData slot is populate and their row numbers match)
-#'   \item An error is thrown (when the number of rows in samples DataFrame does not match the number of columns in asssays or the number of rows in already populated colData)
-#' }
-#'
-#' @param .Object An object of \linkS4class{BiocProject} class
-#'
-#' @return An object of \linkS4class{BiocProject} class. The colData slot is derived from samples attribute of \linkS4class{Project}
-#' @examples 
-#' projectConfig = system.file("extdata","example_peps-master","example_implied","project_config.yaml",package = "pepr")
-#' nrows = 200
-#' ncols = 6
-#' counts = matrix(runif(nrows * ncols, 1, 1e4), nrows)
-#' rowRanges = GRanges(rep(c("chr1", "chr2"), c(50, 150)),
-#'                     IRanges(floor(runif(200, 1e5, 1e6)), width=100),
-#'                     strand=sample(c("+", "-"), 200, TRUE),
-#'                     feature_id=sprintf("ID%03d", 1:200))
-#' colData = DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
-#'                     row.names=LETTERS[1:6])
-#' bp = BiocProject(file=projectConfig, assays=list(counts=counts), rowRanges=rowRanges, colData=colData)
-#' bpc = getColData(bp)
-#' colData(bp)
-#' colData(bpc)
-#' @export getColData
+#' @export
 setMethod(
-  "getColData",
+  f = "toProject",
   signature = "BiocProject",
   definition = function(.Object) {
-    if(NCOL(.Object@assays) != NROW(.Object@samples)) stop("The number of rows in Project samples (", NROW(.Object@samples),") and the number of samples in assays (", NCOL(.Object),") are not equal.")
-    if (sum(dim(.Object@colData)) == 0){
-      .Object@colData = DataFrame(.Object@samples)
-    }else{
-      if(NROW(.Object@colData) == NROW(DataFrame(.Object@samples))){
-        .Object@colData = cbind(.Object@colData, DataFrame(.Object@samples))
-      }else{
-        stop("The number of rows in the current colData DataFrame (",NROW(.Object@colData),") is not equal the number of rows in the samples DataFrame (",NROW(DataFrame(.Object@samples)),"), cannot be concatenated")
-      }
-    }
-    return(.Object)
+    file = config(.Object)$file
+    return(pepr::Project(file))
   }
 )
 
-setGeneric("getMetadata", function(.Object, ...)
-  standardGeneric("getMetadata"))
 
-#' Get metadata from the Project object (PEP)
+#' Extract data from \code{\link[pepr]{Project-class}} objects
 #'
-#' This method copies the \href{https://pepkit.github.io/docs/project_config/}{PEP config file} data from \linkS4class{Project} object to a list in the metadata slot of the \code{BiocProject} object.
+#' This method extracts the data from \code{\link[pepr]{Project-class}} objects
 #'
-#' @param .Object An object of \linkS4class{BiocProject} class
+#' @param .Object An object of \code{\link{BiocProject-class}}
 #'
-#' @return .Object An object of \linkS4class{BiocProject} class. The metadata slot of \linkS4class{BiocProject} is enriched with data from \linkS4class{Project} object as an additional \code{PEP config file} field list in metadata slot.
-#' @examples 
-#' projectConfig = system.file("extdata","example_peps-master","example_implied","project_config.yaml",package = "pepr")
-#' bp = BiocProject(file = projectConfig)
-#' bpm = getMetadata(bp)
-#' metadata(bp)
-#' metadata(bpm)
-#' @export getMetadata
+#' @return a list with the data elements
+#'
+#' @examples
+#' ProjectConfig = system.file(
+#' "extdata",
+#' "example_peps-master",
+#' "example_BiocProject",
+#' "project_config.yaml",
+#' package = "BiocProject"
+#' )
+#'
+#' bp = BiocProject(file=ProjectConfig)
+#' getData(bp)
+#'
+#' @export
+setGeneric("getData", function(.Object)
+  standardGeneric("getData"))
+
+#' @export
 setMethod(
-  "getMetadata",
+  f = "getData",
   signature = "BiocProject",
   definition = function(.Object) {
-    met=do.call(selectMethod(f = "metadata", signature = "SummarizedExperiment"),list(.Object))
-    metFinal=list('SummarizedExperiment metadata'=met,'PEP config file'=.Object@config)
-    .Object@metadata=metFinal
-    invisible(.Object)
-    }
+    return(.Object@.Data)
+  }
 )

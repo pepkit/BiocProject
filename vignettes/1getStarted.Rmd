@@ -1,0 +1,142 @@
+---
+title: "Get started with BiocProject"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The `BiocProject` class formalizes the way how the metadata are presented within the [Bioconductor](https://www.bioconductor.org/) classes. It uses the generic R package [pepr](http://code.databio.org/pepr/) that provides an interface to the Portable Encapsulated Project (PEP) to enclose the metadata to the original Bioconductor objects. 
+
+* See the [pepkit.github.io](https://pepkit.github.io/) website to learn more about the PEP environment.
+* See the [`pepr`](http://code.databio.org/pepr/) documentation to learn more about PEP implementation in `R`
+
+# Installation
+
+The `BiocProject` package is currently available only via GitHub install. To get the most recent version of the package run:
+
+```{r eval=FALSE}
+devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')
+```
+
+to install development version of `pepr` and 
+
+```{r eval=FALSE}
+devtools::install_github(repo = 'pepkit/BiocProject',ref = 'dev')
+```
+
+to install development version of `BiocProject`
+
+# Prerequisites
+
+In order to use the `BiocProject` package you need two things:
+
+1. **a PEP**
+
+see [this website](https://pepkit.github.io/docs/simple_example/) for the PEP creation instructions and/or use the example provided with this package as guideline
+
+2. **a function that processes your data**
+
+the function has to take the PEP (in form of [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object as an argument) like [this one](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+
+```{r echo=FALSE, eval=TRUE, comment=""}
+processFunction =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "parseEncodeRegions.R",
+  package = "BiocProject"
+)
+source(processFunction)
+parseEncodeRegions
+```
+This function uses the information from the PEP to download the encode regions from the database, format them and coerce to `GRanges` object that is returned.
+
+# How it works
+
+The `BiocProject` function, which is the user-friendly interface to the `BiocProject` class constructor reads a YAML file with the PEP config, creates a PEP and uses your function to read the data specified in the PEP on the fly. 
+
+In the basic case the function name/path is specified in the YAML config file itself, like:
+
+```
+bioconductor:
+  read_fun_name: function_name
+```
+
+OR
+
+```
+bioconductor:
+  read_fun_path: /path/to/the/function.R
+```
+
+# Usage
+Load the library and set the variables with the paths to the YAML config file and the example data reading function to source it.
+```{r echo=T,message=FALSE}
+library(BiocProject)
+ProjectConfig = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "project_config.yaml",
+  package = "BiocProject"
+)
+
+processFunction =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "parseEncodeRegions.R",
+  package = "BiocProject"
+)
+```
+Read the function into the R environment
+```{r}
+source(processFunction)
+```
+Create the `BiocProject` object
+```{r}
+bp = BiocProject(file=ProjectConfig)
+```
+Note that the created object is composed of both the metadata (`pepr::Project` object) and data read with your function.
+
+## Interact with `BiocProject` object
+Inspect it
+```{r}
+bp
+```
+Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
+```{r}
+samples(bp)
+config(bp)
+```
+Apply the `list`-related methods
+```{r}
+names(bp) = c("myDataset")
+names(bp)
+bp[[1]]
+```
+Use the methods of `BiocProject` package
+```{r}
+getData(bp)
+```
+
+# Advanced `BiocProject` features
+
+See this [vignette](./2advancedFeatures.html) if you want to:
+
+* use a lambda function instead of one defined elsewhere
+* use a function that requires more arguments than just a PEP
+* use a function that is a part of other `R` package

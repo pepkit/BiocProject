@@ -2,21 +2,43 @@
 % Please edit documentation in R/class.R
 \name{BiocProject}
 \alias{BiocProject}
-\title{A class representing a Portable Encapsulated Project and Summarized Experiment objects interface}
+\title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), ...)
+BiocProject(file = character(), subproject = character(),
+  autoLoad = TRUE, func = NULL, funcArgs = list())
 }
 \arguments{
-\item{file}{project configuration yaml file}
+\item{file}{a character vecotr with a path to the config file}
 
-\item{...}{For \code{SummarizedExperiment}, S4 methods \code{list}
-    and \code{matrix}, arguments identical to those of the
-    \code{SimpleList} method.
+\item{subproject}{a character vector with a name of the subproject
+to be activated}
 
-    For \code{rowRanges}, ignored.
+\item{autoLoad}{a logical indicating wether the data should be loaded
+automatically. See \code{Details} for more information}
 
-  }
+\item{func}{a lambda function that read the data, it should take 
+only \code{\link[pepr]{Project-class}} as an argument.
+See \code{Details} for more information}
+
+\item{funcArgs}{a list with arguments you want to pass to the \code{func}.
+The PEP will be passed automatically.}
+}
+\value{
+an object of \code{\link{BiocProject-class}}
 }
 \description{
-This is a helper that creates the `BiocProject` with empty \linkS4class{Project} and \linkS4class{SummarizedExperiment} objects included
+This is a helper that creates the \code{\link{BiocProject-class}} object
+}
+\details{
+If the \code{func} parameter is set to \code{TRUE} then the function name
+that will be used to read the data in is taken from the config slot
+in \code{\link[pepr]{Project}}
+(specifically: \code{config(project)$bioconductor$parse_code}).
+ \cr If the \code{func} is set to string then the function of this name
+ will be used to read the data in.\cr If the \code{func} is set
+ to \code{FALSE} then a \code{\link{BiocProject}} object
+ with no data is created.
+}
+\seealso{
+\url{https://pepkit.github.io/}
 }

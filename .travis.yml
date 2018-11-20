@@ -5,4 +5,4 @@ sudo: false
 cache: packages
 warnings_are_errors: false
 before_install:
- - Rscript -e "install.packages('devtools');devtools::install_github(repo = 'pepkit/pepr',ref = 'dev');source('https://bioconductor.org/biocLite.R');biocLite('SummarizedExperiment')"
+ - Rscript -e "install.packages('devtools');devtools::install_github(repo = 'pepkit/pepr',ref = 'dev');source('https://bioconductor.org/biocLite.R');biocLite('GenomicRanges');biocLite('BiocFileCache')"
