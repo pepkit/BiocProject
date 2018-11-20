@@ -1,13 +1,24 @@
 [![Travis-CI Build Status](https://travis-ci.org/pepkit/BiocProject.svg?branch=master)](https://travis-ci.org/pepkit/BiocProject)
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
-Documentation is hosted at: http://code.databio.org/BiocProject/
 
 # BiocProject
-The `BiocProject` class formalizes a way how the metadata are presented data structures, e.g. within the [Bioconductor](https://www.bioconductor.org/) classes. It uses the generic R package [pepr](http://code.databio.org/pepr/) that provides an interface to the Portable Encapsulated Project (PEP) to enclose the metadata to the original Bioconductor objects. 
 
-See the [pepkit.github.io](https://pepkit.github.io/) website to learn more about the PEP environment.
+`BiocProject` allows you to read in project metadata and data for an entire project with a single line of `R` code.
 
+The `BiocProject` class is a [Bioconductor](https://www.bioconductor.org/)-oriented project management class. It wraps the generic [pepr](http://code.databio.org/pepr/) R package for project metadata.
 
-### Usage
-See the package vignette for usage instructions
+### Quick start:
+
+Install from GitHub:
+
+```
+devtools::install_github("pepkit/BiocProject")
+```
+
+Create a new `BiocProject` object by passing your PEP configuration file:
+```
+bp = BiocProject(file=ProjectConfig)
+```
+
+For complete documentation and vignettes, see [code.databio.org/BiocProject](http://code.databio.org/BiocProject/).
