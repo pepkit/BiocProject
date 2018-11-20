@@ -17,14 +17,14 @@ setMethod(
         do.call(f, a)
       }, warning = function(w) {
         warning(
-          "There are warnings associated with your function execution.
-          \nCreating an empty BiocProject..."
+          "There are warnings associated with your function execution."
         )
+        message("No data was read. Creating an empty BiocProject object...")
       }, error = function(e) {
         warning(
-          "There are errors associated with your function execution.
-          \nCreating an empty BiocProject..."
+          "There are errors associated with your function execution."
         )
+        message("No data was read. Creating an empty BiocProject object...")
       })
       return(readData)
       }
@@ -41,20 +41,28 @@ setMethod(
     } else{
       # use config to find it
       if (autoLoad) {
+        # check if the config consists of bioconductor section
+        if(is.null(pepr::config(.Object)$bioconductor)){
+          warning("The config YAML is missing the bioconductor section.")
+          message("No data was read. Creating an empty BiocProject object...")
+          return(.Object)
+        }
         funcName = pepr::config(.Object)$bioconductor$read_fun_name
-        if (exists(funcName)) {
+        # check if the function name was provided
+        # and if it exists in the environment
+        if (!is.null(funcName) && exists(funcName)) {
           # function from config.yaml in environment
           readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
           .Object[[length(.Object)+1]] = readData
           message("Used function ", funcName, " from the environment")
           return(.Object)
         } else{
-          if (length(grep("(\\:){2,3}", funcName)) != 0) {
+          if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
             # trying to access the function from the namespace that 
             # was specified in the config.yaml read_fun_name
             splitted = strsplit(funcName, ":")[[1]]
             nonEmpty = splitted[which(splitted != "")]
-            funcName = getFromNamespace(nonEmpty[1], nonEmpty[2])
+            funcName = getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
             readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
             .Object[[length(.Object)+1]] = readData
             message("Used function ", funcName, " from the environment")
@@ -65,17 +73,23 @@ setMethod(
           # the config.yaml read_fun_path
           funcPath =
             pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
-          if (!file.exists(funcPath))
-            stop(
-              "The function does not exist in the environment and file ",
-              funcPath ,
-              " does not exist"
-            )
-          readFun = source(funcPath)$value
-          readData = .callBiocFun(readFun, append(list(.Object), funcArgs))
-          .Object[[length(.Object)+1]] = readData
-          message("Function read from file: ", funcPath)
-          return(.Object)
+          if (!is.null(funcPath)){
+            if (!file.exists(funcPath))
+              stop(
+                "The function does not exist in the environment and file ",
+                funcPath ,
+                " does not exist"
+              )
+            readFun = source(funcPath)$value
+            readData = .callBiocFun(readFun, append(list(.Object), funcArgs))
+            .Object[[length(.Object)+1]] = readData
+            message("Function read from file: ", funcPath)
+            return(.Object)
+          }else{
+            warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
+            message("No data was read. Creating an empty BiocProject object...")
+            return(.Object)
+          }
         }
       } else{
         message("No data was read. Creating an empty BiocProject object...")
