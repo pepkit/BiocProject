@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 The `BiocProject` class is a structure for holding both metadata and data within the [Bioconductor](https://www.bioconductor.org/) framework. It wraps the generic R package [pepr](http://code.databio.org/pepr/) to read Portable Encapsulated Project (PEP) metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of R code. If you aren't already familiar, please start by checking out this documentation:
 
 * See [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP.
-* See the [`pepr documentation`](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+* See the [`pepr` documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
 
 # Installation
 
@@ -37,30 +37,90 @@ To install development version of `BiocProject`, run:
 devtools::install_github(repo = 'pepkit/BiocProject', ref = 'dev')
 ```
 
-# Prerequisites
+# Usage
 
-In order to use the `BiocProject` package, you need two things:
+## Create a PEP
 
-1. **a PEP**
+In order to use the `BiocProject` package, you need a **PEP**.
 
-A PEP is a standard way of describing sample and project metadata. You can read how to create one at [pepkit.github.io](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
+Briefly, the PEP is a standard way of describing sample and project metadata. You can read how to create one at [pepkit.github.io](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
 
-2. **a function that processes your data**
+Each PEP is composed of two files. In this vignette we will use the PEP presented below:
 
-the function must have a single argument, and that argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object. The function should use that input to load all the relevant data into R, and then return one or more data objects. For example, consider the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+- **YAML config file**
 
-```{r echo=FALSE, eval=TRUE, comment=""}
-processFunction =  system.file(
+```{r, warning=FALSE,echo=FALSE,message=FALSE,collapse=TRUE,comment=" "}
+library(pepr)
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_BiocProject",
+"project_config.yaml",
+package = "BiocProject"
+)
+.printNestedList(yaml::read_yaml(projectConfig))
+```
+
+
+- **sample annotation CSV file**
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE,collapse=TRUE,comment=" "}
+library(knitr)
+sampleAnnotation = system.file(
+"extdata",
+"example_peps-master",
+"example_BiocProject",
+"sample_annotation.csv",
+package = "BiocProject"
+)
+sampleAnnotationDF = read.table(sampleAnnotation, sep = ",", header = T)
+knitr::kable(sampleAnnotationDF, format = "html")
+```
+
+## Code
+
+Load the library and get the path to the example YAML config file.
+```{r echo=T,message=FALSE}
+library(BiocProject)
+
+ProjectConfig = system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions.R",
+  "project_config.yaml",
   package = "BiocProject"
 )
-source(processFunction)
-parseEncodeRegions
 ```
-This function uses the information from the PEP to download the encode regions from the database, format them and coerce to `GRanges` object that is returned.
+
+Create the `BiocProject` object
+```{r}
+bp = BiocProject(file=ProjectConfig)
+```
+This simple line of code read the project metadata from the PEP and loaded it into `R` environment! 
+Therefore, created object is composed of both the metadata (`pepr::Project` object) and data read with your function:
+
+```{r}
+bp
+```
+
+
+## Interact with `BiocProject` object
+
+Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
+```{r}
+samples(bp)
+config(bp)
+```
+Apply the `list`-related methods
+```{r}
+names(bp) = c("myDataset")
+names(bp)
+bp[[1]]
+```
+Use the methods of `BiocProject` package
+```{r}
+getData(bp)
+```
 
 # How it works
 
@@ -80,18 +140,19 @@ bioconductor:
   read_fun_path: /path/to/the/function.R
 ```
 
-# Usage
-Load the library and set the variables with the paths to the YAML config file and the example data reading function to source it.
-```{r echo=T,message=FALSE}
-library(BiocProject)
-ProjectConfig = system.file(
-  "extdata",
-  "example_peps-master",
-  "example_BiocProject",
-  "project_config.yaml",
-  package = "BiocProject"
-)
+# User-supplied function
 
+The function specified above can be a data processing function of any complexity, but has to follow 3 rules listed below.
+
+### Rules:
+
+1. must have a single argument,
+1. the argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object (should use that input to load all the relevant data into `R`),
+1. must return one or more data objects. 
+
+For example, consider the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+  
+```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
   "extdata",
   "example_peps-master",
@@ -99,42 +160,14 @@ processFunction =  system.file(
   "parseEncodeRegions.R",
   package = "BiocProject"
 )
-```
-Read the function into the R environment
-```{r}
 source(processFunction)
-```
-Create the `BiocProject` object
-```{r}
-bp = BiocProject(file=ProjectConfig)
-```
-Note that the created object is composed of both the metadata (`pepr::Project` object) and data read with your function.
-
-## Interact with `BiocProject` object
-Inspect it
-```{r}
-bp
-```
-Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
-```{r}
-samples(bp)
-config(bp)
-```
-Apply the `list`-related methods
-```{r}
-names(bp) = c("myDataset")
-names(bp)
-bp[[1]]
-```
-Use the methods of `BiocProject` package
-```{r}
-getData(bp)
+parseEncodeRegions
 ```
 
 # Advanced `BiocProject` features
 
-See this [BiocProject advanced featuers vignette](./2advancedFeatures.html) if you want to:
+See this [BiocProject advanced features vignette](./2advancedFeatures.html) if you want to:
 
-* use a lambda function instead of one defined elsewhere
+* use a lambda function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
 * use a function that is a part of other `R` package
