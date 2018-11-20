@@ -1,5 +1,5 @@
 ---
-title: "Get started with BiocProject"
+title: "Getting started with BiocProject"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -18,30 +18,28 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `BiocProject` class formalizes the way how the metadata are presented within the [Bioconductor](https://www.bioconductor.org/) classes. It uses the generic R package [pepr](http://code.databio.org/pepr/) that provides an interface to the Portable Encapsulated Project (PEP) to enclose the metadata to the original Bioconductor objects. 
+The `BiocProject` class is a structure for holding both metadata and data within the [Bioconductor](https://www.bioconductor.org/) framework. It wraps the generic R package [pepr](http://code.databio.org/pepr/) to read Portable Encapsulated Project (PEP) metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of R code. If you aren't already familiar, please start by checking out this documentation:
 
-* See the [pepkit.github.io](https://pepkit.github.io/) website to learn more about the PEP environment.
-* See the [`pepr`](http://code.databio.org/pepr/) documentation to learn more about PEP implementation in `R`
+* See [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP.
+* See the [`pepr documentation`](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
 
 # Installation
 
-The `BiocProject` package is currently available only via GitHub install. To get the most recent version of the package run:
+The `BiocProject` package is currently available via GitHub. To install development version of `pepr`, run:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')
+devtools::install_github(repo = 'pepkit/pepr', ref = 'dev')
 ```
 
-to install development version of `pepr` and 
+To install development version of `BiocProject`, run:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/BiocProject',ref = 'dev')
+devtools::install_github(repo = 'pepkit/BiocProject', ref = 'dev')
 ```
-
-to install development version of `BiocProject`
 
 # Prerequisites
 
-In order to use the `BiocProject` package you need two things:
+In order to use the `BiocProject` package, you need two things:
 
 1. **a PEP**
 
@@ -49,7 +47,7 @@ A PEP is a standard way of describing sample and project metadata. You can read 
 
 2. **a function that processes your data**
 
-the function must take the PEP (in form of [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object as an argument). For example, you may use the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+the function must have a single argument, and that argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object. The function should use that input to load all the relevant data into R, and then return one or more data objects. For example, consider the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
