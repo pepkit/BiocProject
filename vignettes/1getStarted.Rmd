@@ -45,11 +45,11 @@ In order to use the `BiocProject` package you need two things:
 
 1. **a PEP**
 
-see [this website](https://pepkit.github.io/docs/simple_example/) for the PEP creation instructions and/or use the example provided with this package as guideline
+A PEP is a standard way of describing sample and project metadata. You can read how to create one at [pepkit.github.io](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
 
 2. **a function that processes your data**
 
-the function has to take the PEP (in form of [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object as an argument) like [this one](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+the function must take the PEP (in form of [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object as an argument). For example, you may use the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
@@ -135,7 +135,7 @@ getData(bp)
 
 # Advanced `BiocProject` features
 
-See this [vignette](./2advancedFeatures.html) if you want to:
+See this [BiocProject advanced featuers vignette](./2advancedFeatures.html) if you want to:
 
 * use a lambda function instead of one defined elsewhere
 * use a function that requires more arguments than just a PEP
