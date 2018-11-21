@@ -1,5 +1,5 @@
 ---
-title: "Advanced features of BiocProject"
+title: "More arguments than just a PEP in your function?"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -18,17 +18,30 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-See this [vignette](./1getStarted.html) for the basic `BiocProject` information and installation instructions.
+Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic information and installation instructions.
 
-# Advanced features
+# Additional arguments in your function
 
-## Additional arguments in your function
+**What if yor custom data processing function requires more arguments than just a PEP?**
 
-There are a few ways to to enable your function to get multiple arguments. Not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object, which is the basic scenario).
+For reference consider the `parseEncodeRegions_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
+```{r echo=FALSE, eval=TRUE, comment=""}
+processFunction =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "parseEncodeRegions_resize.R",
+  package="BiocProject"
+)
+source(processFunction)
+parseEncodeRegions_resize
+```
 
-1. **Use `funcArgs` argument**
+There are a few ways to enable your function to get multiple arguments - not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object, which is the basic scenario).
 
-Provide addtional `funcArgs` argument to the `BiocProject` function. This argument has to be a named list. The names have to correspond to the argument names of your function. Please note that the PEP (`pepr::Project`) object will be passed to your function by default. For example:
+# How to use the `funcArgs` argument
+
+Provide additional `funcArgs` argument to the `BiocProject` function. This argument has to be a named list. The names have to correspond to the argument names of your function. **The PEP (`pepr::Project` object)  will be passed to your function by default**. For example:
 
 Get paths to the files used in this vignette
 ```{r echo=T,message=FALSE}
@@ -37,7 +50,7 @@ ProjectConfigArgs = system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "project_config_args.yaml",
+  "project_config_resize.yaml",
   package = "BiocProject"
 )
 
@@ -45,58 +58,30 @@ processFunctionArgs =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions_args.R",
+  "parseEncodeRegions_resize.R",
   package = "BiocProject"
 )
 ```
-Read the function into R envirionment and create the `BiocProject` object 
+Read the function into R environment and create the `BiocProject` object 
 ```{r}
 source(processFunctionArgs)
-bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(arg1="TEST1",arg2="TEST2"))
+bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=100))
 ```
-Note that the strings `"TEST1"` and `"TEST2"` which were passed as arguments were printed as it was implemented in the `parseEncodeRegions_args.R` function:
-```{r echo=FALSE, eval=TRUE, comment=""}
-processFunction =  system.file(
-  "extdata",
-  "example_peps-master",
-  "example_BiocProject",
-  "parseEncodeRegions_args.R",
-  package = "BiocProject"
-)
-source(processFunction)
-parseEncodeRegions_args
-```
+The `funcArgs` argument gets a one element list and passes the `resize.width` argument to your custom data processing function.
 
 
-2. **Use lambda (anonymous) function**
+# How to use a lambda (anonymous) function
 
 You can use a [lambda function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
 
 ```{r}
-bpLambda = BiocProject(file=ProjectConfigArgs, func=function(x){parseEncodeRegions_args(x,"TEST1","TEST2")})
+bpLambda = BiocProject(file=ProjectConfigArgs, func=function(x){
+      parseEncodeRegions_resize(project=x, resize.width=100)
+    }
+  )
 #Inspect it
 bpLambda
 ```
 
-## Creation of an empty `BiocProject` object
-
-If you need to create an empty `BiocProject` obhect set the `autoLoad` argument to `FALSE` and using the function from the config YAML will be suppressed (`autoLoad` is set to `TRUE` bey default). For example:
-
-```{r}
-bpEmpty =  BiocProject(file=ProjectConfigArgs, autoLoad=FALSE)
-#Inspect it
-bpEmpty
-```
-
-
-
-## Use functions implemented elsewhere 
-
-You can use functions implemented in other R packages. In order to do it specify the name of the function and its source in the config YAML, like:
-
-```
-bioconductor:
-  read_fun_name: packageName::function
-```
 
 
