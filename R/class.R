@@ -25,25 +25,53 @@ setClass("BiocProject",
 #'
 #' This is a helper that creates the \code{\link{BiocProject-class}} object
 #'
-#' If the \code{func} parameter is set to \code{TRUE} then the function name
-#' that will be used to read the data in is taken from the config slot
-#' in \code{\link[pepr]{Project}}
-#' (specifically: \code{config(project)$bioconductor$parse_code}).
-#'  \cr If the \code{func} is set to string then the function of this name
-#'  will be used to read the data in.\cr If the \code{func} is set
-#'  to \code{FALSE} then a \code{\link{BiocProject}} object
-#'  with no data is created.
+#' This \code{\link{BiocProject-class}} object constructor provides some level 
+#' of flexibility in your custom data processing function usage and 
+#' implementation. Consider the possibilities listed below:
+#' \itemize{
+#'   \item use a function loaded into the \code{R} environment and specified in
+#'   the config slot in \code{\link[pepr]{Project}}
+#'   (specifically: \code{config(project)$bioconductor$read_fun_name}).
+#'   \item use a function \emph{not} loaded into the \code{R} environment and specified in
+#'   the config slot in \code{\link[pepr]{Project}}
+#'   (specifically: \code{config(project)$bioconductor$read_fun_path}).
+#'   \item use a function from other \code{R} package not loaded into 
+#'   the \code{R} environment and specified in the config slot
+#'   in \code{\link[pepr]{Project}} 
+#'   (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
+#'   \code{pkgName::functionName}
+#'   \item use a function implemented in the  \code{\link{BiocProject}}
+#'   call (passed to the \code{func} argument - lambda function). This option is given the top priority and overrides 
+#'   other arguments if provided.
+#' }
+#' The custom data processing function must take 
+#' the \code{\link[pepr]{Project-class}} as an argument since this object will 
+#' be passed to the function by default. However, if the function requires
+#' addtional arguments, ones can be proivided with the \code{funcArgs} argument
+#' in the \code{\link{BiocProject}} function call. 
+#' Besides, the \code{func} argument with the lambda function may serve similar
+#' possibility.
+#' 
+#' If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
+#' and empty \code{\link{BiocProject-class}} object will be returned.
+#' 
+#' 
+#' @section Further reading: 
+#' Browse the 
+#' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
+#' for more detailed expalanation with examples.
 #'
-#' @param file a character vecotr with a path to the config file
+#'
+#' @param file a character vector with a path to the config file
 #' @param subproject a character vector with a name of the subproject
 #' to be activated
-#' @param func a lambda function that read the data, it should take 
-#' only \code{\link[pepr]{Project-class}} as an argument.
+#' @param func a lambda function that reads and/or processess the data, it must take 
+#' the \code{\link[pepr]{Project-class}} as an argument.
 #' See \code{Details} for more information
-#' @param funcArgs a list with arguments you want to pass to the \code{func}.
+#' @param funcArgs a named list with arguments you want to pass to the \code{func}.
 #'  The PEP will be passed automatically.
-#' @param autoLoad a logical indicating wether the data should be loaded
-#'  automatically. See \code{Details} for more information
+#' @param autoLoad a logical indicating whether the data should be loaded
+#'  automatically. See \code{Details} for more information.
 #'
 #' @return an object of \code{\link{BiocProject-class}}
 #'

@@ -7,7 +7,7 @@
 getData(.Object)
 }
 \arguments{
-\item{.Object}{An object of \code{\link{BiocProject-class}}}
+\item{.Object}{an object of \code{\link{BiocProject-class}}}
 }
 \value{
 a list with the data elements

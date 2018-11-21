@@ -120,6 +120,7 @@ bp[[1]]
 Use the methods of `BiocProject` package
 ```{r}
 getData(bp)
+toProject(bp)
 ```
 
 # How it works

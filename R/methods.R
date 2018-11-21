@@ -117,9 +117,13 @@ setMethod(
 #' This method coerces the \code{\link{BiocProject-class}}
 #'  to \code{\link{Project-class}}
 #'
-#' @param .Object An object of \code{\link{BiocProject-class}}
+#' @param .Object an object of \code{\link{BiocProject-class}}
+#' @param subproject a character with the name of the subproject
+#' that should be activated during the converstion 
+#' to the \code{\link[pepr]{Project-class}} object
 #'
 #' @return an object of \code{\link[pepr]{Project-class}} object
+#' 
 #'
 #' @examples
 #' ProjectConfig = system.file(
@@ -134,16 +138,15 @@ setMethod(
 #' toProject(bp)
 #'
 #' @export
-setGeneric("toProject", function(.Object)
+setGeneric("toProject", function(.Object,subproject=character())
   standardGeneric("toProject"))
 
 #' @export
 setMethod(
   f = "toProject",
   signature = "BiocProject",
-  definition = function(.Object) {
-    file = config(.Object)$file
-    return(pepr::Project(file))
+  definition = function(.Object,subproject) {
+    pepr::Project(file=.Object@file,subproject=subproject)
   }
 )
 
@@ -152,7 +155,7 @@ setMethod(
 #'
 #' This method extracts the data from \code{\link[pepr]{Project-class}} objects
 #'
-#' @param .Object An object of \code{\link{BiocProject-class}}
+#' @param .Object an object of \code{\link{BiocProject-class}}
 #'
 #' @return a list with the data elements
 #'
