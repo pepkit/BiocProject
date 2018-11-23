@@ -30,3 +30,4 @@ articles:
   - title: Advanced features
     contents:
       - 2advancedFeatures
+      - 3simpleCache
