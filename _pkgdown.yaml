@@ -22,3 +22,11 @@ navbar:
     href: http://databio.org
   - text: Software & Data
     href: http://databio.org/software/
+    
+articles: 
+  - title: Introduction
+    contents:
+      - 1getStarted
+  - title: Advanced features
+    contents:
+      - 2advancedFeatures

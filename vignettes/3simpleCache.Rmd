@@ -1,0 +1,70 @@
+---
+title: "Working with large datasets - simpleCache"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic `BiocProject` information and installation instructions and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
+
+# Why to use `simpleCache` with `BiocProject`
+
+`simpleCache` can help you pick up where you left off in an `R` session. This means that if your custom data processing function that you specify in the `BiocProject()` call reads and/or processes large data sets (which takes a long time) the `R` object will not be recalculated but read from the cache or the memory (`R` environment). 
+
+**Briefly, this is the `simpleCache` logic: **
+
+* if the object exists in memory already: do nothing,
+* if it does not exist in memory, but exists on disk: load it into memory,
+* if it exists neither in memory or on disk: create it and store it to disk and memory.
+
+Moreover, `simpleCache` can help you parallelize code by enabling you to share data sets across multiple `R` sessions.
+
+# How to use `simpleCache` with `BiocProject`
+
+Load the libraries and set the example project config file path:
+```{r message=FALSE}
+library(simpleCache) 
+library(BiocProject)
+
+projectConfig = system.file(
+"extdata",
+"example_peps-master",
+"example_BiocProject",
+"project_config.yaml",
+package = "BiocProject"
+)
+```
+
+Set the cache directory and read the data in
+```{r}
+setCacheDir(tempdir())
+simpleCache("dataSet1", { BiocProject(file = projectConfig) })
+```
+
+Say you rerun this line of code. `simpleCache` prevents the calculations from rerunning since the `dataSet1` object is already present in the memory.
+```{r}
+simpleCache("dataSet1", { BiocProject(file = projectConfig) })
+```
+
+
+Say you come back to your analysis after a while and the `dataSet1` object is not in the memory (simulated by removing it with `rm()` function here)
+```{r}
+rm(dataSet1)
+simpleCache("dataSet1", { BiocProject(file = projectConfig) })
+```
+And that's it! In the simplest case this is all you need to **organize, read, process your data and prevent from copious results recalculations** every time you come back to your project.
+
+

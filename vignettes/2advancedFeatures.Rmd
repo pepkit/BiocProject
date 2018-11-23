@@ -22,7 +22,7 @@ Before you start see the [Getting started with `BiocProject` vignette](./1getSta
 
 # Additional arguments in your function
 
-**What if yor custom data processing function requires more arguments than just a PEP?**
+**What if your custom data processing function requires more arguments than just a PEP?**
 
 For reference consider the `parseEncodeRegions_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
 ```{r echo=FALSE, eval=TRUE, comment=""}
