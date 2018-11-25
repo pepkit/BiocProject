@@ -60,7 +60,7 @@ simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```
 
 
-Say you come back to your analysis after a while and the `dataSet1` object is not in the memory (simulated by removing it with `rm()` function here)
+Say you come back to your analysis after a while and the `dataSet1` object is not in the memory (simulated by removing it with `rm()` function here). `simpleCache` loads the object from the directory you have specified in `setCacheDir()`.
 ```{r}
 rm(dataSet1)
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
