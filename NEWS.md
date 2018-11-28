@@ -6,7 +6,8 @@
 
 * add `BiocProject::BiocProject` constructor function
 * add `BiocProject::getData` method to extract the data from the object
-* allow for passing additional metabolites for `func` in `BiocProject::BiocProject`
+* allow for passing additional arguments for user-provided functions in `BiocProject::BiocProject`
+* allow to use lambda functions with `func` parameter
 
 ## Changed
 

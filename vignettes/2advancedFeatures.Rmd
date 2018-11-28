@@ -37,7 +37,7 @@ source(processFunction)
 parseEncodeRegions_resize
 ```
 
-There are a few ways to enable your function to get multiple arguments - not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object, which is the basic scenario).
+There are a few ways to enable your function to get multiple arguments - not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html)) object, which is the basic scenariopkgd.
 
 # How to use the `funcArgs` argument
 
