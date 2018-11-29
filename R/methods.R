@@ -10,6 +10,16 @@ setMethod(
     .Object = do.call(selectMethod("initialize", signature="Project"),
                       list(.Object, ...))
     
+    .wrapFunMessages = function(str, type) {
+      str = trimws(str, which = "both")
+      n = options("width")[[1]]
+      header = paste0(" Your function ", type, " ")
+      nH = floor(nchar(header) / 2)
+      nFill = floor(n / 2)
+      message(rep("-", nFill - nH), header, rep("-", nFill - nH))
+      message("\n", str, "\n")
+      message("\n", rep("-", n), "\n")
+    }
     # internal function that wraps the external function execution
     # in tryCatch to indicate problems with the external function execution
     .callBiocFun = function(f, a) {
@@ -19,12 +29,15 @@ setMethod(
         warning(
           "There are warnings associated with your function execution."
         )
+        .wrapFunMessages(w$message,"warning")
         message("No data was read. Creating an empty BiocProject object...")
       }, error = function(e) {
         warning(
           "There are errors associated with your function execution."
         )
+        .wrapFunMessages(e$message,"error")
         message("No data was read. Creating an empty BiocProject object...")
+        return(e$message)
       })
       return(readData)
     }
