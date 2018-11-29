@@ -21,7 +21,8 @@ the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
 
 \item{funcArgs}{a named list with arguments you want to pass to the \code{func}.
-The PEP will be passed automatically.}
+The PEP will be passed automatically,
+but if provided regardless, the constructor will disregard it}
 }
 \value{
 an object of \code{\link{BiocProject-class}}
@@ -52,7 +53,7 @@ implementation. Consider the possibilities listed below:
 The custom data processing function must take 
 the \code{\link[pepr]{Project-class}} as an argument since this object will 
 be passed to the function by default. However, if the function requires
-addtional arguments, ones can be proivided with the \code{funcArgs} argument
+addtional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
 Besides, the \code{func} argument with the lambda function may serve similar
 possibility.
