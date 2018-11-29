@@ -1,5 +1,5 @@
 Package: BiocProject
-Title: Portable Encapsulated Project (PEP) for biological applications
+Title: Portable Encapsulated Project (PEP) for Biological Data
 Version: 0.0.1
 Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu", role = c("aut", "cre")), c(person("Nathan", "Sheffield", email = "nathan@code.databio.org",role = c("aut"))))
 Description: provides a link between Portable Encapsulated Project (PEP) and biological data structures 
