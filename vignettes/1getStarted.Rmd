@@ -18,36 +18,35 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `BiocProject` class is a structure for holding both metadata and data within the [Bioconductor](https://www.bioconductor.org/) framework. It wraps the generic R package [pepr](http://code.databio.org/pepr/) to read Portable Encapsulated Project (PEP) metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of R code. If you aren't already familiar, please start by checking out this documentation:
+The `BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) package that provides a class (also called `BiocProject`) that holds both metadata and data for set of biological samples. 
 
-* See [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP.
-* See the [`pepr` documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+This vignette assumes you are already familiar with Portable Encapsulated Projects (PEPs). If not, see [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP in general and the [`pepr` documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+
+`BiocProject` uses `pepr` to handle PEP metadata, and allows you to provide a data loading function so that you can read in project metadata and data for an entire project with a single line of R code.
 
 # Installation
 
-The `BiocProject` package is currently available via GitHub. To install development version of `pepr`, run:
+The `BiocProject` package is hosted on GitHub. You must first install `pepr`:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/pepr', ref = 'dev')
+devtools::install_github(repo='pepkit/pepr')
 ```
 
-To install development version of `BiocProject`, run:
+Then, install `BiocProject`:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/BiocProject', ref = 'dev')
+devtools::install_github(repo='pepkit/BiocProject')
 ```
 
-# Usage
+# How to use BiocProject
 
 ## Create a PEP
 
-In order to use the `BiocProject` package, you need a **PEP**.
+In order to use the `BiocProject` package, you first need a PEP. You can [create your own](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/). For this vignette, we have included a basic example PEP that we will introduce now.
 
-Briefly, the PEP is a standard way of describing sample and project metadata. You can read how to create one at [pepkit.github.io](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
+A PEP is composed of two files.
 
-Each PEP is composed of two files. In this vignette we will use the PEP presented below:
-
-- **YAML config file**
+1. A YAML project config file"
 
 ```{r, warning=FALSE,echo=FALSE,message=FALSE,collapse=TRUE,comment=" "}
 library(pepr)
@@ -62,7 +61,7 @@ package = "BiocProject"
 ```
 
 
-- **sample annotation CSV file**
+2. A sample annotation CSV file:
 
 ```{r, echo=FALSE,message=FALSE,warning=FALSE,collapse=TRUE,comment=" "}
 library(knitr)
@@ -76,6 +75,8 @@ package = "BiocProject"
 sampleAnnotationDF = read.table(sampleAnnotation, sep = ",", header = T)
 knitr::kable(sampleAnnotationDF, format = "html")
 ```
+
+In this example, our file has only a single "sample" (which is really a loosely used term here).
 
 ## Code
 
