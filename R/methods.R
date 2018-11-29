@@ -27,7 +27,16 @@ setMethod(
         message("No data was read. Creating an empty BiocProject object...")
       })
       return(readData)
-      }
+    }
+    
+    # prevent PEP (Project object) input. This prevents BiocProject object
+    # failing when the user provides the Project object
+    pepArgs = as.logical(lapply(funcArgs, function(x) {
+      is(x, "Project")
+    }))
+    if (any(pepArgs))
+      funcArgs = funcArgs[-which(pepArgs)]
+    args = append(list(.Object), funcArgs)
     
     if (!is.null(func)) {
       # use the lambda function if provided
@@ -52,7 +61,7 @@ setMethod(
         # and if it exists in the environment
         if (!is.null(funcName) && exists(funcName)) {
           # function from config.yaml in environment
-          readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
+          readData = .callBiocFun(funcName, args)
           .Object[[length(.Object)+1]] = readData
           message("Used function ", funcName, " from the environment")
           return(.Object)
@@ -63,7 +72,7 @@ setMethod(
             splitted = strsplit(funcName, ":")[[1]]
             nonEmpty = splitted[which(splitted != "")]
             funcName = getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
-            readData = .callBiocFun(funcName, append(list(.Object), funcArgs))
+            readData = .callBiocFun(funcName, args)
             .Object[[length(.Object)+1]] = readData
             message("Used function ", funcName, " from the environment")
             return(.Object)
@@ -81,7 +90,7 @@ setMethod(
                 " does not exist"
               )
             readFun = source(funcPath)$value
-            readData = .callBiocFun(readFun, append(list(.Object), funcArgs))
+            readData = .callBiocFun(readFun, args)
             .Object[[length(.Object)+1]] = readData
             message("Function read from file: ", funcPath)
             return(.Object)
