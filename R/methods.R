@@ -31,6 +31,7 @@ setMethod(
         )
         .wrapFunMessages(w$message,"warning")
         message("No data was read. Creating an empty BiocProject object...")
+        return(w$message)
       }, error = function(e) {
         warning(
           "There are errors associated with your function execution."
