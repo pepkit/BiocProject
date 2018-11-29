@@ -18,19 +18,17 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic `BiocProject` information and installation instructions and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
+This vignette assumes you're familiar with the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic `BiocProject` information and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
 
 # Why to use `simpleCache` with `BiocProject`
 
-`simpleCache` can help you pick up where you left off in an `R` session. This means that if your custom data processing function that you specify in the `BiocProject()` call reads and/or processes large data sets (which takes a long time) the `R` object will not be recalculated but read from the cache or the memory (`R` environment). 
+For a large project, it can take substantial computational effort to run the initial data loading function that will load your data into R. We'd like to cache that result so that it doesn't have to be reprocessed every time we want to load our project metadata and data. Pairing `simpleCache` with `BiocProject` allows us to do just that. This means that if your custom data processing function loads or processes large data sets that take a long time, the `R` object will not be recalculated, but simply reloaded.
 
 **Briefly, this is the `simpleCache` logic: **
 
 * if the object exists in memory already: do nothing,
 * if it does not exist in memory, but exists on disk: load it into memory,
 * if it exists neither in memory or on disk: create it and store it to disk and memory.
-
-Moreover, `simpleCache` can help you parallelize code by enabling you to share data sets across multiple `R` sessions.
 
 # How to use `simpleCache` with `BiocProject`
 
@@ -54,7 +52,8 @@ setCacheDir(tempdir())
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```
 
-Say you rerun this line of code. `simpleCache` prevents the calculations from rerunning since the `dataSet1` object is already present in the memory.
+This loads your PEP and its data with `BiocProject`, and then caches the result with `simpleCache`. Say you rerun this line of code. `simpleCache` prevents the calculations from rerunning since the `dataSet1` object is already present in the memory:
+
 ```{r}
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```

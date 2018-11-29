@@ -142,9 +142,8 @@ getData(bp)
 toProject(bp)
 ```
 
-# How it works
+# How to provide a data load function
 
-The `BiocProject` function, which is the user-friendly interface to the `BiocProject` class constructor, reads a YAML file with the PEP config, creates a PEP and uses your function to read the data specified in the PEP on the fly. 
 
 In the basic case the function name (and path to source file, if necessary) is specified in the YAML config file itself, like:
 
@@ -161,9 +160,7 @@ bioconductor:
   read_fun_path: /path/to/the/file.R
 ```
 
-# User-supplied function
-
-The function specified above can be a data processing function of any complexity, but has to follow 3 rules listed below.
+The function specified can be a data processing function of any complexity, but has to follow 3 rules listed below.
 
 ### Rules:
 
@@ -191,4 +188,4 @@ See this [BiocProject advanced features vignette](./2advancedFeatures.html) if y
 
 * use a lambda function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
-* use a function that is a part of other `R` package
+* use a function that is a part of another `R` package
