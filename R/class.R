@@ -59,7 +59,7 @@ setClass("BiocProject",
 #' @section Further reading: 
 #' Browse the 
 #' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
-#' for more detailed expalanation with examples.
+#' for more detailed explanation with examples.
 #'
 #'
 #' @param file a character vector with a path to the config file

@@ -65,7 +65,7 @@ and empty \code{\link{BiocProject-class}} object will be returned.
  
 Browse the 
 \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
-for more detailed expalanation with examples.
+for more detailed explanation with examples.
 }
 
 \seealso{
