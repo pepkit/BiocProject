@@ -13,3 +13,4 @@
 
 * make `BiocProject` class inherit from `pepr::Project` and `base::list`
 * the `initialize` method can read in the data with the provided `func`
+* the object constructor does not fail if the `pepr::Project` object is provided in the `funcArgs` arguments list
