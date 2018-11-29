@@ -62,7 +62,7 @@ This path points to a YAML project config file, that looks like this:
 
 ```{r, warning=FALSE,echo=FALSE,message=FALSE,collapse=TRUE,comment=" "}
 library(pepr)
-.printNestedList(yaml::read_yaml(projectConfig))
+.printNestedList(yaml::read_yaml(configFile))
 ```
 
 This configuration file points to the second major part of a PEP: the sample annotation CSV file. In our case, it looks like this:
@@ -100,8 +100,9 @@ parseEncodeRegions
 ## How to create a `BiocProject` object
 
 ```{r}
-bp = BiocProject(file=ProjectConfig)
+bp = BiocProject(file=configFile)
 ```
+
 This simple line of code reads the project metadata from the PEP, then loads and calls the actual data processing function, and returns a complete R object that contains all your project metadata and data! Therefore, the created object is composed of both the metadata (`pepr::Project` object) and data read with your function. Let's inspect the object:
 
 ```{r}
@@ -134,20 +135,21 @@ toProject(bp)
 
 # How it works
 
-The `BiocProject` function, which is the user-friendly interface to the `BiocProject` class constructor reads a YAML file with the PEP config, creates a PEP and uses your function to read the data specified in the PEP on the fly. 
+The `BiocProject` function, which is the user-friendly interface to the `BiocProject` class constructor, reads a YAML file with the PEP config, creates a PEP and uses your function to read the data specified in the PEP on the fly. 
 
-In the basic case the function name/path is specified in the YAML config file itself, like:
+In the basic case the function name (and path to source file, if necessary) is specified in the YAML config file itself, like:
 
 ```
 bioconductor:
   read_fun_name: function_name
 ```
 
-OR
+or
 
 ```
 bioconductor:
-  read_fun_path: /path/to/the/function.R
+  read_fun_name: function_name
+  read_fun_path: /path/to/the/file.R
 ```
 
 # User-supplied function
