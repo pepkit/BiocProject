@@ -26,7 +26,7 @@ This vignette assumes you are already familiar with Portable Encapsulated Projec
 
 # Installation
 
-The `BiocProject` package is hosted on GitHub. You must first install `pepr`:
+You must first install `pepr`:
 
 ```{r eval=FALSE}
 devtools::install_github(repo='pepkit/pepr')
@@ -40,28 +40,32 @@ devtools::install_github(repo='pepkit/BiocProject')
 
 # How to use BiocProject
 
-## Create a PEP
+## Introduction to PEP components
 
-In order to use the `BiocProject` package, you first need a PEP. You can [create your own](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/). For this vignette, we have included a basic example PEP that we will introduce now.
+In order to use the `BiocProject` package, you first need a PEP. For this vignette, we have included a basic example PEP within the package, but if you like, you can [create your own](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
 
-A PEP is composed of two files.
+The most important piece of a PEP is the project configuration file. Let's load up `BiocProject` grab the path to our example configuration file:
 
-1. A YAML project config file"
+```{r echo=T,message=FALSE}
+library(BiocProject)
+
+configFile = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "project_config.yaml",
+  package = "BiocProject"
+)
+```
+
+This path points to a YAML project config file, that looks like this:
 
 ```{r, warning=FALSE,echo=FALSE,message=FALSE,collapse=TRUE,comment=" "}
 library(pepr)
-projectConfig = system.file(
-"extdata",
-"example_peps-master",
-"example_BiocProject",
-"project_config.yaml",
-package = "BiocProject"
-)
 .printNestedList(yaml::read_yaml(projectConfig))
 ```
 
-
-2. A sample annotation CSV file:
+This configuration file points to the second major part of a PEP: the sample annotation CSV file. In our case, it looks like this:
 
 ```{r, echo=FALSE,message=FALSE,warning=FALSE,collapse=TRUE,comment=" "}
 library(knitr)
@@ -76,49 +80,53 @@ sampleAnnotationDF = read.table(sampleAnnotation, sep = ",", header = T)
 knitr::kable(sampleAnnotationDF, format = "html")
 ```
 
-In this example, our file has only a single "sample" (which is really a loosely used term here).
+In this example, our PEP has only a single "sample" (which is really a loosely used term here), which has only 2 attributes: `sample_name`, and `remote_url`, which points the location for the data.
 
-## Code
-
-Load the library and get the path to the example YAML config file.
-```{r echo=T,message=FALSE}
-library(BiocProject)
-
-ProjectConfig = system.file(
+The configuration file also points to a third file, which holds an [R function called parseEncodeRegions](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+  
+```{r echo=FALSE, eval=TRUE, comment=""}
+processFunction = system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "project_config.yaml",
+  "parseEncodeRegions.R",
   package = "BiocProject"
 )
+source(processFunction)
+parseEncodeRegions
 ```
 
-Create the `BiocProject` object
+
+## How to create a `BiocProject` object
+
 ```{r}
 bp = BiocProject(file=ProjectConfig)
 ```
-This simple line of code read the project metadata from the PEP and loaded it into `R` environment! 
-Therefore, created object is composed of both the metadata (`pepr::Project` object) and data read with your function:
+This simple line of code reads the project metadata from the PEP, then loads and calls the actual data processing function, and returns a complete R object that contains all your project metadata and data! Therefore, the created object is composed of both the metadata (`pepr::Project` object) and data read with your function. Let's inspect the object:
 
 ```{r}
 bp
 ```
 
+## How to interact with a `BiocProject` object
 
-## Interact with `BiocProject` object
+The `BiocProject` object provides all the [`pepr::Project` methods](http://code.databio.org/pepr/reference/index.html)
 
-Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
 ```{r}
 samples(bp)
 config(bp)
 ```
-Apply the `list`-related methods
+
+Alternatively, it is also of class `list`, so you can apply `list methods: 
+
 ```{r}
 names(bp) = c("myDataset")
 names(bp)
 bp[[1]]
 ```
-Use the methods of `BiocProject` package
+
+Finally, there are a few methods specific to `BiocProject` objects:
+
 ```{r}
 getData(bp)
 toProject(bp)
