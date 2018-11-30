@@ -6,7 +6,7 @@
   nFill = floor(n / 2)
   message(rep("-", nFill - nH), header, rep("-", nFill - nH))
   message("\n", str, "\n")
-  message("\n", rep("-", n), "\n")
+  message(rep("-", n))
 }
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution

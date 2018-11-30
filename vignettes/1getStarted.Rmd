@@ -65,7 +65,7 @@ processFunction = system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions.R",
+  "readBedFiles.R",
   package = "BiocProject"
 )
 source(processFunction)
@@ -175,11 +175,11 @@ processFunction =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions.R",
+  "readBedFiles.R",
   package = "BiocProject"
 )
 source(processFunction)
-parseEncodeRegions
+readBedFiles
 ```
 
 # Advanced `BiocProject` features
