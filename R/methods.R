@@ -10,39 +10,6 @@ setMethod(
     .Object = do.call(selectMethod("initialize", signature="Project"),
                       list(.Object, ...))
     
-    .wrapFunMessages = function(str, type) {
-      str = trimws(str, which = "both")
-      n = options("width")[[1]]
-      header = paste0(" Your function ", type, " ")
-      nH = floor(nchar(header) / 2)
-      nFill = floor(n / 2)
-      message(rep("-", nFill - nH), header, rep("-", nFill - nH))
-      message("\n", str, "\n")
-      message("\n", rep("-", n), "\n")
-    }
-    # internal function that wraps the external function execution
-    # in tryCatch to indicate problems with the external function execution
-    .callBiocFun = function(f, a) {
-      readData = tryCatch({
-        do.call(f, a)
-      }, warning = function(w) {
-        warning(
-          "There are warnings associated with your function execution."
-        )
-        .wrapFunMessages(w$message,"warning")
-        message("No data was read. Creating an empty BiocProject object...")
-        return(w$message)
-      }, error = function(e) {
-        warning(
-          "There are errors associated with your function execution."
-        )
-        .wrapFunMessages(e$message,"error")
-        message("No data was read. Creating an empty BiocProject object...")
-        return(e$message)
-      })
-      return(readData)
-    }
-    
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     pepArgs = as.logical(lapply(funcArgs, function(x) {
@@ -98,9 +65,11 @@ setMethod(
             pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
           if (!is.null(funcPath)){
             if (!file.exists(funcPath))
+              funcPath = .makeAbsPath(funcPath,dirname(.Object@file))
+              if(!file.exists(funcPath))
               stop(
                 "The function does not exist in the environment and file ",
-                funcPath ,
+                funcPath,
                 " does not exist"
               )
             readFun = source(funcPath)$value
