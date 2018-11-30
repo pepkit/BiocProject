@@ -1,2 +1,3 @@
-sample_name,remote_url
-encodeRegions,http://hgdownload.cse.ucsc.edu/goldenpath/hg19/database/encodeRegions
+sample_name,file_path
+laminB1Lads,data/laminB1Lads.bed
+vistaEnhancers,data/vistaEnhancers.bed
