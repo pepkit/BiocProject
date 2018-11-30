@@ -1,7 +1,9 @@
+# internal function used for wrapping the user-supplied function meessages 
+# in a box
 .wrapFunMessages = function(str, type) {
   str = trimws(str, which = "both")
   n = options("width")[[1]]
-  header = paste0(" Your function ", type, " ")
+  header = paste0(" Your function ", type, "(s) ")
   nH = floor(nchar(header) / 2)
   nFill = floor(n / 2)
   message(rep("-", nFill - nH), header, rep("-", nFill - nH))
