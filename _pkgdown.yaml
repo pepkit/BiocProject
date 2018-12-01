@@ -31,3 +31,4 @@ articles:
     contents:
       - 2advancedFeatures
       - 3simpleCache
+      - 4remoteData
