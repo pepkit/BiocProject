@@ -1,6 +1,6 @@
 Package: BiocProject
 Title: Bioconductor Management with Portable Encapsulated Project (PEP) Objects
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu",role = c("aut", "cre")), 
 	person("Nathan", "Sheffield", email = "nathan@code.databio.org",role = c("aut")))
 Description: A Bioconductor-oriented project management class. It wraps the
