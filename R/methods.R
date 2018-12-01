@@ -10,25 +10,6 @@ setMethod(
     .Object = do.call(selectMethod("initialize", signature="Project"),
                       list(.Object, ...))
     
-    # internal function that wraps the external function execution
-    # in tryCatch to indicate problems with the external function execution
-    .callBiocFun = function(f, a) {
-      readData = tryCatch({
-        do.call(f, a)
-      }, warning = function(w) {
-        warning(
-          "There are warnings associated with your function execution."
-        )
-        message("No data was read. Creating an empty BiocProject object...")
-      }, error = function(e) {
-        warning(
-          "There are errors associated with your function execution."
-        )
-        message("No data was read. Creating an empty BiocProject object...")
-      })
-      return(readData)
-    }
-    
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     pepArgs = as.logical(lapply(funcArgs, function(x) {
@@ -84,9 +65,11 @@ setMethod(
             pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
           if (!is.null(funcPath)){
             if (!file.exists(funcPath))
+              funcPath = .makeAbsPath(funcPath,dirname(.Object@file))
+              if(!file.exists(funcPath))
               stop(
                 "The function does not exist in the environment and file ",
-                funcPath ,
+                funcPath,
                 " does not exist"
               )
             readFun = source(funcPath)$value

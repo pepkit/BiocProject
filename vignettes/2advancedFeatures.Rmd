@@ -25,16 +25,16 @@ Before you start see the [Getting started with `BiocProject` vignette](./1getSta
 **What if your custom data processing function requires more arguments than just a PEP?**
 
 For reference consider the `parseEncodeRegions_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
-```{r echo=FALSE, eval=TRUE, comment=""}
+```{r include=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions_resize.R",
+  "readBedFiles_resize.R",
   package="BiocProject"
 )
 source(processFunction)
-parseEncodeRegions_resize
+readBedFiles_resize
 ```
 
 There are a few ways to enable your function to get multiple arguments - not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html)) object, which is the basic scenario.
@@ -54,17 +54,17 @@ ProjectConfigArgs = system.file(
   package = "BiocProject"
 )
 
-processFunctionArgs =  system.file(
+readBedFiles_resize =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions_resize.R",
+  "readBedFiles_resize.R",
   package = "BiocProject"
 )
 ```
 Read the function into R environment and create the `BiocProject` object 
 ```{r}
-source(processFunctionArgs)
+source(readBedFiles_resize)
 bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=100))
 ```
 The `funcArgs` argument gets a one element list and passes the `resize.width` argument to your custom data processing function.
@@ -76,7 +76,7 @@ You can use a [lambda function](https://en.wikipedia.org/wiki/Anonymous_function
 
 ```{r}
 bpLambda = BiocProject(file=ProjectConfigArgs, func=function(x){
-      parseEncodeRegions_resize(project=x, resize.width=100)
+      readBedFiles_resize(project=x, resize.width=100)
     }
   )
 #Inspect it

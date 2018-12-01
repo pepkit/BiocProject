@@ -18,53 +18,70 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `BiocProject` class is a structure for holding both metadata and data within the [Bioconductor](https://www.bioconductor.org/) framework. It wraps the generic R package [pepr](http://code.databio.org/pepr/) to read Portable Encapsulated Project (PEP) metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of R code. If you aren't already familiar, please start by checking out this documentation:
+`BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) package that provides a class (also called `BiocProject`) that holds both metadata and data for set of biological samples. 
 
-* See [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP.
-* See the [`pepr` documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+This vignette assumes you are already familiar with Portable Encapsulated Projects (PEPs). If not, see [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP, and the [pepr documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+
+`BiocProject` uses `pepr` to handle PEP metadata, and allows you to provide a data loading function so that you can load both project metadata and data for an entire project with a single line of R code.
 
 # Installation
 
-The `BiocProject` package is currently available via GitHub. To install development version of `pepr`, run:
+You must first install `pepr`:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/pepr', ref = 'dev')
+devtools::install_github(repo='pepkit/pepr')
 ```
 
-To install development version of `BiocProject`, run:
+Then, install `BiocProject`:
 
 ```{r eval=FALSE}
-devtools::install_github(repo = 'pepkit/BiocProject', ref = 'dev')
+devtools::install_github(repo='pepkit/BiocProject')
 ```
 
-# Usage
+# How to use BiocProject
 
-## Create a PEP
+## Introduction to PEP components
 
-In order to use the `BiocProject` package, you need a **PEP**.
+In order to use the `BiocProject` package, you first need a PEP. For this vignette, we have included a basic example PEP within the package, but if you like, you can [create your own](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
 
-Briefly, the PEP is a standard way of describing sample and project metadata. You can read how to create one at [pepkit.github.io](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
+The central component of a PEP is the project configuration file. Let's load up `BiocProject` and grab the path to our example configuration file:
 
-Each PEP is composed of two files. In this vignette we will use the PEP presented below:
+```{r echo=TRUE, message=FALSE}
+library(BiocProject)
 
-- **YAML config file**
-
-```{r, warning=FALSE,echo=FALSE,message=FALSE,collapse=TRUE,comment=" "}
-library(pepr)
-projectConfig = system.file(
-"extdata",
-"example_peps-master",
-"example_BiocProject",
-"project_config.yaml",
-package = "BiocProject"
+configFile = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "project_config.yaml",
+  package = "BiocProject"
 )
-.printNestedList(yaml::read_yaml(projectConfig))
+configFile
 ```
 
+```{r eval=TRUE, include=FALSE}
+# Run some stuff we need for the vignette
+processFunction = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject",
+  "readBedFiles.R",
+  package = "BiocProject"
+)
+source(processFunction)
+bp = BiocProject(file=configFile)
+```
 
-- **sample annotation CSV file**
+This path points to a YAML project config file, that looks like this:
 
-```{r, echo=FALSE,message=FALSE,warning=FALSE,collapse=TRUE,comment=" "}
+```{r, warning=FALSE, echo=FALSE, message=FALSE, collapse=TRUE, comment=" "}
+library(pepr)
+.printNestedList(yaml::read_yaml(configFile))
+```
+
+This configuration file points to the second major part of a PEP: the sample annotation CSV file (``r { basename(config(bp)$metadata$sample_annotation) }``). Here are the contents of that file:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, collapse=TRUE, comment=" "}
 library(knitr)
 sampleAnnotation = system.file(
 "extdata",
@@ -73,77 +90,77 @@ sampleAnnotation = system.file(
 "sample_annotation.csv",
 package = "BiocProject"
 )
-sampleAnnotationDF = read.table(sampleAnnotation, sep = ",", header = T)
+sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)
 knitr::kable(sampleAnnotationDF, format = "html")
 ```
 
-## Code
+In this example, our PEP has two samples, which have two attributes: `sample_name`, and `file_path`, which points the location for the data.
 
-Load the library and get the path to the example YAML config file.
-```{r echo=T,message=FALSE}
-library(BiocProject)
-
-ProjectConfig = system.file(
-  "extdata",
-  "example_peps-master",
-  "example_BiocProject",
-  "project_config.yaml",
-  package = "BiocProject"
-)
+The configuration file also points to a third file (``r { basename(config(bp)$bioconductor$read_fun_path) }``). This file holds a single R function called ``r { basename(config(bp)$bioconductor$read_fun_name) }``, which has these contents:
+  
+```{r echo=FALSE, eval=TRUE, comment=""}
+get(config(bp)$bioconductor$read_fun_name)
 ```
 
-Create the `BiocProject` object
+And that's all there is to it! This PEP consists really of 3 components: the project configuration file, which points to an annotation sheet, and an R file that holds a function that knows how to process this data. With that, we're ready to see how `BiocProject` works.
+
+## How to create a `BiocProject` object
+
+With a PEP in hand, it takes only a single line of code to do all the magic with `BiocProject`:
+
 ```{r}
-bp = BiocProject(file=ProjectConfig)
+bp = BiocProject(file=configFile)
 ```
-This simple line of code read the project metadata from the PEP and loaded it into `R` environment! 
-Therefore, created object is composed of both the metadata (`pepr::Project` object) and data read with your function:
+
+This loads the project metadata from the PEP, then loads and calls the actual data processing function, and returns a complete R object that contains all your project metadata and data! Therefore, the created object is composed of both the metadata (`pepr::Project` object) and data loaded with your function. Let's inspect the object:
 
 ```{r}
 bp
 ```
 
+## How to interact with a `BiocProject` object
 
-## Interact with `BiocProject` object
+The `BiocProject` object provides all the `pepr::Project` methods (which you can find in the [reference documentation for pepr](http://code.databio.org/pepr/reference/index.html)).
 
-Apply the [`pepr::Project`-related methods](http://code.databio.org/pepr/reference/index.html)
 ```{r}
 samples(bp)
 config(bp)
 ```
-Apply the `list`-related methods
+
+In addition. the `BiocProject` is of class `list`, so you can apply `list` methods to interact with the loaded data:
+
 ```{r}
 names(bp) = c("myDataset")
 names(bp)
 bp[[1]]
 ```
-Use the methods of `BiocProject` package
+
+Finally, there are a few methods specific to `BiocProject` objects:
+
 ```{r}
 getData(bp)
 toProject(bp)
 ```
 
-# How it works
+# How to provide a data load function
 
-The `BiocProject` function, which is the user-friendly interface to the `BiocProject` class constructor reads a YAML file with the PEP config, creates a PEP and uses your function to read the data specified in the PEP on the fly. 
 
-In the basic case the function name/path is specified in the YAML config file itself, like:
+In the basic case the function name (and path to source file, if necessary) is specified in the YAML config file itself, like:
 
 ```
 bioconductor:
   read_fun_name: function_name
 ```
 
-OR
+or
 
 ```
 bioconductor:
-  read_fun_path: /path/to/the/function.R
+  read_fun_name: function_name
+  read_fun_path: /path/to/the/file.R
 ```
 
-# User-supplied function
-
-The function specified above can be a data processing function of any complexity, but has to follow 3 rules listed below.
+The function specified can be a data processing function of any complexity, but has to follow 3 rules listed below.
 
 ### Rules:
 
@@ -158,11 +175,11 @@ processFunction =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject",
-  "parseEncodeRegions.R",
+  "readBedFiles.R",
   package = "BiocProject"
 )
 source(processFunction)
-parseEncodeRegions
+readBedFiles
 ```
 
 # Advanced `BiocProject` features
@@ -171,4 +188,4 @@ See this [BiocProject advanced features vignette](./2advancedFeatures.html) if y
 
 * use a lambda function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
-* use a function that is a part of other `R` package
+* use a function that is a part of another `R` package

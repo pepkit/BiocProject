@@ -1,4 +1,4 @@
-parseEncodeRegions = function(project) {
+readRemoteData = function(project) {
   # get the data from the Project object
   url = pepr::samples(project)$remote_url[[1]]
   # download the file

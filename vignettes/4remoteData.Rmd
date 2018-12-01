@@ -1,0 +1,104 @@
+---
+title: "Working with remote data"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic information and installation instructions.
+
+# How to download the data with your function 
+
+There is *no limit* to the data processing function complexity. For example, the function can retrieve the data from a remote source and then process it.
+
+```{r echo=FALSE, eval=TRUE}
+processFunction =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_remote",
+  "readRemoteData.R",
+  package="BiocProject"
+)
+source(processFunction)
+```
+For reference consider the ``r { basename(processFunction) }`` function
+``` {r echo=FALSE, comment=""}
+readRemoteData
+rm(readRemoteData)
+```
+and the [PEP](https://pepkit.github.io/) that it uses:
+
+* sample annotation sheet
+
+```{r echo=FALSE, eval=TRUE, comment=""}
+sampleAnnotation =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_remote",
+  "sample_annotation.csv",
+  package="BiocProject"
+)
+sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)
+knitr::kable(sampleAnnotationDF, format = "html")
+```
+
+* project config file
+
+```{r echo=FALSE, eval=TRUE, comment=""}
+configFile =  system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_remote",
+  "project_config.yaml",
+  package="BiocProject"
+)
+library(pepr)
+.printNestedList(yaml::read_yaml(configFile))
+```
+
+## Create the `BiocProject` object
+
+Get path to the config file
+```{r echo=T,message=FALSE}
+library(BiocProject)
+ProjectConfigRemote = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_remote",
+  "project_config.yaml",
+  package = "BiocProject"
+)
+```
+Create the `BiocProject` object
+```{r}
+bpRemote = BiocProject(file=ProjectConfigRemote)
+```
+With this simple line of code:
+
+1. the project metadata were read
+1. data processing function was read into `R` envrionment
+1. data were downloaded from the remote source and processed 
+1. everything was conveniently stored in a `BiocProject` object
+
+Let's inspect the results
+```{r}
+getData(bpRemote)
+samples(bpRemote)
+config(bpRemote)
+```
+
+
+
