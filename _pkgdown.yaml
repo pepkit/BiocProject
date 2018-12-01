@@ -29,6 +29,6 @@ articles:
       - 1getStarted
   - title: Advanced features
     contents:
-      - 2advancedFeatures
+      - 2multipleArguments
       - 3simpleCache
       - 4remoteData

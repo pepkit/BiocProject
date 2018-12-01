@@ -25,7 +25,7 @@ Before you start see the [Getting started with `BiocProject` vignette](./1getSta
 **What if your custom data processing function requires more arguments than just a PEP?**
 
 For reference consider the `parseEncodeRegions_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
-```{r include=FALSE, eval=TRUE, comment=""}
+```{r include=FALSE, eval=TRUE}
 processFunction =  system.file(
   "extdata",
   "example_peps-master",
@@ -34,6 +34,8 @@ processFunction =  system.file(
   package="BiocProject"
 )
 source(processFunction)
+```
+```{r echo=FALSE, comment=""}
 readBedFiles_resize
 ```
 
