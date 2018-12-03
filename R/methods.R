@@ -20,13 +20,13 @@ setMethod(
     args = append(list(.Object), funcArgs)
     
     if (!is.null(func)) {
-      # use the lambda function if provided
+      # use the anonymous function if provided
       if (is.function(func)) {
         readData = .callBiocFun(func, list(.Object))
         .Object[[length(.Object)+1]] = readData
         return(.Object)
       } else{
-        stop("The lambda function you provided is invalid.")
+        stop("The anonymous function you provided is invalid.")
       }
     } else{
       # use config to find it

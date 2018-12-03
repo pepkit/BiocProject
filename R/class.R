@@ -41,7 +41,7 @@ setClass("BiocProject",
 #'   (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
 #'   \code{pkgName::functionName}
 #'   \item use a function implemented in the  \code{\link{BiocProject}}
-#'   call (passed to the \code{func} argument - lambda function). This option is given the top priority and overrides 
+#'   call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 
 #'   other arguments if provided.
 #' }
 #' The custom data processing function must take 
@@ -49,7 +49,7 @@ setClass("BiocProject",
 #' be passed to the function by default. However, if the function requires
 #' addtional arguments, ones can be provided with the \code{funcArgs} argument
 #' in the \code{\link{BiocProject}} function call. 
-#' Besides, the \code{func} argument with the lambda function may serve similar
+#' Besides, the \code{func} argument with the anonymous function may serve similar
 #' possibility.
 #' 
 #' If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
@@ -65,7 +65,7 @@ setClass("BiocProject",
 #' @param file a character vector with a path to the config file
 #' @param subproject a character vector with a name of the subproject
 #' to be activated
-#' @param func a lambda function that reads and/or processess the data, it must take 
+#' @param func a anonymous function that reads and/or processess the data, it must take 
 #' the \code{\link[pepr]{Project-class}} as an argument.
 #' See \code{Details} for more information
 #' @param funcArgs a named list with arguments you want to pass to the \code{func}.
