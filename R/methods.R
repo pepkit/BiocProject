@@ -12,11 +12,15 @@ setMethod(
     
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
-    pepArgs = as.logical(lapply(funcArgs, function(x) {
-      is(x, "Project")
-    }))
-    if (any(pepArgs))
-      funcArgs = funcArgs[-which(pepArgs)]
+    if(is.null(funcArgs)){
+      funcArgs = list()
+    }else{
+      pepArgs = as.logical(lapply(funcArgs, function(x) {
+        is(x, "Project")
+      }))
+      if (any(pepArgs))
+        funcArgs = funcArgs[-which(pepArgs)]
+    }
     args = append(list(.Object), funcArgs)
     
     if (!is.null(func)) {

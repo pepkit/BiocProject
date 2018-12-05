@@ -4,8 +4,8 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), subproject = character(),
-  autoLoad = TRUE, func = NULL, funcArgs = list())
+BiocProject(file = NULL, subproject = NULL, autoLoad = TRUE,
+  func = NULL, funcArgs = NULL)
 }
 \arguments{
 \item{file}{a character vector with a path to the config file}

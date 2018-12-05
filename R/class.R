@@ -80,17 +80,19 @@ setClass("BiocProject",
 #'
 #' @export BiocProject
 BiocProject <-
-  function(file = character(),
-           subproject = character(),
+  function(file = NULL,
+           subproject = NULL,
            autoLoad = TRUE,
            func = NULL,
-           funcArgs = list()) {
+           funcArgs = NULL) {
     if (!is.logical(autoLoad))
       stop("The autoLoad argument is not logical.")
-    if (!is.list(funcArgs))
-      stop("The funcArgs has to be a named list.")
-    if (length(funcArgs) > 0 && is.null(names(funcArgs)))
-      stop("The funcArgs has to be a named list")
+    if (!is.null(funcArgs)){
+      if(!is.list(funcArgs))
+        stop("The funcArgs has to be a named list")
+      if (length(funcArgs) > 0 && is.null(names(funcArgs)))
+        stop("The funcArgs has to be a named list")
+    }
     
     methods::new(
       "BiocProject",
