@@ -77,9 +77,9 @@ setMethod(
                 " does not exist"
               )
             readFun = source(funcPath)$value
+            message("Function read from file: ", funcPath)
             readData = .callBiocFun(readFun, args)
             .Object[[length(.Object)+1]] = readData
-            message("Function read from file: ", funcPath)
             return(.Object)
           }else{
             warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
