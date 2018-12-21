@@ -1,9 +1,25 @@
-# BiocProject 0.0.2
+# BiocProject 0.0.4
 
-## 01-12-2018
+## TBA
 
 ## Added
 
+
+## Changed
+
+
+# BiocProject 0.0.3
+
+## 2018-12-21
+
+## Changed
+
+* the default values for all optional arguments are `NULL`
+* change `lambda function` to `anonymous function`
+
+# BiocProject 0.0.2
+
+## 2018-12-01
 
 ## Changed
 
@@ -14,7 +30,7 @@
 
 # BiocProject 0.0.1
 
-## 20-11-2018
+## 2018-11-20
 
 ## Added
 
