@@ -4,8 +4,8 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) class for biological applications}
 \usage{
-BiocProject(file = character(), subproject = character(),
-  autoLoad = TRUE, func = NULL, funcArgs = list())
+BiocProject(file = NULL, subproject = NULL, autoLoad = TRUE,
+  func = NULL, funcArgs = NULL)
 }
 \arguments{
 \item{file}{a character vector with a path to the config file}
@@ -16,7 +16,7 @@ to be activated}
 \item{autoLoad}{a logical indicating whether the data should be loaded
 automatically. See \code{Details} for more information.}
 
-\item{func}{a lambda function that reads and/or processess the data, it must take 
+\item{func}{a anonymous function that reads and/or processess the data, it must take 
 the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
 
@@ -47,7 +47,7 @@ implementation. Consider the possibilities listed below:
   (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
   \code{pkgName::functionName}
   \item use a function implemented in the  \code{\link{BiocProject}}
-  call (passed to the \code{func} argument - lambda function). This option is given the top priority and overrides 
+  call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 
   other arguments if provided.
 }
 The custom data processing function must take 
@@ -55,7 +55,7 @@ the \code{\link[pepr]{Project-class}} as an argument since this object will
 be passed to the function by default. However, if the function requires
 addtional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
-Besides, the \code{func} argument with the lambda function may serve similar
+Besides, the \code{func} argument with the anonymous function may serve similar
 possibility.
 
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 

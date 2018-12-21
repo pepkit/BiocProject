@@ -24,8 +24,8 @@ Before you start see the [Getting started with `BiocProject` vignette](./1getSta
 
 **What if your custom data processing function requires more arguments than just a PEP?**
 
-For reference consider the `parseEncodeRegions_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
-```{r include=FALSE, eval=TRUE, comment=""}
+For reference consider the `readBedFiles_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
+```{r include=FALSE, eval=TRUE}
 processFunction =  system.file(
   "extdata",
   "example_peps-master",
@@ -34,6 +34,8 @@ processFunction =  system.file(
   package="BiocProject"
 )
 source(processFunction)
+```
+```{r echo=FALSE, comment=""}
 readBedFiles_resize
 ```
 
@@ -70,17 +72,17 @@ bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=100))
 The `funcArgs` argument gets a one element list and passes the `resize.width` argument to your custom data processing function.
 
 
-# How to use a lambda (anonymous) function
+# How to use a anonymous function
 
-You can use a [lambda function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
+You can use a [anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
 
 ```{r}
-bpLambda = BiocProject(file=ProjectConfigArgs, func=function(x){
+bpAnonymous = BiocProject(file=ProjectConfigArgs, func=function(x){
       readBedFiles_resize(project=x, resize.width=100)
     }
   )
 #Inspect it
-bpLambda
+bpAnonymous
 ```
 
 

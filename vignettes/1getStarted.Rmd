@@ -184,8 +184,8 @@ readBedFiles
 
 # Advanced `BiocProject` features
 
-See this [BiocProject advanced features vignette](./2advancedFeatures.html) if you want to:
+See this [BiocProject advanced features vignette](./2multipleArguments.html) if you want to:
 
-* use a lambda function instead of one defined *a priori*
+* use a anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
 * use a function that is a part of another `R` package

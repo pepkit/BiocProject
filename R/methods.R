@@ -12,21 +12,25 @@ setMethod(
     
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
-    pepArgs = as.logical(lapply(funcArgs, function(x) {
-      is(x, "Project")
-    }))
-    if (any(pepArgs))
-      funcArgs = funcArgs[-which(pepArgs)]
+    if(is.null(funcArgs)){
+      funcArgs = list()
+    }else{
+      pepArgs = as.logical(lapply(funcArgs, function(x) {
+        is(x, "Project")
+      }))
+      if (any(pepArgs))
+        funcArgs = funcArgs[-which(pepArgs)]
+    }
     args = append(list(.Object), funcArgs)
     
     if (!is.null(func)) {
-      # use the lambda function if provided
+      # use the anonymous function if provided
       if (is.function(func)) {
         readData = .callBiocFun(func, list(.Object))
         .Object[[length(.Object)+1]] = readData
         return(.Object)
       } else{
-        stop("The lambda function you provided is invalid.")
+        stop("The anonymous function you provided is invalid.")
       }
     } else{
       # use config to find it
@@ -73,9 +77,9 @@ setMethod(
                 " does not exist"
               )
             readFun = source(funcPath)$value
+            message("Function read from file: ", funcPath)
             readData = .callBiocFun(readFun, args)
             .Object[[length(.Object)+1]] = readData
-            message("Function read from file: ", funcPath)
             return(.Object)
           }else{
             warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
