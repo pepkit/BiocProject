@@ -1,13 +1,3 @@
-# BiocProject 0.0.4
-
-## TBA
-
-## Added
-
-
-## Changed
-
-
 # BiocProject 0.0.3
 
 ## 2018-12-21
