@@ -182,10 +182,14 @@ source(processFunction)
 readBedFiles
 ```
 
-# Advanced `BiocProject` features
+# Further reading
 
-See this [BiocProject advanced features vignette](./2multipleArguments.html) if you want to:
+See this [BiocProject advanced features](./2advancedFeatures.html) vignette if you want to:
 
 * use a anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
 * use a function that is a part of another `R` package
+
+See the [Working with remote data](./4remoteData.html) vignette to learn how to download the data from the Internet and store it conveniently in the `BiocProject` object.
+
+See the [Working with large datasets - simpleCache](./3simpleCache.html) vignette to learn how the `simpleCache` R package can be used to prevent prevent copious lengthy results recalculations when working with large datasets.
