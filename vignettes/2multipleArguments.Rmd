@@ -72,9 +72,9 @@ bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=100))
 The `funcArgs` argument gets a one element list and passes the `resize.width` argument to your custom data processing function.
 
 
-# How to use a anonymous function
+# How to use an anonymous function
 
-You can use a [anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
+You can use an [anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
 
 ```{r}
 bpAnonymous = BiocProject(file=ProjectConfigArgs, func=function(x){
@@ -84,6 +84,3 @@ bpAnonymous = BiocProject(file=ProjectConfigArgs, func=function(x){
 #Inspect it
 bpAnonymous
 ```
-
-
-

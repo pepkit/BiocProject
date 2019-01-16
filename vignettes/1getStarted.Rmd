@@ -188,7 +188,6 @@ See this [BiocProject advanced features](./2advancedFeatures.html) vignette if y
 
 * use an anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
-* use a function that is a part of another `R` package
 
 See the [Working with remote data](./4remoteData.html) vignette to learn how to download the data from the Internet and store it conveniently in the `BiocProject` object.
 
