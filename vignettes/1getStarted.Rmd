@@ -181,7 +181,25 @@ processFunction =  system.file(
 source(processFunction)
 readBedFiles
 ```
+# Data reading function error/warning handling 
 
+The `BiocProject` constructor provides a way to rigorously monitor exceptions related to your data reading function. All the produced warnings and errors are caught, processed and displayed in an organized way:
+
+```{r}
+configFile = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_exceptions",
+  "project_config.yaml",
+  package = "BiocProject"
+)
+
+bpExceptions = BiocProject(configFile)
+```
+In case an error is caught, the erorr message is preserved and stored in the `.Data` slot of the `BiocProject` object, so it can be accessed the regular way:
+```{r}
+getData(bpExceptions)
+```
 # Further reading
 
 See this [More arguments than just a PEP in your function?](./2multipleArguments.html) vignette if you want to:
