@@ -116,7 +116,7 @@ setMethod(
 #' @param .Object an object of \code{\link{BiocProject-class}}
 #' @param subproject a character with the name of the subproject
 #' that should be activated during the converstion 
-#' to the \code{\link[pepr]{Project-class}} object
+#' to the \code{\link[pepr]{Project-class}} object (optional)
 #'
 #' @return an object of \code{\link[pepr]{Project-class}} object
 #' 
@@ -134,7 +134,7 @@ setMethod(
 #' toProject(bp)
 #'
 #' @export
-setGeneric("toProject", function(.Object,subproject=character())
+setGeneric("toProject", function(.Object,subproject=NULL)
   standardGeneric("toProject"))
 
 #' @export
@@ -147,9 +147,9 @@ setMethod(
 )
 
 
-#' Extract data from \code{\link[pepr]{Project-class}} objects
+#' Extract data from \code{\link{BiocProject-class}} objects
 #'
-#' This method extracts the data from \code{\link[pepr]{Project-class}} objects
+#' This method extracts the data from \code{\link{BiocProject-class}} objects
 #'
 #' @param .Object an object of \code{\link{BiocProject-class}}
 #'

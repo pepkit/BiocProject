@@ -4,14 +4,14 @@
 \alias{toProject}
 \title{Get \code{\link[pepr]{Project-class}} object}
 \usage{
-toProject(.Object, subproject = character())
+toProject(.Object, subproject = NULL)
 }
 \arguments{
 \item{.Object}{an object of \code{\link{BiocProject-class}}}
 
 \item{subproject}{a character with the name of the subproject
 that should be activated during the converstion 
-to the \code{\link[pepr]{Project-class}} object}
+to the \code{\link[pepr]{Project-class}} object (optional)}
 }
 \value{
 an object of \code{\link[pepr]{Project-class}} object
