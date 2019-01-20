@@ -1,3 +1,13 @@
+# BiocProject 0.0.4
+
+## Unreleased
+
+## Changed
+
+* better custom data loading function error/warning communication
+* all exceptions are caught with `BiocProject` constructor
+* fix `.updateSubconfig(.Object@config, sp) : Subproject not found:` warning in `toProject` method
+
 # BiocProject 0.0.3
 
 ## 2018-12-21
