@@ -39,7 +39,7 @@
           } 
           res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
           if(length(.warnings) > 0){
-                    warning("There were warnings associated with your function execution. See above.")
+                    warning("There were warnings associated with your function execution.")
                     .wrapFunMessages(.warnings,"warning")
           }
           return(res)
