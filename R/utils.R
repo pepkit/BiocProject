@@ -1,36 +1,48 @@
 # internal function used for wrapping the user-supplied function meessages 
 # in a box
-.wrapFunMessages = function(str, type) {
-  str = trimws(str, which = "both")
-  n = options("width")[[1]]
-  header = paste0(" Your function ", type, "(s) ")
-  nH = floor(nchar(header) / 2)
-  nFill = floor(n / 2)
-  message(rep("-", nFill - nH), header, rep("-", nFill - nH))
-  message("\n", str, "\n")
-  message(rep("-", n))
+.wrapFunMessages = function(messages, type) {
+          n = options("width")[[1]]
+          header = ifelse(
+                    length(messages) > 1,
+                    paste0(" Your function ", type, "s (", length(messages), ") "),
+                    paste0(" Your function ", type, " ")
+          )
+          nH = floor(nchar(header) / 2)
+          nFill = floor(n / 2)
+          message("\n",rep("-", nFill - nH), header, rep("-", nFill - nH))
+          i = 1
+          for (i in seq_along(messages)) {
+                    m = trimws(messages[i], which="both")
+                    message("\n", type, " ", i , ": ", m, "\n")
+          }
+          message(rep("-", n), "\n")
 }
+
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution
-.callBiocFun = function(f, a) {
-  readData = tryCatch({
-    do.call(f, a)
-  }, warning = function(w) {
-    warning(
-      "There are warnings associated with your function execution."
-    )
-    .wrapFunMessages(w$message,"warning")
-    message("No data was read. Creating an empty BiocProject object...")
-    return(w$message)
-  }, error = function(e) {
-    warning(
-      "There are errors associated with your function execution."
-    )
-    .wrapFunMessages(e$message,"error")
-    message("No data was read. Creating an empty BiocProject object...")
-    return(e$message)
-  })
-  return(readData)
+.callBiocFun <- function(func, arguments) 
+{ 
+          .warnings = c()
+          frameNumber <- sys.nframe()
+          wHandler <- function(w){ 
+                    # warning handler 
+                    assign(".warnings", append(.warnings,w$message), 
+                           envir = sys.frame(frameNumber))
+                    invokeRestart("muffleWarning") 
+          }
+          eHandler <- function(e){
+                    # error handler 
+                    .wrapFunMessages(e$message,"error")
+                    message("No data was read. Creating an empty BiocProject object...")
+                    message("The error message was saved in the .Data slot.")
+                    e$message
+          } 
+          res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
+          if(length(.warnings) > 0){
+                    warning("There were warnings associated with your function execution. See above.")
+                    .wrapFunMessages(.warnings,"warning")
+          }
+          return(res)
 }
 
 #' Create an absolute path from a primary target and a parent candidate.

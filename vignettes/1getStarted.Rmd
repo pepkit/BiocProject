@@ -184,7 +184,7 @@ readBedFiles
 
 # Further reading
 
-See this [BiocProject advanced features](./2advancedFeatures.html) vignette if you want to:
+See this [More arguments than just a PEP in your function?](./2multipleArguments.html) vignette if you want to:
 
 * use an anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
