@@ -168,7 +168,7 @@ The function specified can be a data processing function of any complexity, but 
 1. the argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object (should use that input to load all the relevant data into `R`),
 1. must return one or more data objects. 
 
-For example, consider the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+For example, consider the [readBedFiles function](https://github.com/pepkit/example_peps/blob/master/example_BiocProject/readBedFiles.R):
   
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
