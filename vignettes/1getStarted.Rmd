@@ -168,7 +168,7 @@ The function specified can be a data processing function of any complexity, but 
 1. the argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object (should use that input to load all the relevant data into `R`),
 1. must return one or more data objects. 
 
-For example, consider the [parseEncodeRegions function](https://raw.githubusercontent.com/pepkit/example_peps/master/example_BiocProject/parseEncodeRegions.R):
+For example, consider the [readBedFiles function](https://github.com/pepkit/example_peps/blob/master/example_BiocProject/readBedFiles.R):
   
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
@@ -181,11 +181,32 @@ processFunction =  system.file(
 source(processFunction)
 readBedFiles
 ```
+# Data reading function error/warning handling 
 
-# Advanced `BiocProject` features
+The `BiocProject` constructor provides a way to rigorously monitor exceptions related to your data reading function. All the produced warnings and errors are caught, processed and displayed in an organized way:
 
-See this [BiocProject advanced features vignette](./2multipleArguments.html) if you want to:
+```{r}
+configFile = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_BiocProject_exceptions",
+  "project_config.yaml",
+  package = "BiocProject"
+)
 
-* use a anonymous function instead of one defined *a priori*
+bpExceptions = BiocProject(configFile)
+```
+In case an error is caught, the erorr message is preserved and stored in the `.Data` slot of the `BiocProject` object, so it can be accessed the regular way:
+```{r}
+getData(bpExceptions)
+```
+# Further reading
+
+See this [More arguments than just a PEP in your function?](./2multipleArguments.html) vignette if you want to:
+
+* use an anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
-* use a function that is a part of another `R` package
+
+See the [Working with remote data](./4remoteData.html) vignette to learn how to download the data from the Internet and store it conveniently in the `BiocProject` object.
+
+See the [Working with large datasets - simpleCache](./3simpleCache.html) vignette to learn how the `simpleCache` R package can be used to prevent copious and lengthy results recalculations when working with large datasets.

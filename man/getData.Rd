@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{getData}
 \alias{getData}
-\title{Extract data from \code{\link[pepr]{Project-class}} objects}
+\title{Extract data from \code{\link{BiocProject-class}} objects}
 \usage{
 getData(.Object)
 }
@@ -13,7 +13,7 @@ getData(.Object)
 a list with the data elements
 }
 \description{
-This method extracts the data from \code{\link[pepr]{Project-class}} objects
+This method extracts the data from \code{\link{BiocProject-class}} objects
 }
 \examples{
 ProjectConfig = system.file(
