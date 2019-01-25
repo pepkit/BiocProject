@@ -18,11 +18,13 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) package that provides a class (also called `BiocProject`) that holds both metadata and data for set of biological samples. 
+`BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) package that provides a way to use Portable Encapsulated Projects (PEPs) within Bioconductor framework.
 
-This vignette assumes you are already familiar with Portable Encapsulated Projects (PEPs). If not, see [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP, and the [pepr documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+This vignette assumes you are already familiar with PEPs. If not, see [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP, and the [pepr documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
 
-`BiocProject` uses `pepr` to handle PEP metadata, and allows you to provide a data loading function so that you can load both project metadata and data for an entire project with a single line of R code.
+`BiocProject` uses `pepr` to handle PEP metadata, and allows you to provide a data loading/processing function so that you can load both project metadata and data for an entire project with a single line of R code.
+
+The output of the `BiocProject` function is the object that your function returns, but enriched with the PEP in its `metadata` slot. This way of storage is uniform across all objects withib Bioconductor project (see: `?Annotated-class` for details).
 
 # Installation
 
@@ -104,7 +106,7 @@ get(config(bp)$bioconductor$read_fun_name)
 
 And that's all there is to it! This PEP consists really of 3 components: the project configuration file, which points to an annotation sheet, and an R file that holds a function that knows how to process this data. With that, we're ready to see how `BiocProject` works.
 
-## How to create a `BiocProject` object
+## How to use the `BiocProject` function
 
 With a PEP in hand, it takes only a single line of code to do all the magic with `BiocProject`:
 
@@ -112,34 +114,28 @@ With a PEP in hand, it takes only a single line of code to do all the magic with
 bp = BiocProject(file=configFile)
 ```
 
-This loads the project metadata from the PEP, then loads and calls the actual data processing function, and returns a complete R object that contains all your project metadata and data! Therefore, the created object is composed of both the metadata (`pepr::Project` object) and data loaded with your function. Let's inspect the object:
+This loads the project metadata from the PEP, then loads and calls the actual data processing function, and returns a the R object that the data processing function produces but enriched with the PEP metadata. Consequently, the object contains all your project metadata and data! Let's inspect the it:
 
 ```{r}
 bp
 ```
 
-## How to interact with a `BiocProject` object
+Since the data processing function returned `GenomicRanges::GRangesList` object, the final result of the `BiocProject` function is an object of the same class.
 
-The `BiocProject` object provides all the `pepr::Project` methods (which you can find in the [reference documentation for pepr](http://code.databio.org/pepr/reference/index.html)).
+## How to interact with the created object
+
+The created object provides all the `pepr::Project` methods (which you can find in the [reference documentation for pepr](http://code.databio.org/pepr/reference/index.html)).
 
 ```{r}
 samples(bp)
 config(bp)
 ```
 
-In addition. the `BiocProject` is of class `list`, so you can apply `list` methods to interact with the loaded data:
-
-```{r}
-names(bp) = c("myDataset")
-names(bp)
-bp[[1]]
-```
-
 Finally, there are a few methods specific to `BiocProject` objects:
 
 ```{r}
-getData(bp)
-toProject(bp)
+getProject(bp)
+is.Project(bp)
 ```
 
 # How to provide a data load function
@@ -196,10 +192,7 @@ configFile = system.file(
 
 bpExceptions = BiocProject(configFile)
 ```
-In case an error is caught, the erorr message is preserved and stored in the `.Data` slot of the `BiocProject` object, so it can be accessed the regular way:
-```{r}
-getData(bpExceptions)
-```
+
 # Further reading
 
 See this [More arguments than just a PEP in your function?](./2multipleArguments.html) vignette if you want to:

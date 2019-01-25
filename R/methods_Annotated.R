@@ -1,8 +1,7 @@
-setGeneric("is.Project", function(.Object)
-    standardGeneric("is.Project"))
+setGeneric(".is.project", function(.Object)
+    standardGeneric(".is.project"))
 
-#' @export
-setMethod("is.Project","Annotated",function(.Object){
+setMethod(".is.project","Annotated",function(.Object){
     mData = metadata(.Object)
     result = tryCatch(expr = {
         mData[[1]]
@@ -32,7 +31,6 @@ setMethod(
         samples(getProject(object))
     })
 
-
 #' @export
 setMethod(
     f = "config",
@@ -41,11 +39,14 @@ setMethod(
         config(getProject(object))
     })
 
+setGeneric("is", package = "methods")
+
 #' @export
 setMethod("is", "Annotated", definition = function(object, class2){
-    if(class2=="Project" & is.Project(object)){
+    if(class2=="Project" & .is.project(object)){
         TRUE
     } else {
         extends(class(object), class2)
     }
 })
+

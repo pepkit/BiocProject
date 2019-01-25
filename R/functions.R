@@ -85,7 +85,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
       # use the anonymous function if provided
       if (is.function(func)) {
         readData = .callBiocFun(func, list(p))
-        return(insertPEP(readData, p))
+        return(.insertPEP(readData, p))
       } else{
         stop("The anonymous function you provided is invalid.")
       }
@@ -105,7 +105,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
           # function from config.yaml in environment
           readData = .callBiocFun(funcName, args)
           message("Used function ", funcName, " from the environment")
-          return(insertPEP(readData, p))
+          return(.insertPEP(readData, p))
         } else{
           if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
             # trying to access the function from the namespace that
@@ -115,7 +115,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
             funcName = getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
             readData = .callBiocFun(funcName, args)
             message("Used function ", funcName, " from the environment")
-            return(insertPEP(readData, p))
+            return(.insertPEP(readData, p))
           }
           # function from config.yaml in read_fun_name not in environment,
           # trying to source the file specified in
@@ -134,7 +134,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
             readFun = source(funcPath)$value
             message("Function read from file: ", funcPath)
             readData = .callBiocFun(readFun, args)
-            return(insertPEP(readData, p))
+            return(.insertPEP(readData, p))
           }else{
             warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
             message("No data was read. Returning a Project object")
@@ -145,5 +145,15 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
           message("No data was read. Returning a Project object")
           return(p)
       }
+    }
+}
+
+
+.insertPEP = function(object, pep) {
+    if(is(object, "Annotated") & is(pep, "Project")){
+        metadata(object) = list(PEP=pep)
+        object
+    }else{
+        stop("Type error: The 'object' argument has to be of class 'Annotated', got '", class(object),"'. And the pep argument has to be of class 'Project', got '", class(pep),"'")
     }
 }
