@@ -33,7 +33,7 @@
           eHandler <- function(e){
                     # error handler 
                     .wrapFunMessages(e$message,"error")
-                    message("No data was read. Creating an empty BiocProject object...")
+                    message("No data was read.")
                     message("The error message was saved in the .Data slot.")
                     e$message
           } 

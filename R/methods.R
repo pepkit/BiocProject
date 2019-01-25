@@ -1,15 +1,85 @@
 
+setGeneric("is.Project", function(.Object)
+    standardGeneric("is.Project"))
 
+#' @export
+setMethod("is.Project","Annotated",function(.Object){
+    mData = metadata(.Object)
+    result = tryCatch(expr = {
+        mData[[1]]
+    }, error = function(e){
+        FALSE
+    })
+    is(result,"Project")
+})
+
+setGeneric("getProject", function(.Object)
+    standardGeneric("getProject"))
+
+#' @export
+setMethod("getProject","Annotated",function(.Object){
+    if(is.Project(.Object)) {
+        metadata(.Object)[[1]]
+    } else {
+        stop("This object does not have PEP in the metadata slot.")
+    }
+})
+
+#' @export
+setMethod(
+    f = "samples",
+    signature = "Annotated",
+    definition = function(object) {
+        samples(getProject(object))
+    })
 
 
 #' @export
 setMethod(
-  f = "initialize",
-  signature = "BiocProject",
-  definition = function(.Object, autoLoad, func, funcArgs, ...) {
-    .Object = do.call(selectMethod("initialize", signature="Project"),
-                      list(.Object, ...))
-    
+    f = "config",
+    signature = "Annotated",
+    definition = function(object) {
+        config(getProject(object))
+    })
+
+setGeneric("insertPEP",function(.Object, p) 
+    standardGeneric("insertPEP"))
+
+#' @export
+insertPEP = function(object, p) {
+    if(is(object, "Annotated")){
+        metadata(object) = list(PEP=p)
+        object
+    }else{
+        warning("The 'object' argument has to be of class 'Annotated', got '", class(object),"'.")
+    }
+}
+
+#' @export
+# setMethod(
+#     f = "getSubsample",
+#     signature = signature(
+#         .Object = "Annotated",
+#         sampleName = "character",
+#         subsampleName = "character"
+#     ),
+#     definition = function(.Object, sampleName, subsampleName) {
+#         if (!is.null(.Object@metadata$PEP) &
+#             methods::is(object@metadata$PEP, "Project")) {
+#             ret = pepr::getSubsample(
+#                 .Object = .Object@metadata$PEP,
+#                 sampleName = sampleName,
+#                 subsampleName = subsampleName
+#             )
+#             return(ret)
+#         } else{
+#             return()
+#         }
+#     }
+# )
+
+BiocProject = function(config, autoLoad = T, func = NULL, funcArgs = NULL, ...) {
+    p = pepr::Project(file = config, ...)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
@@ -21,14 +91,13 @@ setMethod(
       if (any(pepArgs))
         funcArgs = funcArgs[-which(pepArgs)]
     }
-    args = append(list(.Object), funcArgs)
+    args = append(list(p), funcArgs)
     
     if (!is.null(func)) {
       # use the anonymous function if provided
       if (is.function(func)) {
-        readData = .callBiocFun(func, list(.Object))
-        .Object[[length(.Object)+1]] = readData
-        return(.Object)
+        readData = .callBiocFun(func, list(p))
+        return(insertPEP(readData, p))
       } else{
         stop("The anonymous function you provided is invalid.")
       }
@@ -36,40 +105,38 @@ setMethod(
       # use config to find it
       if (autoLoad) {
         # check if the config consists of bioconductor section
-        if(is.null(pepr::config(.Object)$bioconductor)){
+        if(is.null(pepr::config(p)$bioconductor)){
           warning("The config YAML is missing the bioconductor section.")
-          message("No data was read. Creating an empty BiocProject object...")
-          return(.Object)
+            message("No data was read. Returning a Project object")
+            return(p)
         }
-        funcName = pepr::config(.Object)$bioconductor$read_fun_name
+        funcName = pepr::config(p)$bioconductor$read_fun_name
         # check if the function name was provided
         # and if it exists in the environment
         if (!is.null(funcName) && exists(funcName)) {
           # function from config.yaml in environment
           readData = .callBiocFun(funcName, args)
-          .Object[[length(.Object)+1]] = readData
           message("Used function ", funcName, " from the environment")
-          return(.Object)
+          return(insertPEP(readData, p))
         } else{
           if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
-            # trying to access the function from the namespace that 
+            # trying to access the function from the namespace that
             # was specified in the config.yaml read_fun_name
             splitted = strsplit(funcName, ":")[[1]]
             nonEmpty = splitted[which(splitted != "")]
             funcName = getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
             readData = .callBiocFun(funcName, args)
-            .Object[[length(.Object)+1]] = readData
             message("Used function ", funcName, " from the environment")
-            return(.Object)
+            return(insertPEP(readData, p))
           }
           # function from config.yaml in read_fun_name not in environment,
           # trying to source the file specified in
           # the config.yaml read_fun_path
           funcPath =
-            pepr::.expandPath(pepr::config(.Object)$bioconductor$read_fun_path)
+            pepr::.expandPath(pepr::config(p)$bioconductor$read_fun_path)
           if (!is.null(funcPath)){
             if (!file.exists(funcPath))
-              funcPath = .makeAbsPath(funcPath,dirname(.Object@file))
+              funcPath = .makeAbsPath(funcPath,dirname(p@file))
               if(!file.exists(funcPath))
               stop(
                 "The function does not exist in the environment and file ",
@@ -79,103 +146,16 @@ setMethod(
             readFun = source(funcPath)$value
             message("Function read from file: ", funcPath)
             readData = .callBiocFun(readFun, args)
-            .Object[[length(.Object)+1]] = readData
-            return(.Object)
+            return(insertPEP(readData, p))
           }else{
             warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
-            message("No data was read. Creating an empty BiocProject object...")
-            return(.Object)
+            message("No data was read. Returning a Project object")
+            return(p)
           }
         }
       } else{
-        message("No data was read. Creating an empty BiocProject object...")
-        return(.Object)
+          message("No data was read. Returning a Project object")
+          return(p)
       }
     }
-  }
-)
-
-setMethod(
-  f = "show",
-  signature = "BiocProject",
-  definition = function(object) {
-    cat("data:\n")
-    cat("BiocProject object. Class: ", class(object), fill=T)
-    cat("  length: ", length(object), fill=T)
-    cat("\nmetadata:\n")
-    do.call(selectMethod("show", signature="Project"),
-            list(object))
-  }
-)
-
-#' Get \code{\link[pepr]{Project-class}} object
-#'
-#' This method coerces the \code{\link{BiocProject-class}}
-#'  to \code{\link{Project-class}}
-#'
-#' @param .Object an object of \code{\link{BiocProject-class}}
-#' @param subproject a character with the name of the subproject
-#' that should be activated during the converstion 
-#' to the \code{\link[pepr]{Project-class}} object (optional)
-#'
-#' @return an object of \code{\link[pepr]{Project-class}} object
-#' 
-#'
-#' @examples
-#' ProjectConfig = system.file(
-#' "extdata",
-#' "example_peps-master",
-#' "example_BiocProject",
-#' "project_config.yaml",
-#' package = "BiocProject"
-#' )
-#'
-#' bp = BiocProject(file=ProjectConfig)
-#' toProject(bp)
-#'
-#' @export
-setGeneric("toProject", function(.Object,subproject=NULL)
-  standardGeneric("toProject"))
-
-#' @export
-setMethod(
-  f = "toProject",
-  signature = "BiocProject",
-  definition = function(.Object,subproject) {
-    pepr::Project(file=.Object@file,subproject=subproject)
-  }
-)
-
-
-#' Extract data from \code{\link{BiocProject-class}} objects
-#'
-#' This method extracts the data from \code{\link{BiocProject-class}} objects
-#'
-#' @param .Object an object of \code{\link{BiocProject-class}}
-#'
-#' @return a list with the data elements
-#'
-#' @examples
-#' ProjectConfig = system.file(
-#' "extdata",
-#' "example_peps-master",
-#' "example_BiocProject",
-#' "project_config.yaml",
-#' package = "BiocProject"
-#' )
-#'
-#' bp = BiocProject(file=ProjectConfig)
-#' getData(bp)
-#'
-#' @export
-setGeneric("getData", function(.Object)
-  standardGeneric("getData"))
-
-#' @export
-setMethod(
-  f = "getData",
-  signature = "BiocProject",
-  definition = function(.Object) {
-    return(.Object@.Data)
-  }
-)
+}

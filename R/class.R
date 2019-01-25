@@ -79,27 +79,3 @@ setClass("BiocProject",
 #' @seealso \url{https://pepkit.github.io/}
 #'
 #' @export BiocProject
-BiocProject <-
-  function(file = NULL,
-           subproject = NULL,
-           autoLoad = TRUE,
-           func = NULL,
-           funcArgs = NULL) {
-    if (!is.logical(autoLoad))
-      stop("The autoLoad argument is not logical.")
-    if (!is.null(funcArgs)){
-      if(!is.list(funcArgs))
-        stop("The funcArgs has to be a named list")
-      if (length(funcArgs) > 0 && is.null(names(funcArgs)))
-        stop("The funcArgs has to be a named list")
-    }
-    
-    methods::new(
-      "BiocProject",
-      file = file,
-      subproject = subproject,
-      func = func,
-      funcArgs = funcArgs,
-      autoLoad = autoLoad
-    )
-  }
