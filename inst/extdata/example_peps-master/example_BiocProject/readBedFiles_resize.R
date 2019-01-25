@@ -1,4 +1,5 @@
 readBedFiles_resize = function(project, resize.width) {
+  cwd = getwd()
   paths = pepr::samples(project)$file_path
   sampleNames = pepr::samples(project)$sample_name
   setwd(dirname(project@file))
@@ -7,6 +8,7 @@ readBedFiles_resize = function(project, resize.width) {
     colnames(df) = c('chr', 'start', 'end')
     gr = GenomicRanges::resize(GenomicRanges::GRanges(df), width=resize.width)
   })
+  setwd(cwd)
   names(result) = sampleNames
-  return(result)
+  return(GenomicRanges::GRangesList(result))
 }

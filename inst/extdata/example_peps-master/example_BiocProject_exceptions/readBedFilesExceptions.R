@@ -11,8 +11,7 @@ readBedFilesExceptions = function(project) {
     gr = GenomicRanges::GRanges(df) 
   })
   names(result) = sampleNames
-  return(result)
-  
+  return(GenomicRanges::GRangesList(result))
 }
 
 

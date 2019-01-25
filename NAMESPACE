@@ -2,7 +2,6 @@
 
 export(BiocProject)
 export(insertPEP)
-exportClasses(BiocProject)
 exportMethods(config)
 exportMethods(getProject)
 exportMethods(is.Project)

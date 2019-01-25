@@ -33,8 +33,7 @@
           eHandler <- function(e){
                     # error handler 
                     .wrapFunMessages(e$message,"error")
-                    message("No data was read.")
-                    message("The error message was saved in the .Data slot.")
+                    message("No data was read. The error message was returned instead.")
                     e$message
           } 
           res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
