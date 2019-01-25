@@ -1,61 +1,8 @@
 
-setGeneric("is.Project", function(.Object)
-    standardGeneric("is.Project"))
-
-#' @export
-setMethod("is.Project","Annotated",function(.Object){
-    mData = metadata(.Object)
-    result = tryCatch(expr = {
-        mData[[1]]
-    }, error = function(e){
-        FALSE
-    })
-    is(result,"Project")
-})
-
-setGeneric("getProject", function(.Object)
-    standardGeneric("getProject"))
-
-#' @export
-setMethod("getProject","Annotated",function(.Object){
-    if(is.Project(.Object)) {
-        metadata(.Object)[[1]]
-    } else {
-        stop("This object does not have PEP in the metadata slot.")
-    }
-})
-
-#' @export
-setMethod(
-    f = "samples",
-    signature = "Annotated",
-    definition = function(object) {
-        samples(getProject(object))
-    })
-
-
-#' @export
-setMethod(
-    f = "config",
-    signature = "Annotated",
-    definition = function(object) {
-        config(getProject(object))
-    })
-
-#' @export
-insertPEP = function(object, p) {
-    if(is(object, "Annotated")){
-        metadata(object) = list(PEP=p)
-        object
-    }else{
-        warning("The 'object' argument has to be of class 'Annotated', got '", class(object),"'.")
-    }
-}
-
 #' Portable Encapsulated Project (PEP) for biological applications
 #'
 #' This function creates a \code{\link[pepr]{Project-class}} object, and executes the user provided function with the created object as a first argument.
-#' \emph{The custom data processing function has to return and object of \code{\link[S4Vectors]{Annotated-class}}, otherwise an error will be returned.}
+#' \cr\cr\emph{The custom data processing function has to return and object of \code{\link[S4Vectors]{Annotated-class}}, otherwise an error will be returned.}
 #'
 #' This \code{\link{BiocProject}} function provides some degree 
 #' of flexibility in your custom data processing function usage and 

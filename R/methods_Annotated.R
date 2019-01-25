@@ -40,3 +40,12 @@ setMethod(
     definition = function(object) {
         config(getProject(object))
     })
+
+#' @export
+setMethod("is", "Annotated", definition = function(object, class2){
+    if(class2=="Project" & is.Project(object)){
+        TRUE
+    } else {
+        extends(class(object), class2)
+    }
+})
