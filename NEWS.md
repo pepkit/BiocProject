@@ -1,3 +1,15 @@
+# BiocProject 0.0.5
+
+## Unreleased
+
+## Added
+
+* methods: `is.Project`, `samples`, `config` for signiture `Annotated` and functions: `insertPEP` and `BiocProject` (the workhorse of the package)
+
+## Changed
+
+* **complete concept redesign**: no `BiocProject` class. The objects returned by the custom data reading function have to be of class `Annotated` and the `PEP` is inserted as the first element of its `metadata()` list
+
 # BiocProject 0.0.4
 
 ## 2019-01-25
