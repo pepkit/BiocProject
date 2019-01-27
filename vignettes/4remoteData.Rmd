@@ -103,8 +103,3 @@ metadata(bpRemote)
 samples(bpRemote)
 config(bpRemote)
 ```
-
-The function that was used to download and process the data:
-```{r echo=FALSE, eval=TRUE, comment=""}
-get(config(bpRemote)$bioconductor$read_fun_name)
-```

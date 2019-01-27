@@ -8,7 +8,7 @@
 \S4method{config}{Annotated}(object)
 }
 \arguments{
-\item{object}{an object of \code{\link[pepr]{Project-class}} or \code{\link[S4Vectors]{Annotated-class}}}
+\item{object}{an object of \code{\link[pepr]{Project-class}}}
 }
 \value{
 a list with the config file
