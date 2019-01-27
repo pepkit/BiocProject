@@ -4,7 +4,8 @@
 
 ## Added
 
-* methods: `is.Project`, `samples`, `config` for signiture `Annotated` and functions: `insertPEP` and `BiocProject` (the workhorse of the package)
+* methods: `is` (overwrites this method bahavior just for the class `Annotated`), `.is.project`, `samples`, `config` for signiture `Annotated`
+* functions: `.insertPEP` and `BiocProject` (the workhorse of the package)
 
 ## Changed
 

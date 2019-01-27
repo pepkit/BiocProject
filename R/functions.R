@@ -148,7 +148,14 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
     }
 }
 
-
+#' Insert a PEP metadata in a metadata slot of Annotated
+#' 
+#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) into the metadata slot of objects that extend the \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
+#' @param pep an object of class \code{\link[pepr]{Project-class}}
+#' 
+#' @return an object of the same class as the object argument but enriched with the metadata from the pep argument
 .insertPEP = function(object, pep) {
     if(is(object, "Annotated") & is(pep, "Project")){
         metadata(object) = list(PEP=pep)
