@@ -16,7 +16,7 @@ setGeneric("getProject", function(.Object)
 
 #' @export
 setMethod("getProject","Annotated",function(.Object){
-    if(is.Project(.Object)) {
+    if(.is.project(.Object)) {
         metadata(.Object)[[1]]
     } else {
         stop("This object does not have PEP in the metadata slot.")
