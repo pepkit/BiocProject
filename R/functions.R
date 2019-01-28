@@ -85,6 +85,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
       # use the anonymous function if provided
       if (is.function(func)) {
         readData = .callBiocFun(func, list(p))
+        message("Used function from the 'func' argument")
         return(.insertPEP(readData, p))
       } else{
         stop("The anonymous function you provided is invalid.")
@@ -162,6 +163,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
         object
     }else{
         warning("The 'object' argument has to be of class 'Annotated', got '", class(object),"'. And the pep argument has to be of class 'Project', got '", class(pep),"'")
-        list(result=object,metadata=pep)
+        S4Vectors::List(result=object,metadata=pep)
     }
 }
