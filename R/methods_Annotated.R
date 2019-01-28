@@ -56,7 +56,7 @@ setMethod(
     f = "samples",
     signature = "Annotated",
     definition = function(object) {
-        samples(getProject(object))
+        pepr::samples(getProject(object))
     })
 
 
@@ -80,7 +80,7 @@ setMethod(
     f = "config",
     signature = "Annotated",
     definition = function(object) {
-        config(getProject(object))
+        pepr::config(getProject(object))
     })
 
 setGeneric("is", package = "methods")
