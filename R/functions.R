@@ -158,7 +158,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
 #' @return an object of the same class as the object argument but enriched with the metadata from the pep argument
 .insertPEP = function(object, pep) {
     if(is(object, "Annotated") & is(pep, "Project")){
-        metadata(object) = list(PEP=pep)
+        S4Vectors::metadata(object) = list(PEP=pep)
         object
     }else{
         stop("Type error: The 'object' argument has to be of class 'Annotated', got '", class(object),"'. And the pep argument has to be of class 'Project', got '", class(pep),"'")
