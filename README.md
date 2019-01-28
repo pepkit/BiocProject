@@ -4,7 +4,7 @@
 
 # Description of the BiocProject package
 
-The `BiocProject` class is a [Bioconductor](https://www.bioconductor.org/)-oriented project management class. It wraps the generic [pepr](http://code.databio.org/pepr/) R package for project metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of `R` code.
+The `BiocProject` package is a [Bioconductor](https://www.bioconductor.org/)-oriented project management package. It wraps the generic [pepr](http://code.databio.org/pepr/) R package for project metadata. `BiocProject` allows you to read in project metadata and data for an entire project with a single line of `R` code.
 
 ### Quick start:
 
@@ -14,7 +14,7 @@ Install from GitHub:
 devtools::install_github("pepkit/BiocProject")
 ```
 
-Create a new `BiocProject` object by passing your PEP configuration file:
+Read in both the metadata and data by passing your PEP configuration file:
 ```
 bp = BiocProject(file=ProjectConfig)
 ```
