@@ -33,9 +33,8 @@
           eHandler <- function(e){
                     # error handler 
                     .wrapFunMessages(e$message,"error")
-                    message("No data was read. Creating an empty BiocProject object...")
-                    message("The error message was saved in the .Data slot.")
-                    e$message
+                    message("No data was read. The error message was returned instead.")
+                    List(e$message)
           } 
           res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
           if(length(.warnings) > 0){

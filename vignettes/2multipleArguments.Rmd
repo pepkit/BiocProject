@@ -64,7 +64,7 @@ readBedFiles_resize =  system.file(
   package = "BiocProject"
 )
 ```
-Read the function into R environment and create the `BiocProject` object 
+Read the function into R environment and run the `BiocProject` function 
 ```{r}
 source(readBedFiles_resize)
 bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=100))

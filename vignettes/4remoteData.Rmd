@@ -69,7 +69,7 @@ library(pepr)
 .printNestedList(yaml::read_yaml(configFile))
 ```
 
-## Create the `BiocProject` object
+## Execute the `BiocProject` function
 
 Get path to the config file
 ```{r echo=T,message=FALSE}
@@ -93,12 +93,13 @@ With this simple line of code:
 1. data were downloaded from the remote source and processed 
 1. everything was conveniently stored in a `BiocProject` object
 
-Let's inspect the results
+Let's inspect the results:
 ```{r}
-getData(bpRemote)
+bpRemote
+```
+And the metadata
+```{r}
+metadata(bpRemote)
 samples(bpRemote)
 config(bpRemote)
 ```
-
-
-
