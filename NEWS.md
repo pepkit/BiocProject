@@ -1,10 +1,10 @@
-# BiocProject 0.0.5
+# BiocProject 0.1
 
-## Unreleased
+## 2019-01-28
 
 ## Added
 
-* methods: `is` (overwrites this method bahavior just for the class `Annotated`), `.is.project`, `samples`, `config` for signiture `Annotated`
+* methods: `is` (overwrites this method behavior just for the class `Annotated`), `.is.project`, `samples`, `config` for signiture `Annotated`
 * functions: `.insertPEP` and `BiocProject` (the workhorse of the package)
 
 ## Changed
