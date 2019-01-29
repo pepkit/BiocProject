@@ -17,3 +17,8 @@ an updated list
 \description{
 This function performs a union of two lists and updates the elements of the first one if are found in the other one
 }
+\examples{
+list1=list(a=1,b=2)
+list2=list(a=1,b=1,c=3)
+.updateList(list1,list2)
+}

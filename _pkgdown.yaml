@@ -32,3 +32,14 @@ articles:
       - 2multipleArguments
       - 3simpleCache
       - 4remoteData
+      
+reference:
+  - title: "BiocProject API"
+    desc: "Exported functions of `BiocProject`."
+    contents:
+      - -matches("\\.")
+  - title: "utilities"
+    desc: "Extra non-exported utility functions."
+    contents:
+      - .updateList
+      - .insertPEP

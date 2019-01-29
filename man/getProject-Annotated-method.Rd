@@ -20,6 +20,6 @@ This method can be used to extract the project metadata from objects of \code{\l
 projectConfig = system.file("extdata", "example_peps-master",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
 p=BiocProject(projectConfig)
-samples(p)
+getProject(p)
 
 }

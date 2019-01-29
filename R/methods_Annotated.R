@@ -26,7 +26,7 @@ setGeneric("getProject", function(.Object)
 #' projectConfig = system.file("extdata", "example_peps-master",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
-#' samples(p)
+#' getProject(p)
 #'
 #' @export
 setMethod("getProject","Annotated",function(.Object){
@@ -93,6 +93,11 @@ setGeneric("is", package = "methods")
 #' 
 #' @param object the object to be tested
 #' @param class2 the class name to test the object against
+#' 
+#' @return a logical 
+#' @examples
+#' object = S4Vectors::List(test="test")
+#' is(object,"Annotated")
 #' 
 #' @export
 setMethod("is", "Annotated", definition = function(object, class2){

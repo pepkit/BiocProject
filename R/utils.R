@@ -44,12 +44,12 @@
           return(res)
 }
 
-#' Create an absolute path from a primary target and a parent candidate.
+# Create an absolute path from a primary target and a parent candidate.
 #
-#' @param perhapsRelative: Path to primary target directory.
-#' @param  parent: Path to parent folder to use if target isn't absolute.
+# @param perhapsRelative: Path to primary target directory.
+# @param  parent: Path to parent folder to use if target isn't absolute.
 #
-#' @return	Target itself if already absolute, else target nested within parent.
+# @return	Target itself if already absolute, else target nested within parent.
 .makeAbsPath = function(perhapsRelative, parent) {
   if (!.isDefined(perhapsRelative)) { return(perhapsRelative)}
   perhapsRelative = pepr::.expandPath(perhapsRelative)
@@ -71,10 +71,10 @@
 .isDefined = function(var) { ! (is.null(var) || is.na(var)) }
 
 
-#' Determine whether a path is absolute.
-#'
-#' @param path The path to check for seeming absolute-ness.
-#' @return Flag indicating whether the \code{path} appears to be absolute.
+# Determine whether a path is absolute.
+#
+# @param path The path to check for seeming absolute-ness.
+# @return Flag indicating whether the \code{path} appears to be absolute.
 .isAbsolute = function(path) {
   if(!is.character(path)) stop("The path must be character.")
   firstChar = substr(path, 1, 1)
@@ -89,6 +89,12 @@
 #' @param list2 a list to update with
 #' 
 #' @return an updated list
+#' 
+#' @examples 
+#' list1=list(a=1,b=2)
+#' list2=list(a=1,b=1,c=3)
+#' .updateList(list1,list2)
+#' @export
 .updateList = function(list1,list2) {
     newNms = names(list2)
     nms = names(list1)

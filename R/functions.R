@@ -160,6 +160,18 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
 #' @param pep an object of class \code{\link[pepr]{Project-class}}
 #' 
 #' @return an object of the same class as the object argument but enriched with the metadata from the pep argument
+#' 
+#' @examples 
+#' # If the object is of class Annotated
+#' object = S4Vectors::List(result="test")
+#' result = .insertPEP(object, pepr::Project())
+#' metadata(result)
+#' 
+#' # If the object is not of class Annotated
+#' object1 = "test"
+#' result1 = .insertPEP(object1, pepr::Project())
+#' metadata(result1)
+#' @export
 .insertPEP = function(object, pep) {
     if(is(object, "Annotated") & is(pep, "Project")){
         S4Vectors::metadata(object) = list(PEP=pep)
