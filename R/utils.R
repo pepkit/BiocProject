@@ -96,10 +96,14 @@
 #' .updateList(list1,list2)
 #' @export
 .updateList = function(list1,list2) {
-    newNms = names(list2)
-    nms = names(list1)
-    for(n in newNms){
-        idx = which(nms == n)
+    if((!is.list(list1)) || (!is.list(list2)))
+        stop("One of the arguments was not a list")
+    nms1 = names(list1)
+    nms2 = names(list2)
+    if(length(list1)!=length(nms1) || length(list2)!=length(nms2))
+        stop("All elements in both lists have to be named")
+    for(n in nms2){
+        idx = which(nms1 == n)
         if(length(idx) > 0){
             list1[[idx]] = list2[[n]]
         }else{
