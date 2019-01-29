@@ -166,6 +166,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
         object
     }else{
         warning("The 'object' argument has to be of class 'Annotated', got '", class(object),"'. And the pep argument has to be of class 'Project', got '", class(pep),"'")
-        S4Vectors::List(result=object,metadata=pep)
+        result = S4Vectors::List(result=object)
+        S4Vectors::metadata(result) = list(PEP=pep)
+        result
     }
 }

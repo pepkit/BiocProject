@@ -10,6 +10,7 @@
 
 * not only object that inherit from `Annotated` can be returned by the data processing function
 * error handling changes
+* new config file section naming scheme
 
 # BiocProject 0.1
 
