@@ -18,7 +18,7 @@
 #'   the \code{R} environment and specified in the config slot
 #'   in \code{\link[pepr]{Project}} 
 #'   (specifically: \code{config(project)$bioconductor$readFunName}), like:
-#'   \code{pkgName::FUNCTION_NAME}
+#'   \code{pkgName::functionName}
 #'   \item use a function implemented in the  \code{\link{BiocProject}}
 #'   call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 
 #'   other arguments if provided.
