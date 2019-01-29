@@ -98,10 +98,10 @@ knitr::kable(sampleAnnotationDF, format = "html")
 
 In this example, our PEP has two samples, which have two attributes: `sample_name`, and `file_path`, which points the location for the data.
 
-The configuration file also points to a third file (``r { basename(config(bp)$bioconductor$read_fun_path) }``). This file holds a single `R` function called ``r { basename(config(bp)$bioconductor$read_fun_name) }``, which has these contents:
+The configuration file also points to a third file (``r { basename(config(bp)$bioconductor$readFunPath) }``). This file holds a single `R` function called ``r { basename(config(bp)$bioconductor$readFunName) }``, which has these contents:
   
 ```{r echo=FALSE, eval=TRUE, comment=""}
-get(config(bp)$bioconductor$read_fun_name)
+get(config(bp)$bioconductor$readFunName)
 ```
 
 And that's all there is to it! **This PEP consists really of 3 components:**
@@ -150,15 +150,15 @@ In the basic case the function name (and path to source file, if necessary) is s
 
 ```
 bioconductor:
-  read_fun_name: function_name
+  readFunName: function_name
 ```
 
 or
 
 ```
 bioconductor:
-  read_fun_name: function_name
-  read_fun_path: /path/to/the/file.R
+  readFunName: function_name
+  readFunPath: /path/to/the/file.R
 ```
 
 The function specified can be a data processing function of any complexity, but has to follow 3 rules listed below.
