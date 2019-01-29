@@ -22,7 +22,7 @@ See \code{Details} for more information}
 
 \item{funcArgs}{a named list with arguments you want to pass to the \code{func}.
 The PEP will be passed automatically,
-but if provided regardless, the constructor will disregard it}
+but if provided regardless, the constructor will disregard it. You can also pass the arguments in a \code{funcArgs} section within the \code{bioconductor} section in the config file.}
 }
 \value{
 an object of \code{\link[S4Vectors]{Annotated-class}} that is returned by the user provided function with the \code{\link[pepr]{Project-class}} object inserted into the first element of the list in its medatada slot

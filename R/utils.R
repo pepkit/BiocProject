@@ -80,3 +80,27 @@
   firstChar = substr(path, 1, 1)
   return(identical("/", firstChar) | identical("~", firstChar))
 }
+
+#' Update list with another list
+#'
+#' This function performs a union of two lists and updates the elements of the first one if are found in the other one 
+#' 
+#' @param list1 a list to be updated
+#' @param list2 a list to update with
+#' 
+#' @return an updated list
+.updateList = function(list1,list2) {
+    newNms = names(list2)
+    nms = names(list1)
+    for(n in newNms){
+        idx = which(nms == n)
+        if(length(idx) > 0){
+            list1[[idx]] = list2[[n]]
+        }else{
+            add = list2[[n]]
+            names(add) = n
+            list1 = c(list1,add)
+        }
+    }
+    return(list1)
+}

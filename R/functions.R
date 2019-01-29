@@ -50,7 +50,7 @@
 #' See \code{Details} for more information
 #' @param funcArgs a named list with arguments you want to pass to the \code{func}.
 #'  The PEP will be passed automatically,
-#'  but if provided regardless, the constructor will disregard it
+#'  but if provided regardless, the constructor will disregard it. You can also pass the arguments in a \code{funcArgs} section within the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
 #'
@@ -80,6 +80,9 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
         funcArgs = funcArgs[-which(pepArgs)]
     }
     args = append(list(p), funcArgs)
+    if(pepr::checkSection(pepr::config(p), c("bioconductor", "funcArgs"))){
+        args = .updateList(args,p@config$bioconductor$funcArgs)
+    }
     
     if (!is.null(func)) {
       # use the anonymous function if provided
@@ -94,11 +97,11 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
       # use config to find it
       if (autoLoad) {
         # check if the config consists of bioconductor section
-        if(is.null(pepr::config(p)$bioconductor)){
-          warning("The config YAML is missing the bioconductor section.")
-            message("No data was read. Returning a Project object")
-            return(p)
-        }
+            if(!pepr::checkSection(pepr::config(p),"bioconductor")){
+                message("No data was read. Returning a Project object")
+                warning("The config YAML is missing the 'bioconductor' section.")
+                return(p)
+            }    
         funcName = pepr::config(p)$bioconductor$read_fun_name
         # check if the function name was provided
         # and if it exists in the environment
@@ -113,7 +116,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
             # was specified in the config.yaml read_fun_name
             splitted = strsplit(funcName, ":")[[1]]
             nonEmpty = splitted[which(splitted != "")]
-            funcName = getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
+            funcName = utils::getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
             readData = .callBiocFun(funcName, args)
             message("Used function ", funcName, " from the environment")
             return(.insertPEP(readData, p))

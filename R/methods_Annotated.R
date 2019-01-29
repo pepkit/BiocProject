@@ -91,12 +91,15 @@ setGeneric("is", package = "methods")
 #' 
 #' see the \code{\link[methods]{is}} for more details
 #' 
+#' @param object the object to be tested
+#' @param class2 the class name to test the object against
+#' 
 #' @export
 setMethod("is", "Annotated", definition = function(object, class2){
     if(class2=="Project" & .is.project(object)){
         TRUE
     } else {
-        extends(class(object), class2)
+        methods::extends(class(object), class2)
     }
 })
 

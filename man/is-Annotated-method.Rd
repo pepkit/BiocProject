@@ -7,6 +7,11 @@
 \usage{
 \S4method{is}{Annotated}(object, class2)
 }
+\arguments{
+\item{object}{the object to be tested}
+
+\item{class2}{the class name to test the object against}
+}
 \description{
 Functions to test inheritance relationships between an object and a class or between two classes. It uses the generic is function but overrides its behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when testing for inheritance from \code{\link[pepr]{Project-class}} class.
 }
