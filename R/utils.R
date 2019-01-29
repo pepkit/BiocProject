@@ -83,7 +83,9 @@
 
 #' Update list with another list
 #'
-#' This function performs a union of two lists and updates the elements of the first one if are found in the other one 
+#' This function performs a union of two lists and updates the elements of the first one if are found in the other one. 
+#' 
+#' Both elements have to be lists. If some elements are not named, they are preserved but the order might be lost.
 #' 
 #' @param list1 a list to be updated
 #' @param list2 a list to update with
@@ -94,14 +96,13 @@
 #' list1=list(a=1,b=2)
 #' list2=list(a=1,b=1,c=3)
 #' .updateList(list1,list2)
+#' 
 #' @export
 .updateList = function(list1,list2) {
     if((!is.list(list1)) || (!is.list(list2)))
         stop("One of the arguments was not a list")
     nms1 = names(list1)
     nms2 = names(list2)
-    if(length(list1)!=length(nms1) || length(list2)!=length(nms2))
-        stop("All elements in both lists have to be named")
     for(n in nms2){
         idx = which(nms1 == n)
         if(length(idx) > 0){
