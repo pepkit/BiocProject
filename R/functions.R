@@ -10,15 +10,15 @@
 #' \itemize{
 #'   \item use a function loaded into the \code{R} environment and specified in
 #'   the config slot in \code{\link[pepr]{Project-class}}
-#'   (specifically: \code{config(project)$bioconductor$read_fun_name}).
+#'   (specifically: \code{config(project)$bioconductor$readFunName}).
 #'   \item use a function \emph{not} loaded into the \code{R} environment and specified in
 #'   the config slot in \code{\link[pepr]{Project}}
-#'   (specifically: \code{config(project)$bioconductor$read_fun_path}).
+#'   (specifically: \code{config(project)$bioconductor$readFunPath}).
 #'   \item use a function from other \code{R} package not loaded into 
 #'   the \code{R} environment and specified in the config slot
 #'   in \code{\link[pepr]{Project}} 
-#'   (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
-#'   \code{pkgName::functionName}
+#'   (specifically: \code{config(project)$bioconductor$readFunName}), like:
+#'   \code{pkgName::FUNCTION_NAME}
 #'   \item use a function implemented in the  \code{\link{BiocProject}}
 #'   call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 
 #'   other arguments if provided.
@@ -80,8 +80,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
         funcArgs = funcArgs[-which(pepArgs)]
     }
     args = append(list(p), funcArgs)
-    if(pepr::checkSection(pepr::config(p), c("bioconductor", "funcArgs"))){
-        args = .updateList(args,p@config$bioconductor$funcArgs)
+    if(pepr::checkSection(pepr::config(p), c(MAIN_SECTION, FUNCTION_ARGS))){
+        args = .updateList(args,config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]])
     }
     
     if (!is.null(func)) {
@@ -96,13 +96,13 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
     } else{
       # use config to find it
       if (autoLoad) {
-        # check if the config consists of bioconductor section
-            if(!pepr::checkSection(pepr::config(p),"bioconductor")){
+        # check if the config consists of MAIN_SECTION section
+            if(!pepr::checkSection(pepr::config(p), MAIN_SECTION)){
                 message("No data was read. Returning a Project object")
-                warning("The config YAML is missing the 'bioconductor' section.")
+                warning("The config YAML is missing the '", MAIN_SECTION,"' section.")
                 return(p)
             }    
-        funcName = pepr::config(p)$bioconductor$read_fun_name
+        funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
         # check if the function name was provided
         # and if it exists in the environment
         if (!is.null(funcName) && exists(funcName)) {
@@ -113,7 +113,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
         } else{
           if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
             # trying to access the function from the namespace that
-            # was specified in the config.yaml read_fun_name
+            # was specified in the config.yaml FUNCTION_NAME
             splitted = strsplit(funcName, ":")[[1]]
             nonEmpty = splitted[which(splitted != "")]
             funcName = utils::getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
@@ -123,9 +123,9 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
           }
           # function from config.yaml in read_fun_name not in environment,
           # trying to source the file specified in
-          # the config.yaml read_fun_path
+          # the config.yaml FUNCTION_PATH
           funcPath =
-            pepr::.expandPath(pepr::config(p)$bioconductor$read_fun_path)
+            pepr::.expandPath(pepr::config(p)[[MAIN_SECTION]][[FUNCTION_PATH]])
           if (!is.null(funcPath)){
             if (!file.exists(funcPath))
               funcPath = .makeAbsPath(funcPath,dirname(p@file))
@@ -140,7 +140,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
             readData = .callBiocFun(readFun, args)
             return(.insertPEP(readData, p))
           }else{
-            warning("Can't find function in the environment and the value for read_fun_path key was not provided in the config YAML.")
+            warning("Can't find function in the environment and the value for '", FUNCTION_PATH, "' key was not provided in the config YAML.")
             message("No data was read. Returning a Project object")
             return(p)
           }
