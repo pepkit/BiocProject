@@ -29,7 +29,7 @@ an object of \code{\link[S4Vectors]{Annotated-class}} that is returned by the us
 }
 \description{
 This function creates a \code{\link[pepr]{Project-class}} object, and executes the user provided function with the created object as a first argument.
-\cr\cr\emph{The custom data processing function has to return and object of \code{\link[S4Vectors]{Annotated-class}}, otherwise an error will be returned.}
+\cr\cr\emph{If the custom data processing function returns an object of class other than \code{\link[S4Vectors]{Annotated-class}}, the output will be packaged in a \code{\link[S4Vectors]{List-class}} with a metadata slot populated with the \code{\link[pepr]{Project-class}}.}
 }
 \details{
 This \code{\link{BiocProject}} function provides some degree 
@@ -38,14 +38,14 @@ implementation. Consider the possibilities listed below:
 \itemize{
   \item use a function loaded into the \code{R} environment and specified in
   the config slot in \code{\link[pepr]{Project-class}}
-  (specifically: \code{config(project)$bioconductor$read_fun_name}).
+  (specifically: \code{config(project)$bioconductor$readFunName}).
   \item use a function \emph{not} loaded into the \code{R} environment and specified in
   the config slot in \code{\link[pepr]{Project}}
-  (specifically: \code{config(project)$bioconductor$read_fun_path}).
+  (specifically: \code{config(project)$bioconductor$readFunPath}).
   \item use a function from other \code{R} package not loaded into 
   the \code{R} environment and specified in the config slot
   in \code{\link[pepr]{Project}} 
-  (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
+  (specifically: \code{config(project)$bioconductor$readFunName}), like:
   \code{pkgName::functionName}
   \item use a function implemented in the  \code{\link{BiocProject}}
   call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 

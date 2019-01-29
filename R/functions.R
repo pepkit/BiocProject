@@ -2,7 +2,7 @@
 #' Portable Encapsulated Project (PEP) for biological applications
 #'
 #' This function creates a \code{\link[pepr]{Project-class}} object, and executes the user provided function with the created object as a first argument.
-#' \cr\cr\emph{The custom data processing function has to return and object of \code{\link[S4Vectors]{Annotated-class}}, otherwise an error will be returned.}
+#' \cr\cr\emph{If the custom data processing function returns an object of class other than \code{\link[S4Vectors]{Annotated-class}}, the output will be packaged in a \code{\link[S4Vectors]{List-class}} with a metadata slot populated with the \code{\link[pepr]{Project-class}}.}
 #'
 #' This \code{\link{BiocProject}} function provides some degree 
 #' of flexibility in your custom data processing function usage and 
