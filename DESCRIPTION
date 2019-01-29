@@ -12,7 +12,8 @@ LazyData: true
 Depends: S4Vectors, pepr
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Enhances: BiocFileCache, simpleCache, GenomicRanges
 RoxygenNote: 6.1.1
 BugReports: https://github.com/pepkit/BiocProject
