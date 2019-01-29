@@ -1,3 +1,16 @@
+# BiocProject 0.1.1
+
+## Unreleased
+
+## Added
+
+* option to specify additional arguments in the config file
+
+## Changed
+
+* not only object that inherit from `Annotated` can be returned by the data processing function
+* error handling changes
+
 # BiocProject 0.1
 
 ## 2019-01-28
