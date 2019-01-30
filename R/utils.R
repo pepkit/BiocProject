@@ -20,28 +20,28 @@
 
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution
-.callBiocFun <- function(func, arguments) 
-{ 
-          .warnings = c()
-          frameNumber <- sys.nframe()
-          wHandler <- function(w){ 
-                    # warning handler 
-                    assign(".warnings", append(.warnings,w$message), 
-                           envir = sys.frame(frameNumber))
-                    invokeRestart("muffleWarning") 
-          }
-          eHandler <- function(e){
-                    # error handler 
-                    .wrapFunMessages(e$message,"error")
-                    message("No data was read. The error message was returned instead.")
-                    e$message
-          } 
-          res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
-          if(length(.warnings) > 0){
-                    warning("There were warnings associated with your function execution.")
-                    .wrapFunMessages(.warnings,"warning")
-          }
-          return(res)
+.callBiocFun <- function(func, arguments) { 
+    if(!is(arguments, "list")) stop("The 'arguments' argument has to be a list, got '", class(arguments),"'")
+    .warnings = c()
+    frameNumber <- sys.nframe()
+    wHandler <- function(w){ 
+        # warning handler 
+        assign(".warnings", append(.warnings,w$message), 
+        envir = sys.frame(frameNumber))
+        invokeRestart("muffleWarning") 
+    }
+    eHandler <- function(e){
+        # error handler 
+        .wrapFunMessages(e$message,"error")
+        message("No data was read. The error message was returned instead.")
+        e$message
+    } 
+    res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
+    if(length(.warnings) > 0){
+        warning("There were warnings associated with your function execution.")
+        .wrapFunMessages(.warnings,"warning")
+    }
+    return(res)
 }
 
 # Create an absolute path from a primary target and a parent candidate.

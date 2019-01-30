@@ -26,9 +26,22 @@ configFileExceptions = system.file(
     package = "BiocProject"
 )
 
+a=function(arg) {
+    stop(arg)
+}
+
+b=function(arg) {
+    warning(arg)
+}
+
+c=function(arg) {
+    return(arg)
+}
+
+testChar = "a"
 
 # Test --------------------------------------------------------------------
-context("Test utility .updateList function")
+context("Test .updateList utility function")
 
 test_that(".updateList returns correct object type", {
   expect_is(.updateList(list(a=1),list(a=2,b=2)), 'list')
@@ -44,121 +57,69 @@ test_that(".updateList throws errors", {
     expect_error(.updateList(list(a=1),2))
 })
 
+context("Test .makeAbsPath utility function")
 
+test_that(".makeAbsPath returns correct object", {
+    expect_is(.makeAbsPath("~"),"character")
+})
 
-# test_that("Project throws errors", {
-#   expect_error(Project(file = p@config$metadata$sample_annotation))
-# })
-# 
-# test_that("Project creates an object of class Project", {
-#   expect_is(p, 'Project')
-# })
-# 
-# test_that("Project (loadConfig) produces a proper config file.
-#           YAML read config has to consist of list elements of the same length
-#           as the config processed with the Project constructor", {
-#             expect_equal(unlist(lapply(config(p_yaml)$metadata,length)),
-#                          unlist(lapply(yaml$metadata,length)))
-#           })
-# 
-# context("utils")
-# 
-# test_that("listifyDF returns correct object type and throws errors", {
-#   expect_is(.listifyDF(DF = DF), 'data.frame')
-#   expect_is(.listifyDF(DF = DF)[[1]], 'list')
-#   expect_error(.listifyDF(DF = 1))
-# })
-# 
-# test_that("listifyDF does not change the dimensions", {
-#   expect_equal(dim(.listifyDF(DF)), dim(DF))
-# })
-# 
-# test_that(".expandPath returns correct object type and throws errors", {
-#   expect_is(.expandPath(path = "~/UVA/"), 'character')
-#   expect_error(.expandPath(1))
-#   expect_error(.expandPath("~/$HOME/test/$NonExistentVar"))
-# })
-# 
-# test_that("strformat returns correct object type and throws errors", {
-#   expect_is(.strformat("{VAR1}{VAR2}_file", list(VAR1 = "hi", VAR2 = "hello")), "character")
-#   expect_error(.strformat("{VAR1}{VAR2}_file", list(VAR1 = "hi")))
-#   expect_error(.strformat(1))
-# })
-# 
-# test_that("makeMetadataSectionAbsolute returns correct object type and throws errors",
-#           {
-#             expect_is(.makeMetadataSectionAbsolute(p@config, dirname(p@file)), 'list')
-#             expect_error(.makeMetadataSectionAbsolute(p@file, 1))
-#           })
-# 
-# test_that("makeMetadataSectionAbsolute does not change the length(s) of the list",
-#           {
-#             expect_equal(as.numeric(lapply(p@config$metadata, length)), as.numeric(lapply(
-#               .makeMetadataSectionAbsolute(p@config, dirname(p@file)), length
-#             )))
-#           })
-# 
-# test_that(".isAbsolute returns correct object type and throws errors", {
-#   expect_is(.isAbsolute("/home/mjs5kd"), 'logical')
-#   expect_error(.isAbsolute(1))
-# })
-# 
-# test_that(".isAbsolute works properly", {
-#   expect_true(.isAbsolute("/home/mjs5kd"))
-#   expect_false(.isAbsolute("UVA/data"))
-# })
-# 
-# test_that("printNestedList throws errors", {
-#   expect_error(.printNestedList(1))
-# })
-# 
-# context("Project operations")
-# 
-# test_that("getSubsample method throws errors", {
-#   expect_error(getSubsample(mtcars))
-#   expect_error(getSubsample(p, "frog_1", "test"))
-# })
-# 
-# test_that("getSubsample method returns a correct size DF", {
-#   expect_equal(dim(getSubsample(p_sub, "frog_1", "sub_a")), c(1, 4))
-# })
-# 
-# test_that(".loadSampleAnnotation returns a Project object", {
-#   expect_is(.loadSampleAnnotation(p), 'Project')
-# })
-# 
-# test_that(".loadSampleAnnotation thorws an error when file not fond", {
-#   expect_error(.loadSampleAnnotation(p_file_missing))
-# })
-# 
-# test_that(".loadSamplesubnnotation always returns a Project", {
-#   expect_is(.loadSampleSubannotation(p), 'Project')
-#   expect_is(.loadSampleSubannotation(p_subproj2), 'Project')
-#   expect_is(.loadSampleSubannotation(p_sub), 'Project')
-# })
-# 
-# test_that(".implyColumns returns Project object", {
-#   expect_is(.implyAttributes(p_implied), 'Project')
-# })
-# 
-# test_that(".implyColumns returns Project object", {
-#   expect_is(.deriveAttributes(p), 'Project')
-# })
-# 
-# test_that(".listSubprojects internal function returns correct object type, length and throws errors",
-#           {
-#             expect_equal(length(.listSubprojects(p_subproj1@config)), 2)
-#             expect_is(.listSubprojects(p_subproj2@config), 'character')
-#             expect_null(.listSubprojects(p@config))
-#             expect_error(.listSubprojects(1))
-#           })
-# 
-# test_that("listSubprojects exported method returns correct object type, length and throws errors",
-#           {
-#             expect_equal(length(listSubprojects(p_subproj1)), 2)
-#             expect_is(listSubprojects(p_subproj1), 'character')
-#             expect_null(listSubprojects(p))
-#             expect_error(listSubprojects(1))
-#             expect_equal(length(listSubprojects(p_subproj1)), 2)
-#           })
-# 
+test_that(".makeAbsPath returns correct value", {
+    expect_equal(.makeAbsPath("~"),Sys.getenv("HOME"))
+})
+
+context("Test .isDefined utility function")
+
+test_that(".isDefined returns correct object", {
+    expect_is(.isDefined(NA),"logical")
+})
+
+test_that(".isDefined returns correct value", {
+    expect_equal(.isDefined(NA),F)
+    expect_equal(.isDefined(NULL),F)
+    expect_equal(.isDefined(configFile),T)
+})
+
+context("Test .isAbsolute utility function")
+
+test_that(".isAbsolute returns correct object", {
+    expect_is(.isAbsolute("~"),"logical")
+})
+
+test_that(".isAbsolute returns correct value", {
+    expect_equal(.isAbsolute("~"),T)
+    expect_equal(.isAbsolute("../test"),F)
+})
+
+context("Test .callBiocFun untility function")
+
+test_that(".callBiocFun catches errors", {
+    expect_error(expect_error(.callBiocFun(a,list(testChar))))
+    expect_equal(.callBiocFun(a,list(testChar)),testChar)
+    expect_warning(.callBiocFun(b,list(testChar)))
+})
+
+test_that(".callBiocFun returns correct object on success", {
+    expect_is(.callBiocFun(c,list(testChar)),class(testChar))
+})
+
+test_that(".callBiocFun returns correct value on success", {
+    expect_equal(.callBiocFun(c,list(testChar)),testChar)
+})
+
+test_that(".callBiocFun throws errors", {
+    expect_error(.callBiocFun(a,testChar))
+})
+
+context("Test .insertPEP function")
+
+test_that(".insertPEP returns correct object with a warning",{
+    expect_warning(expect_is(.insertPEP("a",pepr::Project()),"Annotated"))
+})
+
+test_that(".insertPEP returns correct object",{
+    expect_is(.insertPEP(S4Vectors::List(),pepr::Project()),"Annotated")
+})
+
+test_that(".insertPEP throws errors",{
+    expect_error(.insertPEP(S4Vectors::List(),"test"))
+})
