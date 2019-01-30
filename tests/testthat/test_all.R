@@ -26,6 +26,8 @@ configFileExceptions = system.file(
     package = "BiocProject"
 )
 
+bp = BiocProject(configFile)
+
 a=function(arg) {
     stop(arg)
 }
@@ -122,4 +124,66 @@ test_that(".insertPEP returns correct object",{
 
 test_that(".insertPEP throws errors",{
     expect_error(.insertPEP(S4Vectors::List(),"test"))
+})
+
+context("Test BiocProject function")
+
+test_that("BiocProject function return correct object", {
+    expect_is(BiocProject(configFile),"Annotated")
+})
+
+test_that("BiocProject function returns Annotated when provided objects of 
+          different class and thorows a warning", {
+    expect_warning(expect_is(BiocProject(configFile, func = function(x){
+        return("test")
+    }),"Annotated"))
+})
+
+test_that("BiocProject function returns a Project object when autoload is set to FALSE", {
+    expect_is(BiocProject(file=configFile,autoLoad = F),"Project")
+})
+
+test_that("BiocProject function throws errors/warnings when the arguments are inappropriate", {
+    expect_error(BiocProject(file=configFile,func = "2"))
+    expect_warning(BiocProject(file=configFile,funcArgs = "a"))
+    expect_error(BiocProject(file = "test"))
+    expect_error(BiocProject(file = configFile,autoLoad = "test"))
+})
+
+test_that("BiocProject function catches errors in the user-provided function, warns and returns the error message as Annotated", {
+    expect_warning(expect_is(BiocProject(file=configFile,func=function(x) {
+        stop("test")
+    }),"Annotated"))
+})
+
+
+context("Test Annotated methods")
+
+test_that("samples returns a correct object", {
+    expect_is(samples(bp),"data.table")
+})
+
+test_that("config returns a correct object", {
+    expect_is(config(bp),"Config")
+})
+
+test_that(".is.project returns a correct object", {
+    expect_is(.is.project(bp),"logical")
+})
+
+test_that(".is.project returns a value", {
+    expect_equal(.is.project(bp),T)
+    expect_equal(.is.project(S4Vectors::List(a=1)), F)
+})
+
+test_that("is method returns correct value when Annotated provided", {
+    expect_equal(is(bp,"Project"), T)    
+})
+
+test_that("getProject returns a correct object", {
+    expect_is(getProject(bp),"Project")
+})
+
+test_that("getProject returns a correct value", {
+    expect_equal(getProject(bp), pepr::Project(configFile))
 })

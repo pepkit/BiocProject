@@ -59,13 +59,15 @@
 #' @seealso \url{https://pepkit.github.io/}
 #'
 #' @export BiocProject
-BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcArgs = NULL) {
+BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL,
+                       funcArgs = NULL) {
     p = tryCatch(
         expr = {
-         pepr::Project(file = file, subproject = subproject)
+         pepr::Project(file=file, subproject=subproject)
         },warning = function(w) {
             message(w)
-            stop("There are warnings associated with the 'Project' object creation.")
+            stop("There are warnings 
+                 associated with the 'Project' object creation.")
         }
     )
     # prevent PEP (Project object) input. This prevents BiocProject object
@@ -95,11 +97,14 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
       }
     } else{
       # use config to find it
+      if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a logical, 
+                                     got '", class(autoLoad),"'")
       if (autoLoad) {
         # check if the config consists of MAIN_SECTION section
             if(!pepr::checkSection(pepr::config(p), MAIN_SECTION)){
                 message("No data was read. Returning a Project object")
-                warning("The config YAML is missing the '", MAIN_SECTION,"' section.")
+                warning("The config YAML is missing the '",
+                        MAIN_SECTION,"' section.")
                 return(p)
             }    
         funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
@@ -140,7 +145,9 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
             readData = .callBiocFun(readFun, args)
             return(.insertPEP(readData, p))
           }else{
-            warning("Can't find function in the environment and the value for '", FUNCTION_PATH, "' key was not provided in the config YAML.")
+            warning("Can't find function in the environment and the value for '"
+                    , FUNCTION_PATH,
+                    "' key was not provided in the config YAML.")
             message("No data was read. Returning a Project object")
             return(p)
           }
@@ -173,12 +180,14 @@ BiocProject = function(file, subproject = NULL, autoLoad = T, func = NULL, funcA
 #' metadata(result1)
 #' @export
 .insertPEP = function(object, pep) {
-    if(!is(pep, "Project")) stop("the pep argument has to be of class 'Project', got '", class(pep),"'")
+    if(!is(pep, "Project")) stop("the pep argument has to be of class 'Project',
+                                 got '", class(pep),"'")
     if(is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
         object
     }else{
-        warning("The 'object' argument has to be of class 'Annotated', got '", class(object),"'")
+        warning("The 'object' argument has to be of class 'Annotated', got '",
+                class(object),"'")
         result = S4Vectors::List(result=object)
         S4Vectors::metadata(result) = list(PEP=pep)
         result
