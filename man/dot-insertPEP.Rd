@@ -12,10 +12,13 @@
 \item{pep}{an object of class \code{\link[pepr]{Project-class}}}
 }
 \value{
-an object of the same class as the object argument but enriched with the metadata from the pep argument
+an object of the same class as the object argument but enriched
+ with the metadata from the pep argument
 }
 \description{
-This function inserts the PEP (\code{\link[pepr]{Project-class}}) into the metadata slot of objects that extend the \code{\link[S4Vectors]{Annotated-class}}
+This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
+into the metadata slot of objects that 
+extend the \code{\link[S4Vectors]{Annotated-class}}
 }
 \examples{
 # If the object is of class Annotated

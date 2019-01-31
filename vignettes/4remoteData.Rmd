@@ -2,9 +2,9 @@
 title: "Working with remote data"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Working with remote data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -72,7 +72,7 @@ library(pepr)
 ## Execute the `BiocProject` function
 
 Get path to the config file
-```{r echo=T,message=FALSE}
+```{r echo=TRUE,message=FALSE}
 library(BiocProject)
 ProjectConfigRemote = system.file(
   "extdata",

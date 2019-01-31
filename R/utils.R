@@ -1,27 +1,28 @@
 # internal function used for wrapping the user-supplied function meessages 
 # in a box
 .wrapFunMessages = function(messages, type) {
-          n = options("width")[[1]]
-          header = ifelse(
-                    length(messages) > 1,
-                    paste0(" Your function ", type, "s (", length(messages), ") "),
-                    paste0(" Your function ", type, " ")
-          )
-          nH = floor(nchar(header) / 2)
-          nFill = floor(n / 2)
-          message("\n",rep("-", nFill - nH), header, rep("-", nFill - nH))
-          i = 1
-          for (i in seq_along(messages)) {
-                    m = trimws(messages[i], which="both")
-                    message("\n", type, " ", i , ": ", m, "\n")
-          }
-          message(rep("-", n), "\n")
+    n = options("width")[[1]]
+    header = ifelse(
+        length(messages) > 1,
+        paste0(" Your function ", type,"s (", length(messages), ") "),
+        paste0(" Your function ", type, " ")
+    )
+    nH = floor(nchar(header) / 2)
+    nFill = floor(n / 2)
+    message("\n",rep("-", nFill - nH), header, rep("-", nFill - nH))
+    i = 1
+    for (i in seq_along(messages)) {
+        m = trimws(messages[i], which="both")
+        message("\n", type, " ", i , ": ", m, "\n")
+    }
+    message(rep("-", n), "\n")
 }
 
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution
 .callBiocFun <- function(func, arguments) { 
-    if(!is(arguments, "list")) stop("The 'arguments' argument has to be a list, got '", class(arguments),"'")
+    if(!is(arguments, "list")) stop("The 'arguments' argument has to be a list,
+                                    got '", class(arguments),"'")
     .warnings = c()
     frameNumber <- sys.nframe()
     wHandler <- function(w){ 
@@ -36,7 +37,8 @@
         message("No data was read. The error message was returned instead.")
         e$message
     } 
-    res = withCallingHandlers(tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
+    res = withCallingHandlers(
+        tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
     if(length(.warnings) > 0){
         warning("There were warnings associated with your function execution.")
         .wrapFunMessages(.warnings,"warning")
@@ -47,23 +49,23 @@
 # Create an absolute path from a primary target and a parent candidate.
 #
 # @param perhapsRelative: Path to primary target directory.
-# @param  parent: Path to parent folder to use if target isn't absolute.
+# @param parent a path to parent folder to use if target isn't absolute.
 #
-# @return	Target itself if already absolute, else target nested within parent.
+# @return Target itself if already absolute, else target nested within parent.
 .makeAbsPath = function(perhapsRelative, parent) {
-  if (!.isDefined(perhapsRelative)) { return(perhapsRelative)}
-  perhapsRelative = pepr::.expandPath(perhapsRelative)
-  if (.isAbsolute(perhapsRelative)) {
-    abspath = perhapsRelative
-  } else {
-    abspath = file.path(normalizePath(parent), perhapsRelative)
-  }
-  if (!.isAbsolute(abspath)) {
-    errmsg = sprintf("Relative path '%s' and parent '%s' failed to create
-                     absolute path: '%s'", perhapsRelative, parent, abspath)
-    stop(errmsg)
-  }
-  return(abspath)
+    if (!.isDefined(perhapsRelative)) return(perhapsRelative)
+    perhapsRelative = pepr::.expandPath(perhapsRelative)
+    if (.isAbsolute(perhapsRelative)) {
+        abspath = perhapsRelative
+    }else {
+        abspath = file.path(normalizePath(parent), perhapsRelative)
+    }
+    if (!.isAbsolute(abspath)) {
+        errmsg = sprintf("Relative path '%s' and parent '%s' failed to create
+        absolute path: '%s'", perhapsRelative, parent, abspath)
+        stop(errmsg)
+    }
+    return(abspath)
 }
 
 # Must test for is.null first, since is.na(NULL) returns a logical(0) which is
@@ -76,16 +78,18 @@
 # @param path The path to check for seeming absolute-ness.
 # @return Flag indicating whether the \code{path} appears to be absolute.
 .isAbsolute = function(path) {
-  if(!is.character(path)) stop("The path must be character.")
-  firstChar = substr(path, 1, 1)
-  return(identical("/", firstChar) | identical("~", firstChar))
+    if(!is.character(path)) stop("The path must be character.")
+    firstChar = substr(path, 1, 1)
+    return(identical("/", firstChar) | identical("~", firstChar))
 }
 
 #' Update list with another list
 #'
-#' This function performs a union of two lists and updates the elements of the first one if are found in the other one. 
+#' This function performs a union of two lists and updates the elements of the 
+#' first one if are found in the other one. 
 #' 
-#' Both elements have to be lists. If some elements are not named, they are preserved but the order might be lost.
+#' Both elements have to be lists. If some elements are not named, they are 
+#' preserved but the order might be lost.
 #' 
 #' @param list1 a list to be updated
 #' @param list2 a list to update with

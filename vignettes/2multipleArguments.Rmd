@@ -2,9 +2,9 @@
 title: "More arguments than just a PEP in your function?"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{More arguments than just a PEP in your function?}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -3,7 +3,8 @@
 \docType{methods}
 \name{getProject,Annotated-method}
 \alias{getProject,Annotated-method}
-\title{Extract the object of \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}}}
+\title{Extract the object of \code{\link[pepr]{Project-class}} from 
+the \code{\link[S4Vectors]{Annotated-class}}}
 \usage{
 \S4method{getProject}{Annotated}(.Object)
 }
@@ -14,7 +15,8 @@
 an object of \code{\link[pepr]{Project-class}}
 }
 \description{
-This method can be used to extract the project metadata from objects of \code{\link[S4Vectors]{Annotated-class}}
+This method can be used to extract the project metadata from objects of 
+\code{\link[S4Vectors]{Annotated-class}}
 }
 \examples{
 projectConfig = system.file("extdata", "example_peps-master",

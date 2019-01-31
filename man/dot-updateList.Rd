@@ -15,10 +15,12 @@
 an updated list
 }
 \description{
-This function performs a union of two lists and updates the elements of the first one if are found in the other one.
+This function performs a union of two lists and updates the elements of the 
+first one if are found in the other one.
 }
 \details{
-Both elements have to be lists. If some elements are not named, they are preserved but the order might be lost.
+Both elements have to be lists. If some elements are not named, they are 
+preserved but the order might be lost.
 }
 \examples{
 list1=list(a=1,b=2)

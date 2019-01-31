@@ -76,9 +76,9 @@ test_that(".isDefined returns correct object", {
 })
 
 test_that(".isDefined returns correct value", {
-    expect_equal(.isDefined(NA),F)
-    expect_equal(.isDefined(NULL),F)
-    expect_equal(.isDefined(configFile),T)
+    expect_equal(.isDefined(NA),FALSE)
+    expect_equal(.isDefined(NULL),FALSE)
+    expect_equal(.isDefined(configFile),TRUE)
 })
 
 context("Test .isAbsolute utility function")
@@ -88,8 +88,8 @@ test_that(".isAbsolute returns correct object", {
 })
 
 test_that(".isAbsolute returns correct value", {
-    expect_equal(.isAbsolute("~"),T)
-    expect_equal(.isAbsolute("../test"),F)
+    expect_equal(.isAbsolute("~"),TRUE)
+    expect_equal(.isAbsolute("../test"),FALSE)
 })
 
 context("Test .callBiocFun untility function")
@@ -139,18 +139,21 @@ test_that("BiocProject function returns Annotated when provided objects of
     }),"Annotated"))
 })
 
-test_that("BiocProject function returns a Project object when autoload is set to FALSE", {
-    expect_is(BiocProject(file=configFile,autoLoad = F),"Project")
+test_that("BiocProject function returns a Project object 
+          when autoload is set to FALSE", {
+    expect_is(BiocProject(file=configFile,autoLoad = FALSE),"Project")
 })
 
-test_that("BiocProject function throws errors/warnings when the arguments are inappropriate", {
+test_that("BiocProject function throws errors/warnings 
+          when the arguments are inappropriate", {
     expect_error(BiocProject(file=configFile,func = "2"))
     expect_warning(BiocProject(file=configFile,funcArgs = "a"))
     expect_error(BiocProject(file = "test"))
     expect_error(BiocProject(file = configFile,autoLoad = "test"))
 })
 
-test_that("BiocProject function catches errors in the user-provided function, warns and returns the error message as Annotated", {
+test_that("BiocProject function catches errors in the user-provided 
+          function, warns and returns the error message as Annotated", {
     expect_warning(expect_is(BiocProject(file=configFile,func=function(x) {
         stop("test")
     }),"Annotated"))
@@ -172,12 +175,12 @@ test_that(".is.project returns a correct object", {
 })
 
 test_that(".is.project returns a value", {
-    expect_equal(.is.project(bp),T)
-    expect_equal(.is.project(S4Vectors::List(a=1)), F)
+    expect_equal(.is.project(bp),TRUE)
+    expect_equal(.is.project(S4Vectors::List(a=1)), FALSE)
 })
 
 test_that("is method returns correct value when Annotated provided", {
-    expect_equal(is(bp,"Project"), T)    
+    expect_equal(is(bp,"Project"), TRUE)    
 })
 
 test_that("getProject returns a correct object", {
