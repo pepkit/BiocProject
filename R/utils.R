@@ -35,7 +35,7 @@
         # error handler 
         .wrapFunMessages(e$message,"error")
         message("No data was read. The error message was returned instead.")
-        e$message
+        S4Vectors::List(e$message)
     } 
     res = withCallingHandlers(
         tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
