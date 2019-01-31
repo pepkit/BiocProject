@@ -96,7 +96,7 @@ context("Test .callBiocFun untility function")
 
 test_that(".callBiocFun catches errors", {
     expect_error(expect_error(.callBiocFun(a,list(testChar))))
-    expect_equal(.callBiocFun(a,list(testChar)),testChar)
+    expect_equal(.callBiocFun(a,list(testChar)),S4Vectors::List(testChar))
     expect_warning(.callBiocFun(b,list(testChar)))
 })
 
@@ -147,16 +147,15 @@ test_that("BiocProject function returns a Project object
 test_that("BiocProject function throws errors/warnings 
           when the arguments are inappropriate", {
     expect_error(BiocProject(file=configFile,func = "2"))
-    expect_warning(BiocProject(file=configFile,funcArgs = "a"))
     expect_error(BiocProject(file = "test"))
     expect_error(BiocProject(file = configFile,autoLoad = "test"))
 })
 
 test_that("BiocProject function catches errors in the user-provided 
-          function, warns and returns the error message as Annotated", {
-    expect_warning(expect_is(BiocProject(file=configFile,func=function(x) {
+          function returns the error message as Annotated", {
+    expect_is(BiocProject(file=configFile,func=function(x) {
         stop("test")
-    }),"Annotated"))
+    }),"Annotated")
 })
 
 

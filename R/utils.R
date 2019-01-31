@@ -21,8 +21,9 @@
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution
 .callBiocFun <- function(func, arguments) { 
-    if(!is(arguments, "list")) stop("The 'arguments' argument has to be a list,
-                                    got '", class(arguments),"'")
+    if(!is(arguments, "list")) 
+        stop("The 'arguments' argument has to be a list, got '",
+            class(arguments),"'")
     .warnings = c()
     frameNumber <- sys.nframe()
     wHandler <- function(w){ 
