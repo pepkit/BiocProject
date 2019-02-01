@@ -26,12 +26,12 @@ navbar:
 articles: 
   - title: Introduction
     contents:
-      - 1getStarted
+      - vignette1getStarted
   - title: Advanced features
     contents:
-      - 2multipleArguments
-      - 3simpleCache
-      - 4remoteData
+      - vignette2multipleArguments
+      - vignette3simpleCache
+      - vignette4remoteData
       
 reference:
   - title: "BiocProject API"

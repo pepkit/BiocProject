@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette assumes you're familiar with the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic `BiocProject` information and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
+This vignette assumes you're familiar with the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic `BiocProject` information and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
 
 # Why to use `simpleCache` with `BiocProject`
 

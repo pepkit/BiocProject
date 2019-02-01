@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic information and installation instructions.
+Before you start see the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
 
 Get paths to the files used in this vignette
 ```{r echo=T,message=FALSE}

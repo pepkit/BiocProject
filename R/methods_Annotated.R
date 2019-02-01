@@ -27,6 +27,7 @@ setMethod(".is.project","Annotated",function(.Object){
 #' p=BiocProject(projectConfig)
 #' getProject(p)
 #'
+#' @import S4Vectors
 #' @exportMethod getProject
 setGeneric("getProject", function(.Object)
     standardGeneric("getProject"))
@@ -54,7 +55,7 @@ setMethod("getProject","Annotated",function(.Object){
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
 #' samples(p)
-#'
+#' @import pepr
 #' @export
 setMethod(
     f = "samples",
@@ -80,6 +81,7 @@ setMethod(
 #' p=BiocProject(projectConfig)
 #' config(p)
 #'
+#' @import pepr
 #' @export
 setMethod(
     f = "config",
@@ -107,6 +109,7 @@ setGeneric("is", package = "methods")
 #' object = S4Vectors::List(test="test")
 #' is(object,"Annotated")
 #' 
+#' @import methods
 #' @export
 setMethod("is", "Annotated", definition = function(object, class2){
     if(class2=="Project" & .is.project(object)){

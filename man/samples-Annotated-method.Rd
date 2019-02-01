@@ -23,5 +23,4 @@ projectConfig = system.file("extdata", "example_peps-master",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
 p=BiocProject(projectConfig)
 samples(p)
-
 }

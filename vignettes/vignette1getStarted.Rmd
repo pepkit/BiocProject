@@ -207,11 +207,11 @@ bpExceptions = BiocProject(configFile)
 
 # Further reading
 
-See this [More arguments than just a PEP in your function?](./2multipleArguments.html) vignette if you want to:
+See this [More arguments than just a PEP in your function?](./vignette2multipleArguments.html) vignette if you want to:
 
 * use an anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
 
-See the [Working with remote data](./4remoteData.html) vignette to learn how to download the data from the Internet, process it and store it conveniently with related metadata in any object from the Bioconductor project. 
+See the [Working with remote data](./vignette4remoteData.html) vignette to learn how to download the data from the Internet, process it and store it conveniently with related metadata in any object from the Bioconductor project. 
 
-See the [Working with large datasets - simpleCache](./3simpleCache.html) vignette to learn how the `simpleCache` R package can be used to prevent copious and lengthy results recalculations when working with large datasets.
+See the [Working with large datasets - simpleCache](./vignette3simpleCache.html) vignette to learn how the `simpleCache` R package can be used to prevent copious and lengthy results recalculations when working with large datasets.

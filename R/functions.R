@@ -153,7 +153,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 # function from config.yaml in read_fun_name not in environment,
                 # trying to source the file specified in
                 # the config.yaml FUNCTION_PATH
-                funcPath =pepr::.expandPath(
+                funcPath = pepr::.expandPath(
                     pepr::config(p)[[MAIN_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))

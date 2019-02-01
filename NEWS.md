@@ -8,7 +8,7 @@
 
 ## Changed
 
-* not only object that inherit from `Annotated` can be returned by the data processing function
+* not only objects that inherit from `Annotated` can be returned by the data processing function
 * error handling changes
 * new config file section naming scheme
 
@@ -18,7 +18,7 @@
 
 ## Added
 
-* methods: `is` (overwrites this method behavior just for the class `Annotated`), `.is.project`, `samples`, `config` for signiture `Annotated`
+* methods: `is` (overwrites this method behavior just for the class `Annotated`), `.is.project`, `samples`, `config` for signature `Annotated`
 * functions: `.insertPEP` and `BiocProject` (the workhorse of the package)
 
 ## Changed

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic information and installation instructions.
+Before you start see the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
 
 # How to download the data with your function 
 
