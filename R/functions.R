@@ -205,7 +205,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
 #' object1 = "test"
 #' result1 = .insertPEP(object1, pepr::Project())
 #' metadata(result1)
-#' @import S4Vectors
+#' @import S4Vectors methods
 #' @export
 .insertPEP = function(object, pep) {
     if(!methods::is(pep, "Project")) 

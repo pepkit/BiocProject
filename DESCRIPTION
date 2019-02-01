@@ -9,11 +9,12 @@ Description: A Bioconductor-oriented project management class. It wraps the
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: S4Vectors, pepr
+Depends: S4Vectors, pepr, methods
 Suggests:
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    yaml
 Enhances: BiocFileCache, simpleCache, GenomicRanges
 biocViews: DataImport, DataRepresentation
 RoxygenNote: 6.1.1

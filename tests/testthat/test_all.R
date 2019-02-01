@@ -1,4 +1,3 @@
-library(BiocProject)
 library(yaml)
 # Prep data ---------------------------------------------------------------
 

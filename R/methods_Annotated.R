@@ -11,16 +11,13 @@ setMethod(".is.project","Annotated",function(.Object){
     is(result,"Project")
 })
 
-setGeneric("getProject", function(.Object)
-    standardGeneric("getProject"))
-
 #' Extract the object of \code{\link[pepr]{Project-class}} from 
 #' the \code{\link[S4Vectors]{Annotated-class}} 
 #'
 #' This method can be used to extract the project metadata from objects of 
 #' \code{\link[S4Vectors]{Annotated-class}} 
 #'
-#' @param object an object of \code{\link[S4Vectors]{Annotated-class}} 
+#' @param .Object an object of \code{\link[S4Vectors]{Annotated-class}} 
 #'
 #' @return an object of \code{\link[pepr]{Project-class}}
 #' 
@@ -30,7 +27,11 @@ setGeneric("getProject", function(.Object)
 #' p=BiocProject(projectConfig)
 #' getProject(p)
 #'
-#' @export
+#' @exportMethod getProject
+setGeneric("getProject", function(.Object)
+    standardGeneric("getProject"))
+
+#' @describeIn getProject extracts \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}}
 setMethod("getProject","Annotated",function(.Object){
     if(.is.project(.Object)) {
         S4Vectors::metadata(.Object)[[1]]
