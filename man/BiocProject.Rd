@@ -85,7 +85,11 @@ for more detailed explanation with examples.
 \examples{
 projectConfig = system.file("extdata", "example_peps-master",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
-p=BiocProject(projectConfig)
+bp=BiocProject(projectConfig)
+
+bp
+
+metadata(bp)
 
 }
 \seealso{
