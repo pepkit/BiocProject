@@ -18,13 +18,14 @@ configFileArgs = system.file(
     package = "BiocProject"
 )
 
-configFileExceptions = system.file(
-    "extdata",
-    "example_peps-master",
-    "example_BiocProject_exceptions",
+configFileFaulty = system.file(
+    "tests",
+    "test_projects",
+    "faulty_project",
     "project_config.yaml",
     package = "BiocProject"
 )
+
 
 bp = BiocProject(configFile)
 
@@ -132,6 +133,19 @@ test_that("BiocProject function return correct object", {
     expect_is(BiocProject(configFile),"Annotated")
 })
 
+test_that("BiocProject function works with arguments", {
+    expect_is(BiocProject(configFileArgs),"Annotated")
+    expect_is(BiocProject(configFileArgs, funcArgs = list(resize.width=200)), "Annotated")
+})
+
+test_that("BiocProject function overrides the arguments specified in the config
+          file with ones that have the same names in the funcArgs list", {
+            expect_false(identical(
+                BiocProject(configFileArgs),
+                BiocProject(configFileArgs, funcArgs = list(resize.width = 101))
+            ))
+})
+
 test_that("BiocProject function returns Annotated when provided objects of 
           different class and thorows a warning", {
     expect_warning(expect_is(BiocProject(configFile, func = function(x){
@@ -158,6 +172,10 @@ test_that("BiocProject function catches errors in the user-provided
     }),"Annotated")
 })
 
+test_that("BiocProject function catches errors when the function specified
+          does not exist", {
+              expect_error(BiocProject(configFileFaulty))  
+          })
 
 context("Test Annotated methods")
 
