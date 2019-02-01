@@ -184,10 +184,10 @@ test_that("BiocProject function catches errors when the function specified
               expect_error(BiocProject(configFileMissingFun))  
           })
 
-test_that("BiocProject function throws a warning and returns a Project object
-          when no bioconductor section found",{
-    expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
-})
+# test_that("BiocProject function throws a warning and returns a Project object
+#           when no bioconductor section found",{
+#     expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
+# })
 
 test_that("BiocProject function throws an error 
           when nonexistent subproject is provided",{
