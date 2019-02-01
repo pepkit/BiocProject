@@ -17,11 +17,19 @@ configFileArgs = system.file(
     package = "BiocProject"
 )
 
-configFileFaulty = system.file(
+configFileMissingFun = system.file(
     "tests",
     "test_projects",
     "faulty_project",
-    "project_config.yaml",
+    "project_config_no_function.yaml",
+    package = "BiocProject"
+)
+
+configFileNoSection = system.file(
+    "tests",
+    "test_projects",
+    "faulty_project",
+    "project_config_no_section.yaml",
     package = "BiocProject"
 )
 
@@ -173,8 +181,18 @@ test_that("BiocProject function catches errors in the user-provided
 
 test_that("BiocProject function catches errors when the function specified
           does not exist", {
-              expect_error(BiocProject(configFileFaulty))  
+              expect_error(BiocProject(configFileMissingFun))  
           })
+
+test_that("BiocProject function throws a warning and returns a Project object
+          when no bioconductor section found",{
+    expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
+})
+
+test_that("BiocProject function throws an error 
+          when nonexistent subproject is provided",{
+    expect_error(expect_warning(BiocProject(configFile, subproject = "test")))
+})
 
 context("Test Annotated methods")
 

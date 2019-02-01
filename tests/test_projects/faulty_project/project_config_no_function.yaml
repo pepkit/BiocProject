@@ -4,5 +4,5 @@ metadata:
   sample_annotation: sample_annotation.csv
 
 bioconductor:
-  readFunName: readBedFiles_faulty
-  readFunPath: readBedFiles_faulty.R
+  readFunName: readBedFiles_missing
+  readFunPath: readBedFiles_missing.R
