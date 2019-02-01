@@ -93,15 +93,17 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(is.null(funcArgs)){
         funcArgs = list()
     }else{
-        pepArgs = as.logical(lapply(funcArgs, function(x) {
-            is(x, "Project")
-        }))
-        if (any(pepArgs))
-        funcArgs = funcArgs[-which(pepArgs)]
+        if (length(.findProjectInList(funcArgs)) > 0) 
+            funcArgs = funcArgs[-.findProjectInList(funcArgs)]
     }
     args = append(list(p), funcArgs)
     if(pepr::checkSection(pepr::config(p), c(MAIN_SECTION, FUNCTION_ARGS))){
-        args = .updateList(args,config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]])
+        args = .updateList(config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]],args)
+        argsNames = names(args)
+        project = args[[.findProjectInList(args)]]
+        argsNames = append("",argsNames[-.findProjectInList(args)])
+        args = append(list(p), args[[-.findProjectInList(args)]])
+        names(args) = argsNames
     }
     
     if (!is.null(func)) {
