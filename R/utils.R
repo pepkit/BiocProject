@@ -108,15 +108,27 @@
         stop("One of the arguments was not a list")
     nms1 = names(list1)
     nms2 = names(list2)
+    if(is.null(nms2)) nms2 = ""
+    counter=1
     for(n in nms2){
         idx = which(nms1 == n)
         if(length(idx) > 0){
             list1[[idx]] = list2[[n]]
         }else{
-            add = list2[[n]]
+            add = list(list2[[counter]])
             names(add) = n
-            list1 = c(list1,add)
+            list1 = append(list1,add)
         }
+        counter = counter + 1
     }
     return(list1)
 }
+
+# Finds the pepr::Project object in a list and returns its index
+# If it is not present, returns integer(0)
+.findProjectInList = function(l) {
+    which(as.logical(lapply(l, function(x) {
+        is(x, "Project")
+    })))
+}
+
