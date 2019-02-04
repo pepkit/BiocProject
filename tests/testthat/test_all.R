@@ -145,7 +145,7 @@ test_that("BiocProject function works with arguments", {
 
 # test_that("BiocProject function overrides the arguments specified in the config
 #           file with ones that have the same names in the funcArgs list", {
-#             expect_false(identical(
+#             expect_failure(expect_identical(
 #                 BiocProject(configFileArgs),
 #                 BiocProject(configFileArgs, funcArgs = list(resize.width = 200))
 #             ))
