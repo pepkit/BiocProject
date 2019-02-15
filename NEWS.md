@@ -4,13 +4,14 @@
 
 ## Added
 
-* option to specify additional arguments in the config file using a `funcArgs` subsection within the `bioconductor` section.
+* passes `BiocCheck`
+* added option to specify additional arguments in the config file using a `funcArgs` subsection within the `bioconductor` section of the PEP config `yaml` file.
 
 ## Changed
 
-* not only objects that inherit from `Annotated` can be returned by the data processing function
-* error handling changes; a PEP (`pepr::Project`) is returned along with the error message in a `S4Vectors::List` object
-* new config file section naming scheme; the `bioconductor` section of the config file follows the Bioconductor coding style (`camelCaps`)
+* now, any object can be returned by the data processing function, rather than requiring objects to inherit from `Annotated`
+* when errors are encountered, BiocProject now returns a PEP (`pepr::Project`) along with the error message in a `S4Vectors::List` object
+* the `bioconductor` section of the config file now follows the Bioconductor coding style (`camelCaps`)
 
 # BiocProject 0.1
 
