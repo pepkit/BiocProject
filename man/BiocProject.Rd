@@ -4,7 +4,7 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) for biological applications}
 \usage{
-BiocProject(file, subproject = NULL, autoLoad = T, func = NULL,
+BiocProject(file, subproject = NULL, autoLoad = TRUE, func = NULL,
   funcArgs = NULL)
 }
 \arguments{
@@ -16,20 +16,32 @@ to be activated}
 \item{autoLoad}{a logical indicating whether the data should be loaded
 automatically. See \code{Details} for more information.}
 
-\item{func}{a anonymous function that reads and/or processess the data, it must take 
+\item{func}{a anonymous function that reads and/or processess the data, 
+it must take 
 the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
 
-\item{funcArgs}{a named list with arguments you want to pass to the \code{func}.
-The PEP will be passed automatically,
-but if provided regardless, the constructor will disregard it}
+\item{funcArgs}{a named list with arguments you want 
+to pass to the \code{func}.
+ The PEP will be passed automatically,
+ but if provided regardless, the constructor will disregard it. 
+ You can also pass the arguments in a \code{funcArgs} section within 
+ the \code{bioconductor} section in the config file.}
 }
 \value{
-an object of \code{\link[S4Vectors]{Annotated-class}} that is returned by the user provided function with the \code{\link[pepr]{Project-class}} object inserted into the first element of the list in its medatada slot
+an object of \code{\link[S4Vectors]{Annotated-class}} that is 
+returned by the user provided function with 
+the \code{\link[pepr]{Project-class}} object inserted into the first 
+element of the list in its medatada slot
 }
 \description{
-This function creates a \code{\link[pepr]{Project-class}} object, and executes the user provided function with the created object as a first argument.
-\cr\cr\emph{The custom data processing function has to return and object of \code{\link[S4Vectors]{Annotated-class}}, otherwise an error will be returned.}
+This function creates a \code{\link[pepr]{Project-class}} object, 
+and executes the user provided function with the created object 
+as a first argument.
+\cr\cr\emph{If the custom data processing function returns an object of 
+class other than \code{\link[S4Vectors]{Annotated-class}}, the output 
+will be packaged in a \code{\link[S4Vectors]{List-class}} with a metadata 
+slot populated with the \code{\link[pepr]{Project-class}}.}
 }
 \details{
 This \code{\link{BiocProject}} function provides some degree 
@@ -38,26 +50,27 @@ implementation. Consider the possibilities listed below:
 \itemize{
   \item use a function loaded into the \code{R} environment and specified in
   the config slot in \code{\link[pepr]{Project-class}}
-  (specifically: \code{config(project)$bioconductor$read_fun_name}).
-  \item use a function \emph{not} loaded into the \code{R} environment and specified in
-  the config slot in \code{\link[pepr]{Project}}
-  (specifically: \code{config(project)$bioconductor$read_fun_path}).
+  (specifically: \code{config(project)$bioconductor$readFunName}).
+  \item use a function \emph{not} loaded into the \code{R} environment and 
+  specified in the config slot in \code{\link[pepr]{Project}}
+  (specifically: \code{config(project)$bioconductor$readFunPath}).
   \item use a function from other \code{R} package not loaded into 
   the \code{R} environment and specified in the config slot
   in \code{\link[pepr]{Project}} 
-  (specifically: \code{config(project)$bioconductor$read_fun_name}), like:
+  (specifically: \code{config(project)$bioconductor$readFunName}), like:
   \code{pkgName::functionName}
   \item use a function implemented in the  \code{\link{BiocProject}}
-  call (passed to the \code{func} argument - anonymous function). This option is given the top priority and overrides 
-  other arguments if provided.
+  call (passed to the \code{func} argument - anonymous function). 
+  This option is given the top priority and overrides other
+   arguments if provided.
 }
 The custom data processing function must take 
 the \code{\link[pepr]{Project-class}} as an argument since this object will 
 be passed to the function by default. However, if the function requires
 addtional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
-Besides, the \code{func} argument with the anonymous function may serve similar
-possibility.
+Besides, the \code{func} argument with the anonymous 
+function may serve similar possibility.
 
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
@@ -69,6 +82,16 @@ Browse the
 for more detailed explanation with examples.
 }
 
+\examples{
+projectConfig = system.file("extdata", "example_peps-master",
+"example_BiocProject", "project_config.yaml", package="BiocProject")
+bp=BiocProject(projectConfig)
+
+bp
+
+metadata(bp)
+
+}
 \seealso{
 \url{https://pepkit.github.io/}
 }

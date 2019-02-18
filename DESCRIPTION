@@ -1,6 +1,6 @@
 Package: BiocProject
 Title: Bioconductor Management with Portable Encapsulated Project (PEP) Objects
-Version: 0.1
+Version: 0.1.1
 Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu",role = c("aut", "cre")), 
 	person("Nathan", "Sheffield", email = "nathan@code.databio.org",role = c("aut")))
 Description: A Bioconductor-oriented project management class. It wraps the
@@ -9,11 +9,15 @@ Description: A Bioconductor-oriented project management class. It wraps the
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: S4Vectors, pepr
+Depends: S4Vectors, pepr, methods
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat,
+    yaml
 Enhances: BiocFileCache, simpleCache, GenomicRanges
+biocViews: DataImport, DataRepresentation
 RoxygenNote: 6.1.1
+URL: https://github.com/pepkit/BiocProject
 BugReports: https://github.com/pepkit/BiocProject
 VignetteBuilder: knitr

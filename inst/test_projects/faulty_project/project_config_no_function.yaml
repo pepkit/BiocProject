@@ -1,0 +1,8 @@
+# This is a faulty PEP.
+# The readFunName and readFunPath values point to function that does not exist
+metadata:
+  sample_annotation: sample_annotation.csv
+
+bioconductor:
+  readFunName: readBedFiles_missing
+  readFunPath: readBedFiles_missing.R

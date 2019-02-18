@@ -11,14 +11,13 @@ setMethod(".is.project","Annotated",function(.Object){
     is(result,"Project")
 })
 
-setGeneric("getProject", function(.Object)
-    standardGeneric("getProject"))
-
-#' Extract the object of \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}} 
+#' Extract the object of \code{\link[pepr]{Project-class}} from 
+#' the \code{\link[S4Vectors]{Annotated-class}} 
 #'
-#' This method can be used to extract the project metadata from objects of \code{\link[S4Vectors]{Annotated-class}} 
+#' This method can be used to extract the project metadata from objects of 
+#' \code{\link[S4Vectors]{Annotated-class}} 
 #'
-#' @param object an object of \code{\link[S4Vectors]{Annotated-class}} 
+#' @param .Object an object of \code{\link[S4Vectors]{Annotated-class}} 
 #'
 #' @return an object of \code{\link[pepr]{Project-class}}
 #' 
@@ -26,9 +25,14 @@ setGeneric("getProject", function(.Object)
 #' projectConfig = system.file("extdata", "example_peps-master",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
-#' samples(p)
+#' getProject(p)
 #'
-#' @export
+#' @import S4Vectors
+#' @exportMethod getProject
+setGeneric("getProject", function(.Object)
+    standardGeneric("getProject"))
+
+#' @describeIn getProject extracts \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}}
 setMethod("getProject","Annotated",function(.Object){
     if(.is.project(.Object)) {
         S4Vectors::metadata(.Object)[[1]]
@@ -40,7 +44,8 @@ setMethod("getProject","Annotated",function(.Object){
 #' View samples in the objects of \code{\link[pepr]{Project-class}} 
 #'
 #' This method can be used to view the samples slot
-#' of the \code{\link[pepr]{Project-class}} or \code{\link[S4Vectors]{Annotated-class}} 
+#' of the \code{\link[pepr]{Project-class}} 
+#' or \code{\link[S4Vectors]{Annotated-class}} 
 #'
 #' @param object an object of \code{\link[pepr]{Project-class}}
 #'
@@ -50,7 +55,7 @@ setMethod("getProject","Annotated",function(.Object){
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
 #' samples(p)
-#'
+#' @import pepr
 #' @export
 setMethod(
     f = "samples",
@@ -63,7 +68,8 @@ setMethod(
 #' View PEP config of the object of \code{\link[pepr]{Project-class}}
 #'
 #' This method can be used to view the config slot of
-#' the \code{\link[pepr]{Project-class}} or  or \code{\link[S4Vectors]{Annotated-class}} 
+#' the \code{\link[pepr]{Project-class}}
+#'  or \code{\link[S4Vectors]{Annotated-class}} 
 #'
 #' @param object an object of \code{\link[pepr]{Project-class}}
 #'
@@ -75,6 +81,7 @@ setMethod(
 #' p=BiocProject(projectConfig)
 #' config(p)
 #'
+#' @import pepr
 #' @export
 setMethod(
     f = "config",
@@ -87,16 +94,28 @@ setGeneric("is", package = "methods")
 
 #' Is an Object from a Class?
 #' 
-#' Functions to test inheritance relationships between an object and a class or between two classes. It uses the generic is function but overrides its behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when testing for inheritance from \code{\link[pepr]{Project-class}} class.
+#' Functions to test inheritance relationships between an object and a class 
+#' or between two classes. It uses the generic is function but overrides its 
+#' behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when 
+#' testing for inheritance from \code{\link[pepr]{Project-class}} class.
 #' 
 #' see the \code{\link[methods]{is}} for more details
 #' 
+#' @param object the object to be tested
+#' @param class2 the class name to test the object against
+#' 
+#' @return a logical 
+#' @examples
+#' object = S4Vectors::List(test="test")
+#' is(object,"Annotated")
+#' 
+#' @import methods
 #' @export
 setMethod("is", "Annotated", definition = function(object, class2){
     if(class2=="Project" & .is.project(object)){
         TRUE
     } else {
-        extends(class(object), class2)
+        methods::extends(class(object), class2)
     }
 })
 

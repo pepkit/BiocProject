@@ -15,7 +15,8 @@ a list with the config file
 }
 \description{
 This method can be used to view the config slot of
-the \code{\link[pepr]{Project-class}} or  or \code{\link[S4Vectors]{Annotated-class}}
+the \code{\link[pepr]{Project-class}}
+ or \code{\link[S4Vectors]{Annotated-class}}
 }
 \examples{
 projectConfig = system.file("extdata", "example_peps-master",

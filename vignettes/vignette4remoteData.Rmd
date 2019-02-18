@@ -2,9 +2,9 @@
 title: "Working with remote data"
 author: "Michal Stolarczyk"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Working with remote data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Before you start see the [Getting started with `BiocProject` vignette](./1getStarted.html) for the basic information and installation instructions.
+Before you start see the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
 
 # How to download the data with your function 
 
@@ -72,7 +72,7 @@ library(pepr)
 ## Execute the `BiocProject` function
 
 Get path to the config file
-```{r echo=T,message=FALSE}
+```{r echo=TRUE,message=FALSE}
 library(BiocProject)
 ProjectConfigRemote = system.file(
   "extdata",
