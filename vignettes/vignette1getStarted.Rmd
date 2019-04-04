@@ -81,7 +81,7 @@ library(pepr)
 .printNestedList(yaml::read_yaml(configFile))
 ```
 
-This configuration file points to the second major part of a PEP: the sample annotation CSV file (``r { basename(config(bp)$metadata$sample_annotation) }``). Here are the contents of that file:
+This configuration file points to the second major part of a PEP: the sample annotation CSV file (``r { basename(config(bp)$metadata$sample_table) }``). Here are the contents of that file:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, collapse=TRUE, comment=" "}
 library(knitr)
@@ -89,7 +89,7 @@ sampleAnnotation = system.file(
 "extdata",
 "example_peps-master",
 "example_BiocProject",
-"sample_annotation.csv",
+"sample_table.csv",
 package = "BiocProject"
 )
 sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)

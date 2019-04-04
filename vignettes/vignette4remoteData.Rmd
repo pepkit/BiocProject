@@ -48,7 +48,7 @@ sampleAnnotation =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject_remote",
-  "sample_annotation.csv",
+  "sample_table.csv",
   package="BiocProject"
 )
 sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)
