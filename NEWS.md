@@ -1,5 +1,11 @@
 # BiocProject Changelog
 
+## [0.1.2] - unreleased
+
+### Changed
+
+* updates in the vignettes related to changes of metadata keys in the Project config
+
 ## [0.1.1] - 2019-02-15
 
 ### Added
