@@ -11,4 +11,4 @@ bioc_packages:
   - BiocStyle
   - BiocFileCache
 before_install:
-  - Rscript -e 'devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')'
+  - Rscript -e 'install.package('devtools');devtools::install_github(repo = 'pepkit/pepr',ref = 'dev')'
