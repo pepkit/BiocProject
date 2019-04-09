@@ -115,6 +115,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         if (is.function(func)) {
             readData = .callBiocFun(func, list(p))
             message("Used function from the 'func' argument")
+            .setShowMethod(readData)
             return(.insertPEP(readData, p))
         }else{
             stop("The anonymous function you provided is invalid.")
@@ -137,6 +138,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
             if (!is.null(funcName) && exists(funcName)) {
                 # function from config.yaml in environment
                 readData = .callBiocFun(funcName, args)
+                .setShowMethod(readData)
                 message("Used function ", funcName, " from the environment")
                 return(.insertPEP(readData, p))
             }else{
@@ -145,8 +147,9 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     # was specified in the config.yaml FUNCTION_NAME
                     splitted = strsplit(funcName, ":")[[1]]
                     nonEmpty = splitted[which(splitted != "")]
-                    funcName = utils::getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
+                    funcName = utils::getFromNamespace(nonEmpty[2], nonEmpty[1])
                     readData = .callBiocFun(funcName, args)
+                    .setShowMethod(readData)
                     message("Used function ", funcName, " from the environment")
                     return(.insertPEP(readData, p))
                 }
@@ -167,6 +170,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     readFun = source(funcPath)$value
                     message("Function read from file: ", funcPath)
                     readData = .callBiocFun(readFun, args)
+                    .setShowMethod(readData)
                     return(.insertPEP(readData, p))
                 }else{
                     warning("Can't find function in the environment and the value for '"

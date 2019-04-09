@@ -204,6 +204,11 @@ configFile = system.file(
 
 bpExceptions = BiocProject(configFile)
 ```
+As indicated in the warning messages above -- no data is being returned. Instead a `S4Vectors::List` with a PEP is its `metadata` slot is produced.
+
+```{r}
+bpExceptions
+```
 
 # Further reading
 
