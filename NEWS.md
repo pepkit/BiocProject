@@ -2,6 +2,10 @@
 
 ## [0.1.2] - unreleased
 
+### Added
+
+* the native `show` methods are redefined for the objects returned by `BiocProject` function, so that they display the PEP component of the object `metadata`
+
 ### Changed
 
 * updates in the vignettes related to changes of metadata keys in the Project config
