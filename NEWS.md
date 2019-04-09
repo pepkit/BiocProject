@@ -4,7 +4,7 @@
 
 ### Added
 
-* the native `show` methods are redefined for the objects returned by `BiocProject` function, so that they display the PEP component of the object `metadata`b=
+* the native `show` methods are redefined for the objects returned by `BiocProject` function, so that they display the PEP component of the object `metadata`
 
 ### Changed
 
