@@ -214,13 +214,13 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         object = S4Vectors::List(object)
     if(methods::is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
-        .setShowMethod(object)
-        object
     } else{
         warning("To fully exploit features of BiocProject package, the object returned by the data processing function should be of class 'Annotated'. Got '",
                 class(object),"' instead.")
         result = S4Vectors::List(result=object)
         S4Vectors::metadata(result) = list(PEP=pep)
-        result
+        object = result
     }
+    .setShowMethod(object)
+    object
 }
