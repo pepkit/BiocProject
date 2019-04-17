@@ -83,15 +83,7 @@
 #' @export BiocProject
 BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL, 
                         funcArgs = NULL) {
-    p = tryCatch(
-        expr = { 
-            pepr::Project(file=file, subproject=subproject)
-        },warning = function(w) {
-            message(w)
-            stop("There are warnings 
-                associated with the 'Project' object creation.")
-        }
-    )
+    p = pepr::Project(file=file, subproject=subproject)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
@@ -115,7 +107,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         if (is.function(func)) {
             readData = .callBiocFun(func, list(p))
             message("Used function from the 'func' argument")
-            .setShowMethod(readData)
             return(.insertPEP(readData, p))
         }else{
             stop("The anonymous function you provided is invalid.")
@@ -138,7 +129,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
             if (!is.null(funcName) && exists(funcName)) {
                 # function from config.yaml in environment
                 readData = .callBiocFun(funcName, args)
-                .setShowMethod(readData)
                 message("Used function ", funcName, " from the environment")
                 return(.insertPEP(readData, p))
             }else{
@@ -149,7 +139,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     nonEmpty = splitted[which(splitted != "")]
                     funcName = utils::getFromNamespace(nonEmpty[2], nonEmpty[1])
                     readData = .callBiocFun(funcName, args)
-                    .setShowMethod(readData)
                     message("Used function ", funcName, " from the environment")
                     return(.insertPEP(readData, p))
                 }
@@ -170,7 +159,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     readFun = source(funcPath)$value
                     message("Function read from file: ", funcPath)
                     readData = .callBiocFun(readFun, args)
-                    .setShowMethod(readData)
                     return(.insertPEP(readData, p))
                 }else{
                     warning("Can't find function in the environment and the value for '"
@@ -192,6 +180,12 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
 #' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
 #' into the metadata slot of objects that 
 #' extend the \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' Additionally, if the object extends the 
+#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+#' as the metadata.
 #' 
 #' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
 #' @param pep an object of class \code{\link[pepr]{Project-class}}
@@ -215,12 +209,16 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(!methods::is(pep, "Project")) 
         stop("the pep argument has to be of class 'Project', 
             got '", class(pep),"'")
+    # do we throw a warning/message saying what happens in the next line?
+    if(methods::is(object, "list"))
+        object = S4Vectors::List(object)
     if(methods::is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
+        .setShowMethod(object)
         object
-    }else{
-        warning("The 'object' argument has to be of class 'Annotated', got '",
-                class(object),"'")
+    } else{
+        warning("To fully exploit features of BiocProject package, the object returned by the data processing function should be of class 'Annotated'. Got '",
+                class(object),"' instead.")
         result = S4Vectors::List(result=object)
         S4Vectors::metadata(result) = list(PEP=pep)
         result

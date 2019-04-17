@@ -150,13 +150,11 @@
 #' .setShowMethod(x)
 #' x
 .setShowMethod = function(returnedObject) {
+    oriClass = class(returnedObject)
     if(!is(returnedObject,"Annotated")){
-        warning("The object cannot be accommodated to include PEP in",
-                " its metadata slot in the future.",
-                " The show method was not redefined.")
+        warning("The show method was not redefined for '", oriClass, "'")
         return(FALSE)
     }
-    oriClass = class(returnedObject)
     oriShow =  selectMethod("show", oriClass)
     # the new method is created only if the environment of the original one is locked.
     # this way the method will not be redefined over and over again when the BiocProject functon is called.
