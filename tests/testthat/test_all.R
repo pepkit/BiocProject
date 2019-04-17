@@ -187,11 +187,6 @@ test_that("BiocProject function throws a warning and returns a Project object
     expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
 })
 
-test_that("BiocProject function throws an error 
-          when nonexistent subproject is provided",{
-    expect_error(expect_warning(BiocProject(configFile, subproject = "test")))
-})
-
 context("Test Annotated methods")
 
 test_that("samples returns a correct object", {
