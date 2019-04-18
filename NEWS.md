@@ -3,10 +3,12 @@
 ## Added
 
 * the native `show` methods are redefined for the objects returned by `BiocProject::BiocProject` function, so that they display the PEP component of the object `metadata`
+* `BiocProject` function now handles the case when multiple data processing functions are defined in the config file. The last one is used if there's no match in `readFunName` and any of the functions sourced from the file specified in `readFunPath`
 
 ## Changed
 
 * updates in the vignettes related to changes of metadata keys in the Project config
+* when the data processing function function is read from file, it is used within a newly created environment so that it is not left in the `.GlobalEnv` after the `BiocProject` function execution
 
 # BiocProject 0.1.1 - 2019-02-15
 

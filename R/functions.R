@@ -116,20 +116,20 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a logical, 
                                     got '", class(autoLoad),"'")
         if (autoLoad) {
-        # check if the config consists of MAIN_SECTION section
+            # check if the config consists of MAIN_SECTION section
             if(!pepr::checkSection(pepr::config(p), MAIN_SECTION)){
                 message("No data was read. Returning a Project object")
                 warning("The config YAML is missing the '",
                         MAIN_SECTION,"' section.")
                 return(p)
             }    
-        funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
-        # check if the function name was provided
-        # and if it exists in the environment
+            funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
+            # check if the function name was provided
+            # and if it exists in the environment
             if (!is.null(funcName) && exists(funcName)) {
                 # function from config.yaml in environment
                 readData = .callBiocFun(funcName, args)
-                message("Used function ", funcName, " from the environment")
+                message("Used function '", funcName, "' from the environment")
                 return(.insertPEP(readData, p))
             }else{
                 if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
@@ -137,28 +137,48 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     # was specified in the config.yaml FUNCTION_NAME
                     splitted = strsplit(funcName, ":")[[1]]
                     nonEmpty = splitted[which(splitted != "")]
-                    funcName = utils::getFromNamespace(nonEmpty[2], nonEmpty[1])
-                    readData = .callBiocFun(funcName, args)
-                    message("Used function ", funcName, " from the environment")
+                    funcCode = utils::getFromNamespace(nonEmpty[2], nonEmpty[1])
+                    readData = .callBiocFun(funcCode, args)
+                    message("Used function '", nonEmpty[2],
+                            "' from the package: ", nonEmpty[1])
                     return(.insertPEP(readData, p))
                 }
-                # function from config.yaml in read_fun_name not in environment,
-                # trying to source the file specified in
-                # the config.yaml FUNCTION_PATH
+                # function from config.yaml in FUNCTION_NAME not in environment,
+                # trying to source the file specified 
+                # in the config.yaml FUNCTION_PATH
                 funcPath = pepr::.expandPath(
                     pepr::config(p)[[MAIN_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))
                         funcPath = .makeAbsPath(funcPath,dirname(p@file))
-                        if(!file.exists(funcPath))
+                    if (!file.exists(funcPath))
                         stop(
-                            "The function does not exist in the environment and file ",
+                            "The function does not exist in the environment and file '",
                             funcPath,
-                            " does not exist"
+                            "' does not exist"
                         )
-                    readFun = source(funcPath)$value
-                    message("Function read from file: ", funcPath)
-                    readData = .callBiocFun(readFun, args)
+                    # Load the sourced objects into a new environment, 
+                    # so they are not in the .GlobalEnv after the BiocProject 
+                    # function execution
+                    e = new.env()
+                    # only the last defined function is saved into the variable 
+                    # below so first we need to check whether the FUNCTION_NAME 
+                    # defines a preferred function. If it does not, then use the
+                    # lastFun. This is relevant in case multiple functions are
+                    # defined in the file specified in FUNCTION_PATH.
+                    lastFun = source(funcPath, local=e)$value
+                    # check again for the specified funcion name, maybe it is 
+                    # defined in the file which was just sourced
+                    if (!is.null(funcName) && exists(funcName, where=e)) {
+                        message("Function '", funcName,"' read from file '", funcPath, "'")
+                        readData = .callBiocFun(
+                            getFunction(funcName, where=e,mustFind=TRUE), args)
+                        return(.insertPEP(readData, p))
+                    }
+                    # the function indicated in FUNCTION_NAME was not found, 
+                    # use the last one in FUNCTION_PATH
+                    message("Multiple functions found in '", funcPath, "'. Using the last one.")
+                    readData = .callBiocFun(lastFun, args)
                     return(.insertPEP(readData, p))
                 }else{
                     warning("Can't find function in the environment and the value for '"
