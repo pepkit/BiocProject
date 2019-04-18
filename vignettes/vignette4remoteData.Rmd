@@ -48,7 +48,7 @@ sampleAnnotation =  system.file(
   "extdata",
   "example_peps-master",
   "example_BiocProject_remote",
-  "sample_annotation.csv",
+  "sample_table.csv",
   package="BiocProject"
 )
 sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)
@@ -82,7 +82,7 @@ ProjectConfigRemote = system.file(
   package = "BiocProject"
 )
 ```
-Create the `BiocProject` object
+Run the `BiocProject` function. Creates an object returned with the data processing function with a PEP in its `metadata` slot:
 ```{r}
 bpRemote = BiocProject(file=ProjectConfigRemote)
 ```
@@ -91,7 +91,7 @@ With this simple line of code:
 1. the project metadata were read
 1. data processing function was read into `R` envrionment
 1. data were downloaded from the remote source and processed 
-1. everything was conveniently stored in a `BiocProject` object
+1. everything was conveniently stored in the created object
 
 Let's inspect the results:
 ```{r}

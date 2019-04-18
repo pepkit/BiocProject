@@ -83,15 +83,7 @@
 #' @export BiocProject
 BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL, 
                         funcArgs = NULL) {
-    p = tryCatch(
-        expr = { 
-            pepr::Project(file=file, subproject=subproject)
-        },warning = function(w) {
-            message(w)
-            stop("There are warnings 
-                associated with the 'Project' object creation.")
-        }
-    )
+    p = pepr::Project(file=file, subproject=subproject)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
@@ -145,7 +137,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     # was specified in the config.yaml FUNCTION_NAME
                     splitted = strsplit(funcName, ":")[[1]]
                     nonEmpty = splitted[which(splitted != "")]
-                    funcName = utils::getFromNamespace(x=nonEmpty[2], ns=nonEmpty[1])
+                    funcName = utils::getFromNamespace(nonEmpty[2], nonEmpty[1])
                     readData = .callBiocFun(funcName, args)
                     message("Used function ", funcName, " from the environment")
                     return(.insertPEP(readData, p))
@@ -189,6 +181,12 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
 #' into the metadata slot of objects that 
 #' extend the \code{\link[S4Vectors]{Annotated-class}}
 #' 
+#' Additionally, if the object extends the 
+#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+#' as the metadata.
+#' 
 #' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
 #' @param pep an object of class \code{\link[pepr]{Project-class}}
 #' 
@@ -211,14 +209,18 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(!methods::is(pep, "Project")) 
         stop("the pep argument has to be of class 'Project', 
             got '", class(pep),"'")
+    # do we throw a warning/message saying what happens in the next line?
+    if(methods::is(object, "list"))
+        object = S4Vectors::List(object)
     if(methods::is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
-        object
-    }else{
-        warning("The 'object' argument has to be of class 'Annotated', got '",
-                class(object),"'")
+    } else{
+        warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
+                class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
         result = S4Vectors::List(result=object)
         S4Vectors::metadata(result) = list(PEP=pep)
-        result
+        object = result
     }
+    .setShowMethod(object)
+    object
 }

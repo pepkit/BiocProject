@@ -132,3 +132,37 @@
     })))
 }
 
+#' Redefine the show method of the object
+#' 
+#' Adds the Project objects display to the default show method of an \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' The method is defined in the environment in which the function was called, see: \code{\link[base]{sys.parent}}
+#' 
+#' @param returnedObject object of \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' @return \code{FALSE} if the function was not set
+#'
+#' @export
+#'
+#' @examples
+#' x = S4Vectors::List(c("so","cool"))
+#' metadata(x) = list(PEP=pepr::Project())
+#' .setShowMethod(x)
+#' x
+.setShowMethod = function(returnedObject) {
+    oriClass = class(returnedObject)
+    if(!is(returnedObject,"Annotated")){
+        warning("The show method was not redefined for '", oriClass, "'")
+        return(FALSE)
+    }
+    oriShow =  selectMethod("show", oriClass)
+    # the new method is created only if the environment of the original one is locked.
+    # this way the method will not be redefined over and over again when the BiocProject functon is called.
+    if(environmentIsLocked(environment(oriShow)))
+        setMethod("show", signature = oriClass, definition = function(object){
+            do.call(oriShow, list(object))
+            pep = getProject(object)
+            cat("\nmetadata: ")
+            selectMethod("show","Project")(pep)
+        }, where = parent.frame())
+}

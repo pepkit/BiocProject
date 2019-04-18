@@ -1,5 +1,5 @@
 metadata:
-  sample_annotation: sample_annotation.csv
+  sample_table: sample_table.csv
 
 bioconductor:
   readFunName: readBedFiles
