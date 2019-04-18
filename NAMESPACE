@@ -3,6 +3,8 @@
 export(.insertPEP)
 export(.updateList)
 export(BiocProject)
+export(getOutFiles)
+export(populateString)
 exportMethods(config)
 exportMethods(getProject)
 exportMethods(is)
