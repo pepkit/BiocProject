@@ -235,8 +235,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(methods::is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
     } else{
-        warning("To fully exploit features of BiocProject package, the object returned by the data processing function should be of class 'Annotated'. Got '",
-                class(object),"' instead.")
+        warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
+                class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
         result = S4Vectors::List(result=object)
         S4Vectors::metadata(result) = list(PEP=pep)
         object = result
