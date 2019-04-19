@@ -20,6 +20,13 @@ This function inserts the PEP (\code{\link[pepr]{Project-class}})
 into the metadata slot of objects that 
 extend the \code{\link[S4Vectors]{Annotated-class}}
 }
+\details{
+Additionally, if the object extends the 
+\code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+as the metadata.
+}
 \examples{
 # If the object is of class Annotated
 object = S4Vectors::List(result="test")

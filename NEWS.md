@@ -1,4 +1,16 @@
-# BiocProject 0.1.1  - 2019-02-15
+# BiocProject 0.1.2 - unreleased
+
+## Added
+
+* the native `show` methods are redefined for the objects returned by `BiocProject::BiocProject` function, so that they display the PEP component of the object `metadata`
+* `BiocProject` function now handles the case when multiple data processing functions are defined in the config file. The last one is used if there's no match in `readFunName` and any of the functions sourced from the file specified in `readFunPath`
+
+## Changed
+
+* updates in the vignettes related to changes of metadata keys in the Project config
+* when the data processing function function is read from file, it is used within a newly created environment so that it is not left in the `.GlobalEnv` after the `BiocProject` function execution
+
+# BiocProject 0.1.1 - 2019-02-15
 
 ## Added
 
@@ -11,7 +23,7 @@
 * when errors are encountered, BiocProject now returns a PEP (`pepr::Project`) along with the error message in a `S4Vectors::List` object
 * the `bioconductor` section of the config file now follows the Bioconductor coding style (`camelCaps`)
 
-# BiocProject 0.1  - 2019-01-28
+# BiocProject 0.1 - 2019-01-28
 
 ## Added
 
@@ -22,7 +34,7 @@
 
 * **complete concept redesign**: no `BiocProject` class. The objects returned by the custom data reading function have to be of class `Annotated` and the `PEP` is inserted as the first element of its `metadata()` list
 
-# BiocProject 0.0.4  - 2019-01-25
+# BiocProject 0.0.4 - 2019-01-25
 
 ## Changed
 
@@ -30,14 +42,14 @@
 * all exceptions are caught with `BiocProject` constructor
 * fix `.updateSubconfig(.Object@config, sp) : Subproject not found:` warning in `toProject` method
 
-# BiocProject 0.0.3  - 2018-12-21
+# BiocProject 0.0.3 - 2018-12-21
 
 ## Changed
 
 * the default values for all optional arguments are `NULL`
 * change `lambda function` to `anonymous function`
 
-# BiocProject 0.0.2  - 2018-12-01
+# BiocProject 0.0.2 - 2018-12-01
 
 ## Changed
 
@@ -46,7 +58,7 @@
 * errors and warnings (if any) are returned instead of the data
 * if the object constructor can't find the function file, the message is more informative
 
-# BiocProject 0.0.1  - 2018-11-20
+# BiocProject 0.0.1 - 2018-11-20
 
 ## Added
 
