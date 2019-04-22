@@ -7,8 +7,7 @@
 #' @return string with the recoded accession syntax
 #' @examples
 #' pyToR("{sample.name}...{project.source.name}")
-#' @export
-pyToR = function(str) {
+.pyToR = function(str) {
     # This is the regex where the magic happens
     pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
     # This loop allows multi-layer accession
@@ -32,9 +31,8 @@ pyToR = function(str) {
 #' 
 #' @return populated string
 #' @importMethodsFrom pepr samples
-#' @importMethodsFrom glue glue
+#' @importFrom glue glue
 #' 
-#' @export
 #' @examples
 #' configFile = system.file(
 #'   "extdata",
@@ -44,12 +42,12 @@ pyToR = function(str) {
 #'   package = "BiocProject"
 #' )
 #' bp = BiocProject(file=configFile)
-#' populateString("{sample.sample_name}/{sample.file_path}", bp)
-populateString = function(string, project) {
+#' .populateString("{sample.sample_name}/{sample.file_path}", bp)
+.populateString = function(string, project) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
     populatedStrings = apply(pepr::samples(project), 1, function(s) {
-        with(list(sample=s, project=project), glue::glue(pyToR(string)))
+        with(list(sample=s, project=project), glue::glue(.pyToR(string)))
     })
     return(populatedStrings)
 }
@@ -62,11 +60,8 @@ populateString = function(string, project) {
 #' @param project an object of \code{\link[pepr]{Project-class}}
 #'
 #' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-#' @export
 #' @importMethodsFrom pepr getPipelineInterface
-#' @examples
-#' #test
-getOutputs = function(project) {
+.getOutputs = function(project) {
   piface = pepr::getPipelineInterface(project)
   if (is.null(piface)) {
     return(NULL)
@@ -76,10 +71,18 @@ getOutputs = function(project) {
 }
 
 #' Populates and returns output files
-#' @param project pepr::Project object
+#' 
+#' Returns the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+#' 
+#' @param project \code{\link[pepr]{Project-class}} object
+#' 
+#' @return a list of output file paths
+#' 
 #' @export
+#' @examples 
+#' #add examples
 getOutFiles = function(project) {
-    outputs = getOutputs(project)
+    outputs = .getOutputs(project)
     if (is.null(outputs)) {
         return(NULL)
     }
@@ -90,7 +93,7 @@ getOutFiles = function(project) {
         file.path(prefix, path)
     }
     outFilesFull = lapply(outputs, prepend, prefix)
-    outFilesPopulated = lapply(outFilesFull, populateString, project)
+    outFilesPopulated = lapply(outFilesFull, .populateString, project)
     return(outFilesPopulated)
 }
 

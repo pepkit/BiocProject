@@ -82,14 +82,15 @@
 #' @import pepr
 #' @export BiocProject
 BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL, 
-                        funcArgs = NULL) {
+                        funcArgs = NULL, pipelineName = NULL) {
     p = pepr::Project(file=file, subproject=subproject)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
         funcArgs = list()
     }else{
-        if (length(.findProjectInList(funcArgs)) > 0) 
+        if (length(.findProjectInList(funcArgs)) > 0)
+            warning("Project object was found in the arguments list. It will be removed.")
             funcArgs = funcArgs[-.findProjectInList(funcArgs)]
     }
     args = append(list(p), funcArgs)
@@ -243,4 +244,29 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     }
     .setShowMethod(object)
     object
+}
+
+
+#' Get the preferred source of the bioconductor section
+#'
+#' @param p Project object
+#'
+#' @return 
+#' @importFrom pepr getPipelineInterface checkSection config
+.getBiocConfigSrc = function(p, pipelineName) {
+    p
+    if(is.null(pipelineName))
+        pipelineName = 1
+    if(checkSection(config(p), MAIN_SECTION)){
+        message("The '", MAIN_SECTION, "' key found in the Project config")
+        pepr::config(p)
+    } else if(!is.null(getPipelineInterface(p)) && 
+              checkSection(getPipelineInterface(p), 
+                           c(PIPELINES_SECTION, pipelineName, MAIN_SECTION))){
+        message("The '", MAIN_SECTION, "' key found in the pipeline interface")
+        getPipelineInterface(p)[[PIPELINES_SECTION]][[pipelineName]]
+    } else{
+        warning("The '", MAIN_SECTION, "' key is missing in Project config and pipeline interface")
+        invisible(NULL)
+    }
 }

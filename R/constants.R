@@ -12,3 +12,5 @@ MAIN_SECTION = "bioconductor"
 FUNCTION_ARGS = "funcArgs"
 FUNCTION_PATH = "readFunPath"
 FUNCTION_NAME = "readFunName"
+
+PIPELINES_SECTION = "pipelines"

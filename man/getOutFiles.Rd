@@ -7,8 +7,14 @@
 getOutFiles(project)
 }
 \arguments{
-\item{project}{pepr::Project object}
+\item{project}{\code{\link[pepr]{Project-class}} object}
+}
+\value{
+a list of output file paths
 }
 \description{
-Populates and returns output files
+Returns the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+}
+\examples{
+#add examples
 }

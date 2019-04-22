@@ -5,7 +5,7 @@
 \title{Portable Encapsulated Project (PEP) for biological applications}
 \usage{
 BiocProject(file, subproject = NULL, autoLoad = TRUE, func = NULL,
-  funcArgs = NULL)
+  funcArgs = NULL, pipelineName = NULL)
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
