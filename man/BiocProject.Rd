@@ -27,6 +27,11 @@ to pass to the \code{func}.
  but if provided regardless, the constructor will disregard it. 
  You can also pass the arguments in a \code{funcArgs} section within 
  the \code{bioconductor} section in the config file.}
+
+\item{pipelineName}{a string indicating the name of the pipeline in the 
+pipeline interface. It is used for the \code{bioconductor} section 
+selection. If none privided and there's no \code{bioconductor} section in 
+the config file, the first pipeline in the pipeline interface will be used.}
 }
 \value{
 an object of \code{\link[S4Vectors]{Annotated-class}} that is 

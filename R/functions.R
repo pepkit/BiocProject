@@ -63,6 +63,10 @@
 #'  the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
+#' @param pipelineName a string indicating the name of the pipeline in the 
+#'  pipeline interface. It is used for the \code{bioconductor} section 
+#'  selection. If none privided and there's no \code{bioconductor} section in 
+#'  the config file, the first pipeline in the pipeline interface will be used. 
 #'
 #' @return an object of \code{\link[S4Vectors]{Annotated-class}} that is 
 #' returned by the user provided function with 
@@ -94,7 +98,10 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
             funcArgs = funcArgs[-.findProjectInList(funcArgs)]
     }
     args = append(list(p), funcArgs)
-    if(pepr::checkSection(pepr::config(p), c(MAIN_SECTION, FUNCTION_ARGS))){
+    cfg = .getBiocConfig(p, pipelineName)
+    if(is.null(cfg))
+        cfg = pepr::config(p)
+    if(pepr::checkSection(cfg, c(MAIN_SECTION, FUNCTION_ARGS))){
         args = .updateList(config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
@@ -118,13 +125,13 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                                     got '", class(autoLoad),"'")
         if (autoLoad) {
             # check if the config consists of MAIN_SECTION section
-            if(!pepr::checkSection(pepr::config(p), MAIN_SECTION)){
+            if(!pepr::checkSection(cfg, MAIN_SECTION)){
                 message("No data was read. Returning a Project object")
                 warning("The config YAML is missing the '",
                         MAIN_SECTION,"' section.")
                 return(p)
             }    
-            funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
+            funcName = cfg[[MAIN_SECTION]][[FUNCTION_NAME]]
             # check if the function name was provided
             # and if it exists in the environment
             if (!is.null(funcName) && exists(funcName)) {
@@ -148,7 +155,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 # trying to source the file specified 
                 # in the config.yaml FUNCTION_PATH
                 funcPath = pepr::.expandPath(
-                    pepr::config(p)[[MAIN_SECTION]][[FUNCTION_PATH]])
+                    cfg[[MAIN_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))
                         funcPath = .makeAbsPath(funcPath,dirname(p@file))
@@ -251,9 +258,9 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
 #'
 #' @param p Project object
 #'
-#' @return 
+#' @return a list with the selected config
 #' @importFrom pepr getPipelineInterface checkSection config
-.getBiocConfigSrc = function(p, pipelineName) {
+.getBiocConfig = function(p, pipelineName) {
     p
     if(is.null(pipelineName))
         pipelineName = 1

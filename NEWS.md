@@ -1,3 +1,11 @@
+# BiocProject 0.2.1 - unreleased
+
+## Added
+
+* the `bioconductor` section can be provided in either in the pipeline interface or in the project config 
+
+## Changed
+
 # BiocProject 0.2 - 2019-04-19
 
 ## Added
