@@ -1,21 +1,22 @@
-
 #' Switches from python to R list accession syntax
 #' 
-#' Python uses a dot to access attributes, while R uses `$`; this function
+#' Python uses a dot to access attributes, while R uses \code{$}; this function
 #' converts the python style into R so that we can use R code to populate
-#' variables with R lists. From this: '(sample.name}' to this: '{sample$name}'
+#' variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
 #' @param str String to recode
+#' @return string with the recoded accession syntax
 #' @examples
-#' pytor("{sample.name}...{project.source.name}")
-pytor = function(str) {
+#' pyToR("{sample.name}...{project.source.name}")
+#' @export
+pyToR = function(str) {
     # This is the regex where the magic happens
-    pytor1 = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
+    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
     # This loop allows multi-layer accession
     res = str
     prev = ""
     while (prev != res) {
         prev = res
-        res = pytor1(res)
+        res = pytor(res)
     }
     return(res)
 }
@@ -25,8 +26,14 @@ pytor = function(str) {
 #' Given a string and a project this function will go through samples and populate
 #' the variables. Used to return real files for each sample from an output variable
 #' in the pipeline interface
+#' 
 #' @param string Variable-encoded string to populate
-#' @param pepr::Project object with values to draw from
+#' @param \code{\link[pepr]{Project-class}} object with values to draw from
+#' 
+#' @return populated string
+#' @importMethodsFrom pepr samples
+#' @importMethodsFrom glue glue
+#' 
 #' @export
 #' @examples
 #' configFile = system.file(
@@ -42,27 +49,25 @@ populateString = function(string, project) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
     populatedStrings = apply(pepr::samples(project), 1, function(s) {
-        with(list(sample=s, project=project), glue::glue(pytor(string)))
+        with(list(sample=s, project=project), glue::glue(pyToR(string)))
     })
     return(populatedStrings)
 }
 
-#' Returns pipeline interface object
-#' TODO: handle multiple pipeline interfaces
-#' TODO: Load this at construction time.
-getPiface = function(project) {
-    if (!is.null(config(bp)$metadata$pipeline_interface)) {
-        piface = yaml::yaml.load_file(pepr::config(project)$metadata$pipeline_interface)
-        return(piface)
-    } else {
-        message("No pipeline interface found.")
-        return(NULL)
-    }
 
-}
-
+#' Get the outputs
+#'
+#' Gets the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+#'
+#' @param project an object of \code{\link[pepr]{Project-class}}
+#'
+#' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
+#' @export
+#' @importMethodsFrom pepr getPipelineInterface
+#' @examples
+#' #test
 getOutputs = function(project) {
-  piface = getPiface(project)
+  piface = pepr::getPipelineInterface(project)
   if (is.null(piface)) {
     return(NULL)
   }
