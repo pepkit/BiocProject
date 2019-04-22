@@ -7,7 +7,7 @@
 .getBiocConfig(p, pipelineName)
 }
 \arguments{
-\item{p}{Project object}
+\item{p}{\code{\link[pepr]{Project-class}} object}
 }
 \value{
 a list with the selected config

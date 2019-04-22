@@ -1,3 +1,98 @@
+
+#' Insert a PEP metadata in a metadata slot of Annotated
+#' 
+#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
+#' into the metadata slot of objects that 
+#' extend the \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' Additionally, if the object extends the 
+#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+#' as the metadata.
+#' 
+#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
+#' @param pep an object of class \code{\link[pepr]{Project-class}}
+#' 
+#' @return an object of the same class as the object argument but enriched
+#'  with the metadata from the pep argument
+#' 
+#' @examples 
+#' # If the object is of class Annotated
+#' object = S4Vectors::List(result="test")
+#' result = .insertPEP(object, pepr::Project())
+#' metadata(result)
+#' 
+#' # If the object is not of class Annotated
+#' object1 = "test"
+#' result1 = .insertPEP(object1, pepr::Project())
+#' metadata(result1)
+#' @import S4Vectors methods
+#' @export
+.insertPEP = function(object, pep) {
+    if(!methods::is(pep, "Project")) 
+        stop("the pep argument has to be of class 'Project', 
+             got '", class(pep),"'")
+    # do we throw a warning/message saying what happens in the next line?
+    if(methods::is(object, "list"))
+        object = S4Vectors::List(object)
+    if(methods::is(object, "Annotated")){
+        S4Vectors::metadata(object) = list(PEP=pep)
+    } else{
+        warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
+                class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
+        result = S4Vectors::List(result=object)
+        S4Vectors::metadata(result) = list(PEP=pep)
+        object = result
+    }
+    .setShowMethod(object)
+    object
+}
+
+
+#' Get the preferred source of the bioconductor section
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#'
+#' @return a list with the selected config
+#' @importFrom pepr getPipelineInterface checkSection config
+.getBiocConfig = function(p, pipelineName) {
+    if(is.null(pipelineName))
+        pipelineName = 1
+    if(checkSection(config(p), MAIN_SECTION)){
+        message("The '", MAIN_SECTION, "' key found in the Project config")
+        pepr::config(p)
+    } else if(!is.null(getPipelineInterface(p)) && 
+              checkSection(getPipelineInterface(p), 
+                           c(PIPELINES_SECTION, pipelineName, MAIN_SECTION))){
+        message("The '", MAIN_SECTION, "' key found in the pipeline interface")
+        methods::new("Config", getPipelineInterface(p)[[PIPELINES_SECTION]][[pipelineName]])
+        .makeReadFunPathAbs(p, getPipelineInterface(p)[[PIPELINES_SECTION]][[pipelineName]])
+    } else{
+        warning("The '", MAIN_SECTION, "' key is missing in Project config and pipeline interface")
+        invisible(NULL)
+    }
+}
+
+#' Make readFunPath absolute
+#' 
+#' Uses the absolute pipeline interface path in the config to determine the
+#' absolute path to the readFunPath file that consists of the data processing function
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
+.makeReadFunPathAbs = function(p, piface){
+    pth = piface[[MAIN_SECTION]][[FUNCTION_PATH]]
+    absReadFunPath = file.path(dirname(pepr::config(p)$metadata$pipeline_interfaces), pth)
+    if(!.isAbsolute(absReadFunPath))
+        stop("Failed to make the readFunPath absolute")
+    piface[[MAIN_SECTION]][[FUNCTION_PATH]] = absReadFunPath
+    methods::new("Config", piface)
+}
+
+
 # internal function used for wrapping the user-supplied function meessages 
 # in a box
 .wrapFunMessages = function(messages, type) {
