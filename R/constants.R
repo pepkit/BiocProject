@@ -14,3 +14,4 @@ FUNCTION_PATH = "readFunPath"
 FUNCTION_NAME = "readFunName"
 
 PIPELINES_SECTION = "pipelines"
+OUTPUTS_SECTION = "outputs"

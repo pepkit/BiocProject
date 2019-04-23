@@ -55,19 +55,21 @@
 #' @param p \code{\link[pepr]{Project-class}} object
 #'
 #' @return a list with the selected config
-#' @importFrom pepr getPipelineInterface checkSection config
+#' @importFrom pepr getPipelineInterfaces checkSection config
 .getBiocConfig = function(p, pipelineName) {
     if(is.null(pipelineName))
+        # if not pipeline name specified, use the first pipeline defined in 
+        # the pipeline interface file
         pipelineName = 1
     if(checkSection(config(p), MAIN_SECTION)){
         message("The '", MAIN_SECTION, "' key found in the Project config")
         pepr::config(p)
-    } else if(!is.null(getPipelineInterface(p)) && 
-              checkSection(getPipelineInterface(p), 
+    } else if(!is.null(getPipelineInterfaces(p)) && 
+              checkSection(getPipelineInterfaces(p), 
                            c(PIPELINES_SECTION, pipelineName, MAIN_SECTION))){
         message("The '", MAIN_SECTION, "' key found in the pipeline interface")
-        methods::new("Config", getPipelineInterface(p)[[PIPELINES_SECTION]][[pipelineName]])
-        .makeReadFunPathAbs(p, getPipelineInterface(p)[[PIPELINES_SECTION]][[pipelineName]])
+        methods::new("Config", getPipelineInterfaces(p)[[PIPELINES_SECTION]][[pipelineName]])
+        .makeReadFunPathAbs(p, getPipelineInterfaces(p)[[PIPELINES_SECTION]][[pipelineName]])
     } else{
         warning("The '", MAIN_SECTION, "' key is missing in Project config and pipeline interface")
         invisible(NULL)
@@ -261,3 +263,4 @@
             selectMethod("show","Project")(pep)
         }, where = parent.frame())
 }
+

@@ -2,16 +2,19 @@
 % Please edit documentation in R/pipeline_interface.R
 \name{.getOutputs}
 \alias{.getOutputs}
-\title{Get the outputs}
+\title{Get outputs from pipeline}
 \usage{
-.getOutputs(project)
+.getOutputs(.Object)
 }
 \arguments{
-\item{project}{an object of \code{\link[pepr]{Project-class}}}
+\item{.Object}{pipeline, an object of \code{\link[pepr]{Config-class}}}
 }
 \value{
 named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 }
 \description{
-Gets the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+Extracts the output file templates defined for a given pipeline
+}
+\examples{
+# add example
 }

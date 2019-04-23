@@ -53,22 +53,27 @@
 }
 
 
-#' Get the outputs
+#' Get outputs from pipeline
+#' 
+#' Extracts the output file templates defined for a given pipeline
 #'
-#' Gets the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
-#'
-#' @param project an object of \code{\link[pepr]{Project-class}}
+#' @param .Object pipeline, an object of \code{\link[pepr]{Config-class}} 
 #'
 #' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-#' @importMethodsFrom pepr getPipelineInterface
-.getOutputs = function(project) {
-  piface = pepr::getPipelineInterface(project)
-  if (is.null(piface)) {
-    return(NULL)
-  }
-  outputs = piface$pipelines$pepatac.py$outputs
-  outputs
-}
+#' @export
+#'
+#' @examples
+#' # add example
+setGeneric(".getOutputs", function(.Object)
+    standardGeneric(".getOutputs"))
+
+#' @describeIn .getOutputs extracts output templates from a pipeline
+setMethod(".getOutputs","Config",function(.Object){
+    if(!pepr::checkSection(.Object, OUTPUTS_SECTION))
+        stop("There's no '", OUTPUTS_SECTION , 
+             "' section in the provided pipeline.")  
+    .Object[[OUTPUTS_SECTION]]
+})
 
 #' Populates and returns output files
 #' 
@@ -97,3 +102,26 @@ getOutFiles = function(project) {
     return(outFilesPopulated)
 }
 
+#' Get pipelines defined within a pipeline interface
+#'
+#' @param .Object a pipeline interface, an object of \code{\link[pepr]{Config-class}} 
+#'
+#' @return a list of pipelines, objets of \code{\link[pepr]{Config-class}} 
+#' @export
+#'
+#' @examples
+#' # add example
+setGeneric("getPipelines", function(.Object)
+    standardGeneric("getPipelines"))
+
+#' @describeIn getPipelines extracts pipelines from a pipeline interface
+setMethod("getPipelines","Config",function(.Object){
+    if(checkSection(.Object, PIPELINES_SECTION)){
+        lapply(.Object[[PIPELINES_SECTION]], function(x){
+            methods::new("Config", x)
+        })
+    }else{
+        warning("The '", PIPELINES_SECTION
+                ,"' section is not defined in the provided pipeline interface.")
+    }
+})
