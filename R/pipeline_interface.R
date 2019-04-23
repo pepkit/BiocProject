@@ -125,3 +125,28 @@ setMethod("getPipelines","Config",function(.Object){
                 ,"' section is not defined in the provided pipeline interface.")
     }
 })
+
+#' Get protocol mappings defined within a pipeline interface
+#'
+#' @param .Object a pipeline interface, an object of \code{\link[pepr]{Config-class}} 
+#'
+#' @return a named list, where the names of the elements are the 
+#' protocols and the elements names of the pipelines
+#' @export
+#'
+#' @examples
+#' # add example
+setGeneric("getProtocolMappings", function(.Object)
+    standardGeneric("getProtocolMappings"))
+
+#' @describeIn getProtocolMappings extracts protocol mappings from a pipeline interface
+setMethod("getProtocolMappings","Config",function(.Object){
+    if(checkSection(.Object, PROTO_MAP_SECTION)){
+        lapply(.Object[[PROTO_MAP_SECTION]], function(x){
+            x
+        })
+    }else{
+        warning("The '", PROTO_MAP_SECTION
+                ,"' section is not defined in the provided pipeline interface.")
+    }
+})
