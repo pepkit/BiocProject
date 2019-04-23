@@ -86,11 +86,33 @@ setMethod(".getOutputs","Config",function(.Object){
 #' @export
 #' @examples 
 #' #add examples
-getOutFiles = function(project) {
-    outputs = .getOutputs(project)
-    if (is.null(outputs)) {
-        return(NULL)
+getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
+    outputs = NULL
+    pifaces = getPipelineInterfaces(project)
+    for(piface in pifaces){
+        pipelines = getPipelines(piface)
+        protoMappings = getProtocolMappings(piface)
+        protocolMappingNames = names(protoMappings)
+        if(!all(protocolNames %in% protocolMappingNames))
+            stop("Not all protocolNames are vaild protocols in the pipeline interface. Select from: ", paste0(protocolMappingNames,collapse=", "))
+        idx = as.numeric(which(names(protoMappings) == protocolNames))
+        if(length(idx) > 0){
+            pipelineNames = append(pipelineNames, protoMappings[[protocolNames]])
+            message("protocolNames: ", paste0(protocolMappingNames,", ")," were used for pipelineNames selection: ", paste0(pipelineNames, collapse=", "))
+        }
+        idx = which(names(pipelines) == pipelineNames)
+        if(length(idx) > 0){
+            message(paste0(names(pipelines)[idx], collapse=", "), " matched the requirements")
+            pipelines = pipelines[idx]
+            for(pipeline in pipelines){
+                outputs = append(outputs, .getOutputs(pipeline))
+            }
+        }else{
+            message("No pipeline matched") # TODO: remove
+        }
     }
+    if (is.null(outputs))
+        return(NULL)
     prefix = ifelse(is.null(config(project)$metadata$results_subdir),
                   "results_pipeline", config(project)$metadata$results_subdir)
     prefix = file.path(prefix, "{sample$sample_name}/")
@@ -123,6 +145,7 @@ setMethod("getPipelines","Config",function(.Object){
     }else{
         warning("The '", PIPELINES_SECTION
                 ,"' section is not defined in the provided pipeline interface.")
+        invisible(NULL)
     }
 })
 
@@ -148,5 +171,6 @@ setMethod("getProtocolMappings","Config",function(.Object){
     }else{
         warning("The '", PROTO_MAP_SECTION
                 ,"' section is not defined in the provided pipeline interface.")
+        invisible(NULL)
     }
 })
