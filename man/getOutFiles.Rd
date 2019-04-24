@@ -4,7 +4,7 @@
 \alias{getOutFiles}
 \title{Populates and returns output files}
 \usage{
-getOutFiles(project)
+getOutFiles(project, pipelineNames = NULL, protocolNames = NULL)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}

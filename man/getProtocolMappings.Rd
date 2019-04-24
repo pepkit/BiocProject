@@ -14,7 +14,7 @@ getProtocolMappings(.Object)
 \item{.Object}{a pipeline interface, an object of \code{\link[pepr]{Config-class}}}
 }
 \value{
-a named list of pipelines, where the names of the elements are the 
+a named list, where the names of the elements are the 
 protocols and the elements names of the pipelines
 }
 \description{

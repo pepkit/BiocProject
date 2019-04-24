@@ -96,6 +96,7 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
     pifaces = getPipelineInterfaces(project)
     # message(length(pifaces), " pipeline intrafaces found")
     cnt = 0
+    ret = list()
     for (piface in pifaces) {
         pipN = pipelineNames
         proN = protocolNames
@@ -104,15 +105,17 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
         # message("pipeline interface ", cnt, " defines: ", paste0(names(pipelines), collapse=", "))
         protoMappings = getProtocolMappings(piface)
         protocolMappingNames = names(protoMappings)
-        if (!all(proN %in% protocolMappingNames))
-            stop("Not all protocolNames are vaild protocols in the pipeline ",
-                 "interface. Select from: ", paste0(protocolMappingNames,
+        if (!all(proN %in% protocolMappingNames)){
+            warning("Not all protocolNames are vaild protocols in the pipeline ",
+                 "interface ", cnt,". Select from: ", paste0(protocolMappingNames,
                                                    collapse=", "))
+            next
+        }
         idx = match(proN, protocolMappingNames)
         idx = idx[!is.na(idx)]
         if (length(idx) > 0) {
             if(all(is.na(match(names(pipelines), protoMappings[[idx]]))))
-                warning("No pipelines were matched by selected protocol: ", proN)
+                warning("No pipelines in pipeline_interface ", cnt," were matched by selected protocol: ", proN)
             pipN = append(pipN, protoMappings[[idx]])
             message("protocolNames: ", paste0(proN, collapse=", "),
                     " were used for pipelineNames selection: ",
@@ -121,25 +124,20 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
         idx = which(names(pipelines) == pipN)
         if (length(idx) > 0) {
             pipelines = pipelines[idx]
-            for(pipeline in pipelines){
-                outputs = append(outputs, .getOutputs(pipeline))
+            pipOutputs = list()
+            for(i in seq_along(pipelines)){
+                pipelineOutputs = .getOutputs(pipelines[[i]])
+                if(is.null(pipelineOutputs)) next
+                pipOutputs[[names(pipelines)[i]]] = .populateTemplates(project, pipelineOutputs)
             }
+            ret[[cnt]] = pipOutputs
         }
     }
-    outputs = unique(outputs)
-    if (is.null(outputs)){
-        warning("No pipelines matched the requirements")
+    if (length(ret) < 1){
+        stop("No pipelines matched the requirements")
         return(invisible(NULL))
     }
-    prefix = ifelse(is.null(config(project)$metadata$results_subdir),
-                  "results_pipeline", config(project)$metadata$results_subdir)
-    prefix = file.path(prefix, "{sample$sample_name}/")
-    prepend = function(path, prefix) {
-        file.path(prefix, path)
-    }
-    outFilesFull = lapply(outputs, prepend, prefix)
-    outFilesPopulated = lapply(outFilesFull, .populateString, project)
-    return(outFilesPopulated)
+    ret
 }
 
 #' Get pipelines defined within a pipeline interface
@@ -192,3 +190,20 @@ setMethod("getProtocolMappings","Config",function(.Object){
         invisible(NULL)
     }
 })
+
+#' Populate list of path templates
+#'
+#' @param project an object of \code{\link[pepr]{Config-class}} 
+#' @param templList list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"
+#'
+#' @return list of strings
+.populateTemplates <- function(project, templList) {
+    prefix = ifelse(is.null(config(project)$metadata$results_subdir),
+                    "results_pipeline", config(project)$metadata$results_subdir)
+    prefix = file.path(prefix, "{sample$sample_name}/")
+    prepend = function(path, prefix) {
+        file.path(prefix, path)
+    }
+    outFilesFull = lapply(templList, prepend, prefix)
+    lapply(outFilesFull, .populateString, project)
+}
