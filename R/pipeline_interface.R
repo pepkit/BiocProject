@@ -80,11 +80,17 @@ setMethod(".getOutputs","Config",function(.Object){
 
 #' Populates and returns output files
 #' 
-#' Returns the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+#' Returns the pipeline outputs which are defined in the pipeline interface 
+#' indicated in the \code{\link[pepr]{Project-class}}
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
+#' @param pipelineNames char vector of pipeline names to return the outputs for
+#' @param protocolNames char vector of protocol names to match the pipelines 
+#' and return their outputs
 #' 
-#' @return a list of output file paths
+#' @return a list of output file paths. The order of the first level of the 
+#' list corresponds to the order of the pipeline interface files, second level 
+#' order (named) reflects the pipelines within the files.
 #' 
 #' @export
 #' @examples 

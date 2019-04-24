@@ -8,12 +8,20 @@ getOutFiles(project, pipelineNames = NULL, protocolNames = NULL)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
+
+\item{pipelineNames}{char vector of pipeline names to return the outputs for}
+
+\item{protocolNames}{char vector of protocol names to match the pipelines 
+and return their outputs}
 }
 \value{
-a list of output file paths
+a list of output file paths. The order of the first level of the 
+list corresponds to the order of the pipeline interface files, second level 
+order (named) reflects the pipelines within the files.
 }
 \description{
-Returns the pipeline outputs which are defined in the pipeline interface indicated in the \code{\link[pepr]{Project-class}}
+Returns the pipeline outputs which are defined in the pipeline interface 
+indicated in the \code{\link[pepr]{Project-class}}
 }
 \examples{
 #add examples
