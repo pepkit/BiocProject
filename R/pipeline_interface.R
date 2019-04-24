@@ -69,9 +69,17 @@ setGeneric(".getOutputs", function(.Object)
 
 #' @describeIn .getOutputs extracts output templates from a pipeline
 setMethod(".getOutputs","Config",function(.Object){
-    if(!pepr::checkSection(.Object, OUTPUTS_SECTION))
-        stop("There's no '", OUTPUTS_SECTION , 
-             "' section in the provided pipeline.")  
+    if(!pepr::checkSection(.Object, OUTPUTS_SECTION)){
+        pipName = tryCatch({
+            .Object$name
+        }, error = function(e){
+            "provided"
+        })
+        
+        warning("There's no '", OUTPUTS_SECTION , 
+             "' section in the ", pipName," pipeline.")
+        return(invisible(NULL))
+    }
     .Object[[OUTPUTS_SECTION]]
 })
 
@@ -87,32 +95,47 @@ setMethod(".getOutputs","Config",function(.Object){
 #' @examples 
 #' #add examples
 getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
+    if(!is.null(pipelineNames) && !is.null(protocolNames))
+        stop("Use just one pipeline outputs selection method")
     outputs = NULL
     pifaces = getPipelineInterfaces(project)
-    for(piface in pifaces){
+    # message(length(pifaces), " pipeline intrafaces found")
+    cnt = 0
+    for (piface in pifaces) {
+        pipN = pipelineNames
+        proN = protocolNames
+        cnt = cnt + 1
         pipelines = getPipelines(piface)
+        # message("pipeline interface ", cnt, " defines: ", paste0(names(pipelines), collapse=", "))
         protoMappings = getProtocolMappings(piface)
         protocolMappingNames = names(protoMappings)
-        if(!all(protocolNames %in% protocolMappingNames))
-            stop("Not all protocolNames are vaild protocols in the pipeline interface. Select from: ", paste0(protocolMappingNames,collapse=", "))
-        idx = as.numeric(which(names(protoMappings) == protocolNames))
-        if(length(idx) > 0){
-            pipelineNames = append(pipelineNames, protoMappings[[protocolNames]])
-            message("protocolNames: ", paste0(protocolMappingNames,", ")," were used for pipelineNames selection: ", paste0(pipelineNames, collapse=", "))
+        if (!all(proN %in% protocolMappingNames))
+            stop("Not all protocolNames are vaild protocols in the pipeline ",
+                 "interface. Select from: ", paste0(protocolMappingNames,
+                                                   collapse=", "))
+        idx = match(proN, protocolMappingNames)
+        idx = idx[!is.na(idx)]
+        if (length(idx) > 0) {
+            if(all(is.na(match(names(pipelines), protoMappings[[idx]]))))
+                warning("No pipelines were matched by selected protocol: ", proN)
+            pipN = append(pipN, protoMappings[[idx]])
+            message("protocolNames: ", paste0(proN, collapse=", "),
+                    " were used for pipelineNames selection: ",
+                    paste0(pipN, collapse=", "))
         }
-        idx = which(names(pipelines) == pipelineNames)
-        if(length(idx) > 0){
-            message(paste0(names(pipelines)[idx], collapse=", "), " matched the requirements")
+        idx = which(names(pipelines) == pipN)
+        if (length(idx) > 0) {
             pipelines = pipelines[idx]
             for(pipeline in pipelines){
                 outputs = append(outputs, .getOutputs(pipeline))
             }
-        }else{
-            message("No pipeline matched") # TODO: remove
         }
     }
-    if (is.null(outputs))
-        return(NULL)
+    outputs = unique(outputs)
+    if (is.null(outputs)){
+        warning("No pipelines matched the requirements")
+        return(invisible(NULL))
+    }
     prefix = ifelse(is.null(config(project)$metadata$results_subdir),
                   "results_pipeline", config(project)$metadata$results_subdir)
     prefix = file.path(prefix, "{sample$sample_name}/")
