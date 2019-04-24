@@ -56,24 +56,46 @@
 #'
 #' @return a list with the selected config
 #' @importFrom pepr getPipelineInterfaces checkSection config
+#' @importFrom methods new
 .getBiocConfig = function(p, pipelineName) {
-    if(is.null(pipelineName))
-        # if not pipeline name specified, use the first pipeline defined in 
+    if(checkSection(config(p), MAIN_SECTION)){
+        # if the MAIN_SECTION section is found in the project config,
+        # override any other locations
+        message("The '", MAIN_SECTION, "' key found in the Project config")
+        return(config(p))
+    }
+    if (is.null(pipelineName)){
+        # if no pipeline name specified, use the first pipeline defined in 
         # the pipeline interface file
         pipelineName = 1
-    if(checkSection(config(p), MAIN_SECTION)){
-        message("The '", MAIN_SECTION, "' key found in the Project config")
-        pepr::config(p)
-    } else if(!is.null(getPipelineInterfaces(p)) && 
-              checkSection(getPipelineInterfaces(p), 
-                           c(PIPELINES_SECTION, pipelineName, MAIN_SECTION))){
-        message("The '", MAIN_SECTION, "' key found in the pipeline interface")
-        methods::new("Config", getPipelineInterfaces(p)[[PIPELINES_SECTION]][[pipelineName]])
-        .makeReadFunPathAbs(p, getPipelineInterfaces(p)[[PIPELINES_SECTION]][[pipelineName]])
-    } else{
-        warning("The '", MAIN_SECTION, "' key is missing in Project config and pipeline interface")
-        invisible(NULL)
+        piface = getPipelineInterfaces(p)[[1]]
+    } else {
+        piface = .getPifaceByPipeline(pipelineName, getPipelineInterfaces(p))
     }
+        
+    if (!is.null(piface) && checkSection(piface, c(PIPELINES_SECTION, pipelineName, MAIN_SECTION))) {
+        message("The '", MAIN_SECTION, "' key found in the pipeline interface")
+        new("Config", piface[[PIPELINES_SECTION]][[pipelineName]])
+        return(.makeReadFunPathAbs(p, piface[[PIPELINES_SECTION]][[pipelineName]]))
+    } else {
+        warning("The '", MAIN_SECTION, "' key is missing in Project config and pipeline interface")
+        return(invisible(NULL))
+    } 
+}
+
+#' Get the pipeline interface with a pipeline
+#' 
+#' Gets the pipeline interface which defines the pipeline from a list of pipeline interfaces
+#'
+#' @param pipeline string, name of the pipeline
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the selected pipeline defined
+.getPifaceByPipeline = function(pipeline, pifaces){
+    for (piface in pifaces) {
+        if (pipeline %in% names(getPipelines(piface))) return(piface)
+    }
+    warning("No pipeline interface defines '", pipeline, "' pipeline")
+    NULL
 }
 
 #' Make readFunPath absolute

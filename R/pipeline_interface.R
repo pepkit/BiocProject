@@ -71,7 +71,7 @@ setGeneric(".getOutputs", function(.Object)
 setMethod(".getOutputs","Config",function(.Object){
     if(!pepr::checkSection(.Object, OUTPUTS_SECTION)){
         pipName = ifelse(is.null(.Object$name),"provided",.Object$name)
-        warning("There's no '", OUTPUTS_SECTION , 
+        warning("There is no '", OUTPUTS_SECTION , 
              "' section in the ", pipName," pipeline.")
         return(invisible(NULL))
     }
@@ -103,17 +103,16 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
     # message(length(pifaces), " pipeline intrafaces found")
     cnt = 0
     ret = list()
-    for (piface in pifaces) {
+    for (i in seq_along(pifaces)) {
         pipN = pipelineNames
         proN = protocolNames
-        cnt = cnt + 1
-        pipelines = getPipelines(piface)
-        # message("pipeline interface ", cnt, " defines: ", paste0(names(pipelines), collapse=", "))
-        protoMappings = getProtocolMappings(piface)
+        pipelines = getPipelines(pifaces[[i]])
+        # message("pipeline interface ", i, " defines: ", paste0(names(pipelines), collapse=", "))
+        protoMappings = getProtocolMappings(pifaces[[i]])
         protocolMappingNames = names(protoMappings)
         if (!all(proN %in% protocolMappingNames)){
             warning("Not all protocolNames are vaild protocols in the pipeline ",
-                 "interface ", cnt,". Select from: ", paste0(protocolMappingNames,
+                 "interface ", i,". Select from: ", paste0(protocolMappingNames,
                                                    collapse=", "))
             next
         }
@@ -121,7 +120,7 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
         idx = idx[!is.na(idx)]
         if (length(idx) > 0) {
             if(all(is.na(match(names(pipelines), protoMappings[[idx]]))))
-                warning("No pipelines in pipeline_interface ", cnt," were matched by selected protocol: ", proN)
+                warning("No pipelines in pipeline_interface ", i," were matched by selected protocol: ", proN)
             pipN = append(pipN, protoMappings[[idx]])
             message("protocolNames: ", paste0(proN, collapse=", "),
                     " were used for pipelineNames selection: ",
@@ -131,12 +130,12 @@ getOutFiles = function(project, pipelineNames=NULL, protocolNames=NULL) {
         if (length(idx) > 0) {
             pipelines = pipelines[idx]
             pipOutputs = list()
-            for(i in seq_along(pipelines)){
-                pipelineOutputs = .getOutputs(pipelines[[i]])
+            for(j in seq_along(pipelines)){
+                pipelineOutputs = .getOutputs(pipelines[[j]])
                 if(is.null(pipelineOutputs)) next
-                pipOutputs[[names(pipelines)[i]]] = .populateTemplates(project, pipelineOutputs)
+                pipOutputs[[names(pipelines)[j]]] = .populateTemplates(project, pipelineOutputs)
             }
-            ret[[cnt]] = pipOutputs
+            ret[[i]] = pipOutputs
         }
     }
     if (length(ret) < 1){
