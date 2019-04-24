@@ -70,12 +70,7 @@ setGeneric(".getOutputs", function(.Object)
 #' @describeIn .getOutputs extracts output templates from a pipeline
 setMethod(".getOutputs","Config",function(.Object){
     if(!pepr::checkSection(.Object, OUTPUTS_SECTION)){
-        pipName = tryCatch({
-            .Object$name
-        }, error = function(e){
-            "provided"
-        })
-        
+        pipName = ifelse(is.null(.Object$name),"provided",.Object$name)
         warning("There's no '", OUTPUTS_SECTION , 
              "' section in the ", pipName," pipeline.")
         return(invisible(NULL))
