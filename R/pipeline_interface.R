@@ -48,8 +48,10 @@
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
     samplesSubset = samplesByProtocol(samples(project), protocolName)
-    if (NROW(samplesSubset) < 1)
-        stop("No samples matched the ", protocolName," protocol")
+    if (NROW(samplesSubset) < 1){
+        warning("No samples matched the ", protocolName," protocol")
+        return(invisible(NULL))
+    }
     populatedStrings = apply(samplesSubset, 1, function(s) {
         with(list(sample=s, project=project), glue(.pyToR(string)))
     })
@@ -101,21 +103,31 @@ setMethod(".getOutputs","Config",function(.Object){
 #' #add examples
 getOutFiles = function(project, protocolNames=NULL) {
     ret = list()
+    # make sure no duplicates exist
+    protocolNames = unique(protocolNames)
     pifaces = getPipelineInterfaces(project)
     for (i in seq_along(pifaces)) {
         pifaceRet = list()
         protoMappings = getProtocolMappings(pifaces[[i]])
         pifaceProtoNames = names(protoMappings)
+        # find protocol names that both exist in the pipeline interface 
+        # and were requested
         validProtoNames = pifaceProtoNames[match(protocolNames, pifaceProtoNames)]
         validProtoNames = validProtoNames[!is.na(validProtoNames)]
+        # if there are none, skip iteration
         if(length(validProtoNames) < 1) next
         protRet = list()
         for (j in seq_along(validProtoNames)) {
+            # get the pipelines that match the protocol
             pipelines = getPipelines(pifaces[[i]], validProtoNames[j])
             pipRet = list()
             for (k in seq_along(pipelines)) {
+                # get the output templates fot the pipeline
                 pipelineOutputs = .getOutputs(pipelines[[k]])
+                # if there are none, skip iteration
                 if (is.null(pipelineOutputs)) next
+                # populate the templates with the sample data, only samples that
+                # have the protocol attribute matching the protocol are used
                 pipRet[[names(pipelines)[k]]] = 
                     .populateTemplates(project, pipelineOutputs, validProtoNames[j])
             }
