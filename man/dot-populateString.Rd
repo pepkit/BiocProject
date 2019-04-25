@@ -4,17 +4,17 @@
 \alias{.populateString}
 \title{Populates a variable-encoded string with sample/project variables}
 \usage{
-.populateString(string, project)
+.populateString(string, project, protocolName)
 }
 \arguments{
 \item{string}{Variable-encoded string to populate}
 
-\item{\code{\link[pepr]{Project-class}}}{object with values to draw from}
-
 \item{protocolName}{string, name of the protocol to select the samples}
+
+\item{\code{\link[pepr]{Project-class}}}{object with values to draw from}
 }
 \value{
-populated string
+a named list of populated strings
 }
 \description{
 Given a string and a project this function will go through samples and populate

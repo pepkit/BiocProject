@@ -30,7 +30,7 @@
 #' @param \code{\link[pepr]{Project-class}} object with values to draw from
 #' @param protocolName string, name of the protocol to select the samples
 #' 
-#' @return populated string
+#' @return a named list of populated strings
 #' @importMethodsFrom pepr samples
 #' @importFrom glue glue
 #' 
@@ -52,9 +52,10 @@
         warning("No samples matched the ", protocolName," protocol")
         return(invisible(NULL))
     }
-    populatedStrings = apply(samplesSubset, 1, function(s) {
+    populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
         with(list(sample=s, project=project), glue(.pyToR(string)))
-    })
+    }))
+    names(populatedStrings) = unlist(samplesSubset$sample_name)
     return(populatedStrings)
 }
 
@@ -111,11 +112,16 @@ getOutFiles = function(project, protocolNames=NULL) {
         protoMappings = getProtocolMappings(pifaces[[i]])
         pifaceProtoNames = names(protoMappings)
         # find protocol names that both exist in the pipeline interface 
-        # and were requested
-        validProtoNames = pifaceProtoNames[match(protocolNames, pifaceProtoNames)]
-        validProtoNames = validProtoNames[!is.na(validProtoNames)]
+        # and were requested. If none are requested, return all the info held 
+        # in all the pipeline interfaces
+        if (is.null(protocolNames)) {
+            validProtoNames = pifaceProtoNames
+        } else {
+            validProtoNames = pifaceProtoNames[match(protocolNames, pifaceProtoNames)]
+            validProtoNames = validProtoNames[!is.na(validProtoNames)]
+        }
         # if there are none, skip iteration
-        if(length(validProtoNames) < 1) next
+        if (length(validProtoNames) < 1) next
         protRet = list()
         for (j in seq_along(validProtoNames)) {
             # get the pipelines that match the protocol

@@ -101,8 +101,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     cfg = .getBiocConfig(p, pipelineName)
     if(is.null(cfg))
         cfg = pepr::config(p)
-    if(pepr::checkSection(cfg, c(MAIN_SECTION, FUNCTION_ARGS))){
-        args = .updateList(config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]],args)
+    if(pepr::checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
+        args = .updateList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
         argsNames = append("",argsNames[-.findProjectInList(args)])
@@ -124,14 +124,14 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a logical, 
                                     got '", class(autoLoad),"'")
         if (autoLoad) {
-            # check if the config consists of MAIN_SECTION section
-            if(!pepr::checkSection(cfg, MAIN_SECTION)){
+            # check if the config consists of BIOC_SECTION section
+            if(!pepr::checkSection(cfg, BIOC_SECTION)){
                 message("No data was read. Returning a Project object")
                 warning("The config YAML is missing the '",
-                        MAIN_SECTION,"' section.")
+                        BIOC_SECTION,"' section.")
                 return(p)
             }    
-            funcName = cfg[[MAIN_SECTION]][[FUNCTION_NAME]]
+            funcName = cfg[[BIOC_SECTION]][[FUNCTION_NAME]]
             # check if the function name was provided
             # and if it exists in the environment
             if (!is.null(funcName) && exists(funcName)) {
@@ -155,7 +155,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 # trying to source the file specified 
                 # in the config.yaml FUNCTION_PATH
                 funcPath = pepr::.expandPath(
-                    cfg[[MAIN_SECTION]][[FUNCTION_PATH]])
+                    cfg[[BIOC_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))
                         funcPath = .makeAbsPath(funcPath,dirname(p@file))
