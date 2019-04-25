@@ -85,24 +85,24 @@ setMethod(".getOutputs","Config",function(.Object){
     .Object[[OUTPUTS_SECTION]]
 })
 
-#' Populates and returns output files
+#' Populates and returns output files for a given protocol
 #' 
 #' Returns the pipeline outputs which are defined in the pipeline interface 
 #' indicated in the \code{\link[pepr]{Project-class}}
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param pipelineNames char vector of pipeline names to return the outputs for
 #' @param protocolNames char vector of protocol names to match the pipelines 
 #' and return their outputs
 #' 
 #' @return a list of output file paths. The order of the first level of the 
 #' list corresponds to the order of the pipeline interface files, second level 
-#' order (named) reflects the pipelines within the files.
+#' order (named) reflects the pipelines within the files, the last level is a 
+#' named list of file paths populated by the samples
 #' 
 #' @export
 #' @examples 
 #' #add examples
-getOutFiles = function(project, protocolNames=NULL) {
+outputsByProtocols = function(project, protocolNames=NULL) {
     ret = list()
     # make sure no duplicates exist
     protocolNames = unique(protocolNames)
@@ -147,6 +147,41 @@ getOutFiles = function(project, protocolNames=NULL) {
         return(invisible(NULL))
     }
     ret
+}
+
+#' Populates and returns output files for a given pipeline
+#' 
+#' Returns the pipeline outputs which are defined in the pipeline interface 
+#' indicated in the \code{\link[pepr]{Project-class}}
+#' 
+#' Only the samples that have a matching protocol attribute will be used to
+#' populate the output paths.
+#' 
+#' @note If there are multiple pipeline interfaces that defined the sampe 
+#' pipeline (name), the output files of first one will be returned 
+#' 
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param pipelineNames pipeline name to return the outputs for
+#' 
+#' @return a list of output file paths for the requested pipeline
+#' 
+#' @export
+#' @examples 
+#' #add examples
+outputsByPipelines = function(project, pipelineName=NULL) {
+    allOutputs = outputsByProtocols(project)
+    if (is.null(pipelineName))
+        return(allOutputs)
+    for(piface in allOutputs){
+        for(protocol in piface){
+            matchPips = match(pipelineName, names(protocol))
+            if(!is.na(matchPips)){
+                return(protocol[matchPips][[1]])
+            }
+        }
+    }
+    warning("No outputs match for the pipeline: ", pipelineName)
+    return(invisible(NULL))
 }
 
 #' Get pipelines by protocol name
