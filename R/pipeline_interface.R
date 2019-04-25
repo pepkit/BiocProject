@@ -100,8 +100,6 @@ setMethod(".getOutputs","Config",function(.Object){
 #' @examples 
 #' #add examples
 getOutFiles = function(project, protocolNames=NULL) {
-    # if(!is.null(pipelineNames) && !is.null(protocolNames))
-        # stop("Use just one pipeline outputs selection method")
     ret = list()
     pifaces = getPipelineInterfaces(project)
     for (i in seq_along(pifaces)) {
@@ -110,6 +108,7 @@ getOutFiles = function(project, protocolNames=NULL) {
         pifaceProtoNames = names(protoMappings)
         validProtoNames = pifaceProtoNames[match(protocolNames, pifaceProtoNames)]
         validProtoNames = validProtoNames[!is.na(validProtoNames)]
+        if(length(validProtoNames) < 1) next
         protRet = list()
         for (j in seq_along(validProtoNames)) {
             pipelines = getPipelines(pifaces[[i]], validProtoNames[j])
