@@ -18,5 +18,5 @@ converts the python style into R so that we can use R code to populate
 variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
 }
 \examples{
-pyToR("{sample.name}...{project.source.name}")
+.pyToR("{sample.name}...{project.source.name}")
 }

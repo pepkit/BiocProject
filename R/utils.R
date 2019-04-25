@@ -70,6 +70,8 @@
         pipelineName = 1
         piface = getPipelineInterfaces(p)[[1]]
     } else {
+        # if a pipeline name is specified, find the first pipeline interface 
+        # that defines such a pipeline
         piface = .getPifaceByPipeline(pipelineName, getPipelineInterfaces(p))
     }
         

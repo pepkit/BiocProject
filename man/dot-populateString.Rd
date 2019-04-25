@@ -10,6 +10,8 @@
 \item{string}{Variable-encoded string to populate}
 
 \item{\code{\link[pepr]{Project-class}}}{object with values to draw from}
+
+\item{protocolName}{string, name of the protocol to select the samples}
 }
 \value{
 populated string

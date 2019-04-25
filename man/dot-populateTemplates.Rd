@@ -4,12 +4,14 @@
 \alias{.populateTemplates}
 \title{Populate list of path templates}
 \usage{
-.populateTemplates(project, templList)
+.populateTemplates(project, templList, protocolName)
 }
 \arguments{
 \item{project}{an object of \code{\link[pepr]{Config-class}}}
 
 \item{templList}{list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
+
+\item{protocolName}{string, name of the protocol to select the samples}
 }
 \value{
 list of strings

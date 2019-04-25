@@ -4,20 +4,26 @@
 \name{getPipelines}
 \alias{getPipelines}
 \alias{getPipelines,Config-method}
-\title{Get pipelines defined within a pipeline interface}
+\title{Get pipelines by protocol name}
 \usage{
-getPipelines(.Object)
+getPipelines(.Object, protocolName = NULL)
 
-\S4method{getPipelines}{Config}(.Object)
+\S4method{getPipelines}{Config}(.Object, protocolName = NULL)
 }
 \arguments{
 \item{.Object}{a pipeline interface, an object of \code{\link[pepr]{Config-class}}}
+
+\item{protocolName}{a string or vector of strings indicating the protocols 
+for which the pipelines should be returned}
 }
 \value{
 a list of pipelines, objets of \code{\link[pepr]{Config-class}}
 }
 \description{
-Get pipelines defined within a pipeline interface
+Gets the pipelines defined within the pipeline interface
+}
+\details{
+To get all the pipelines (default) do not specify any \code{protocolName}
 }
 \section{Methods (by class)}{
 \itemize{

@@ -4,15 +4,15 @@
 \alias{getOutFiles}
 \title{Populates and returns output files}
 \usage{
-getOutFiles(project, pipelineNames = NULL, protocolNames = NULL)
+getOutFiles(project, protocolNames = NULL)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
-\item{pipelineNames}{char vector of pipeline names to return the outputs for}
-
 \item{protocolNames}{char vector of protocol names to match the pipelines 
 and return their outputs}
+
+\item{pipelineNames}{char vector of pipeline names to return the outputs for}
 }
 \value{
 a list of output file paths. The order of the first level of the 
