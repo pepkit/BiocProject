@@ -168,7 +168,7 @@ outputsByProtocols = function(project, protocolNames=NULL) {
 #' @export
 #' @examples 
 #' #add examples
-outputsByPipelines = function(project, pipelineName=NULL) {
+outputsByPipeline = function(project, pipelineName=NULL) {
     allOutputs = outputsByProtocols(project)
     if (is.null(pipelineName))
         return(allOutputs)
