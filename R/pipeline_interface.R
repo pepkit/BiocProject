@@ -47,7 +47,10 @@
 .populateString = function(string, project, protocolName) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
-    populatedStrings = apply(samplesByProtocol(samples(project), protocolName), 1, function(s) {
+    samplesSubset = samplesByProtocol(samples(project), protocolName)
+    if (NROW(samplesSubset) < 1)
+        stop("No samples matched the ", protocolName," protocol")
+    populatedStrings = apply(samplesSubset, 1, function(s) {
         with(list(sample=s, project=project), glue(.pyToR(string)))
     })
     return(populatedStrings)
