@@ -55,7 +55,7 @@
 #'
 #' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 .getOutputs = function(pipeline){
-    if(!pepr::checkSection(pipeline, OUTPUTS_SECTION)){
+    if (!pepr::checkSection(pipeline, OUTPUTS_SECTION)) {
         pipName = ifelse(is.null(pipeline$name),"provided",pipeline$name)
         warning("There is no '", OUTPUTS_SECTION , 
              "' section in the ", pipName," pipeline.")
@@ -273,8 +273,10 @@ setMethod("getProtocolMappings","Config",function(.Object){
 #'
 #' @return list of strings
 .populateTemplates = function(project, templList, protocolName) {
-    prefix = ifelse(is.null(config(project)$metadata$results_subdir),
-                    "results_pipeline", config(project)$metadata$results_subdir)
+    cfgMetadata = config(project)$metadata
+    prefix = ifelse(is.null(cfgMetadata$results_subdir),
+                    file.path(cfgMetadata$output_dir,"results_pipeline"),
+                    cfgMetadata$results_subdir)
     prefix = file.path(prefix, "{sample$sample_name}/")
     prepend = function(path, prefix) {
         file.path(prefix, path)

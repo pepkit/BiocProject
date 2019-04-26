@@ -113,10 +113,10 @@
 #'
 #' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
 .makeReadFunPathAbs = function(p, piface){
-    pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
-    absReadFunPath = file.path(dirname(pepr::config(p)$metadata$pipeline_interfaces), pth)
+    pth = basename(piface[[BIOC_SECTION]][[FUNCTION_PATH]])
+    absReadFunPath = file.path(dirname(pepr::config(p)$metadata$pipeline_interfaces[[1]]), pth)
     if(!.isAbsolute(absReadFunPath))
-        stop("Failed to make the readFunPath absolute")
+        stop("Failed to make the readFunPath absolute: ", absReadFunPath)
     piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
     methods::new("Config", piface)
 }

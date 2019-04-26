@@ -93,9 +93,10 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(is.null(funcArgs)){
         funcArgs = list()
     }else{
-        if (length(.findProjectInList(funcArgs)) > 0)
+        if (length(.findProjectInList(funcArgs)) > 0) {
             warning("Project object was found in the arguments list. It will be removed.")
             funcArgs = funcArgs[-.findProjectInList(funcArgs)]
+        }
     }
     args = append(list(p), funcArgs)
     cfg = .getBiocConfig(p, pipelineName)
@@ -109,7 +110,6 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         args = append(list(p), args[[-.findProjectInList(args)]])
         names(args) = argsNames
     }
-    
     if (!is.null(func)) {
         # use the anonymous function if provided
         if (is.function(func)) {
