@@ -157,31 +157,45 @@ outputsByProtocols = function(project, protocolNames=NULL) {
 #' Only the samples that have a matching protocol attribute will be used to
 #' populate the output paths.
 #' 
-#' @note If there are multiple pipeline interfaces that defined the sampe 
-#' pipeline (name), the output files of first one will be returned 
+#' @note If there are multiple pipeline interfaces that defined the same 
+#' pipeline (name), the output files of first one will be returned. 
+#' \cr \cr If no pipeline name provided, output for all pipelines with unique 
+#' names are returned
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
 #' @param pipelineNames pipeline name to return the outputs for
 #' 
-#' @return a list of output file paths for the requested pipeline
+#' @return a named list of output file paths for the requested pipeline
 #' 
 #' @export
 #' @examples 
 #' #add examples
 outputsByPipeline = function(project, pipelineName=NULL) {
     allOutputs = outputsByProtocols(project)
-    if (is.null(pipelineName))
-        return(allOutputs)
-    for(piface in allOutputs){
-        for(protocol in piface){
-            matchPips = match(pipelineName, names(protocol))
-            if(!is.na(matchPips)){
-                return(protocol[matchPips][[1]])
+    if (is.null(pipelineName)) allPips = list()
+    for (piface in allOutputs) {
+        for (protocol in piface) {
+            if (is.null(pipelineName)) {
+                # if no pipelines requested, collect ouput info 
+                allPips = append(allPips, protocol)
+            } else {
+                # if pipeline requested, check for name match 
+                # and return outputs if so
+                matchPips = match(pipelineName, names(protocol))
+                if (!is.na(matchPips)) {
+                    return(protocol[matchPips][[1]])
+                }
             }
         }
     }
-    warning("No outputs match for the pipeline: ", pipelineName)
-    return(invisible(NULL))
+    if (!is.null(pipelineName)){
+        # if no pipelines matched by the requested name, warn 
+        warning("No outputs match for the pipeline: ", pipelineName)
+        return(invisible(NULL))
+    } else {
+        # return only the unique pipelines in terms of their names
+        return(allPips[unique(names(allPips))])
+    }
 }
 
 #' Get pipelines by protocol name

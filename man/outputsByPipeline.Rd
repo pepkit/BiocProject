@@ -12,7 +12,7 @@ outputsByPipeline(project, pipelineName = NULL)
 \item{pipelineNames}{pipeline name to return the outputs for}
 }
 \value{
-a list of output file paths for the requested pipeline
+a named list of output file paths for the requested pipeline
 }
 \description{
 Returns the pipeline outputs which are defined in the pipeline interface 
@@ -23,8 +23,10 @@ Only the samples that have a matching protocol attribute will be used to
 populate the output paths.
 }
 \note{
-If there are multiple pipeline interfaces that defined the sampe 
-pipeline (name), the output files of first one will be returned
+If there are multiple pipeline interfaces that defined the same 
+pipeline (name), the output files of first one will be returned. 
+\cr \cr If no pipeline name provided, output for all pipelines with unique 
+names are returned
 }
 \examples{
 #add examples
