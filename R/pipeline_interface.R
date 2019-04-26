@@ -53,7 +53,8 @@
 #'
 #' @param pipeline an object of \code{\link[pepr]{Config-class}} 
 #'
-#' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
+#' @return named list of output path templates, 
+#' like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 .getOutputs = function(pipeline){
     if (!pepr::checkSection(pipeline, OUTPUTS_SECTION)) {
         pipName = ifelse(is.null(pipeline$name),"provided",pipeline$name)
@@ -302,3 +303,52 @@ samplesByProtocol = function(s, protocolName, caseSensitive=FALSE){
             tolower(s[,which(colnames(s) == "protocol")])
     subset(s, protocol==tolower(protocolName))
 }
+
+setGeneric("getPipelineInterfaces", function(.Object)
+    standardGeneric("getPipelineInterfaces"))
+
+#' Get the pipeline intraface(s)
+#'
+#' Extracts the pipeline interface(s) as a list 
+#' of \code{\link{Config-class}} objects
+#' 
+#' @param .Object an object of \code{\link{Project-class}}
+#'
+#' @return a list of objects of \code{\link{Config-class}} 
+#' (list-like representation of the YAML file(s)). Number of elements in the 
+#' list reflects the number of pipeline interfaces defined by the 
+#' \code{\link{Project-class}} object.
+#' @export
+#'
+#' @examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_subprojects1",
+#' "project_config.yaml",
+#' package = "pepr")
+#' p = Project(file = projectConfig)
+#' getPipelineInterfaces(p)
+setMethod("getPipelineInterfaces", "Project",function(.Object){
+    if(.hasPipIface(.Object)){
+        cfg = config(.Object)
+        for(sect in PIP_IFACE_SECTION){
+            cfg = cfg[[sect]]
+        }
+        lapply(as.list(cfg), function(x){
+            methods::new("Config", yaml::yaml.load_file(x))
+        })
+    } else{
+        warning("No pipeline interface found in the config")
+        invisible(NULL)
+    }
+})
+
+#' Check if project defines pipeline interface
+#'
+#' @param p object of \code{\link{Project-class}}
+#'
+#' @return logical indicating whether pipeline interface is defined
+.hasPipIface = function(p){
+    checkSection(config(p), PIP_IFACE_SECTION)
+}
+

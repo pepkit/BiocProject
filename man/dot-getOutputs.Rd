@@ -10,7 +10,8 @@
 \item{pipeline}{an object of \code{\link[pepr]{Config-class}}}
 }
 \value{
-named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
+named list of output path templates, 
+like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 }
 \description{
 Extracts the output file templates defined for a given pipeline

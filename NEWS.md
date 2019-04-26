@@ -2,9 +2,11 @@
 
 ## Added
 
-* the `bioconductor` section can be provided in either in the pipeline interface or in the project config 
+* pipeline interface support, including functions: `getPipelineInterfaces`, `outputsByPipeline`, `outputsByProtocol`, `getPipelines`,`getProtocolMappings` and `samplesByProtocol`
 
 ## Changed
+
+* the `bioconductor` section can be provided in either in the pipeline interface or in the project config. The project config location is given the priority 
 
 # BiocProject 0.2 - 2019-04-19
 
