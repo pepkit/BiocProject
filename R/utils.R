@@ -215,18 +215,20 @@
 #' 
 #' @param list1 a list to be updated
 #' @param list2 a list to update with
+#' @param combine a logical indicating whether the elements of the second list 
+#' should replace (\code{FALSE}, default) or append to (\code{TRUE}) the first one.
 #' 
 #' @return an updated list
 #' 
 #' @examples 
 #' list1=list(a=1,b=2)
 #' list2=list(a=1,b=1,c=3)
-#' .updateList(list1,list2)
+#' .unionList(list1,list2)
 #' 
 #' @export
-.updateList = function(list1,list2) {
-    if((!is.list(list1)) || (!is.list(list2)))
-        stop("One of the arguments was not a list")
+.unionList = function(list1, list2, combine=FALSE) {
+    if ((!is.list(list1)) || (!is.list(list2)))
+        stop("One of the arguments is not a list")
     nms1 = names(list1)
     nms2 = names(list2)
     if(is.null(nms2)) nms2 = ""
@@ -234,8 +236,12 @@
     for(n in nms2){
         idx = which(nms1 == n)
         if(length(idx) > 0){
-            list1[[idx]] = list2[[n]]
-        }else{
+            if (combine) {
+                list1[[idx]] = append(list1[[idx]], list2[[n]])
+            } else {
+                list1[[idx]] = list2[[n]]
+            }
+        } else {
             add = list(list2[[counter]])
             names(add) = n
             list1 = append(list1,add)

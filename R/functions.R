@@ -102,7 +102,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     if(is.null(cfg))
         cfg = pepr::config(p)
     if(pepr::checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
-        args = .updateList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
+        args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
         argsNames = append("",argsNames[-.findProjectInList(args)])

@@ -3,7 +3,7 @@
 export(.getOutputs)
 export(.insertPEP)
 export(.setShowMethod)
-export(.updateList)
+export(.unionList)
 export(BiocProject)
 export(getPipelines)
 export(getProtocolMappings)

@@ -172,7 +172,7 @@ outputsByProtocols = function(project, protocolNames=NULL) {
 #' #add examples
 outputsByPipeline = function(project, pipelineName=NULL) {
     allOutputs = outputsByProtocols(project)
-    if (is.null(pipelineName)) allPips = list()
+    allPips = list()
     for (piface in allOutputs) {
         for (protocol in piface) {
             if (is.null(pipelineName)) {
@@ -183,15 +183,19 @@ outputsByPipeline = function(project, pipelineName=NULL) {
                 # and return outputs if so
                 matchPips = match(pipelineName, names(protocol))
                 if (!is.na(matchPips)) {
-                    return(protocol[matchPips][[1]])
+                    allPips = .unionList(allPips, protocol[matchPips][[1]],T)
                 }
             }
         }
     }
     if (!is.null(pipelineName)){
-        # if no pipelines matched by the requested name, warn 
-        warning("No outputs match for the pipeline: ", pipelineName)
-        return(invisible(NULL))
+        if(length(allPips) < 1){
+            # if no pipelines matched by the requested name, warn 
+            warning("No outputs match for the pipeline: ", pipelineName)
+            return(invisible(NULL))
+        } else {
+            return(allPips)
+        }
     } else {
         # return only the unique pipelines in terms of their names
         return(allPips[unique(names(allPips))])
