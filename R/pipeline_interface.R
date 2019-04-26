@@ -32,7 +32,13 @@
 #' 
 #' @export
 #' @examples 
-#' #add examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' outputsByProtocols(p, "PROTO2")
 setGeneric("outputsByProtocols", function(project, ...)
     standardGeneric("outputsByProtocols"), signature="project")
 
@@ -104,7 +110,13 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
 #' 
 #' @export
 #' @examples 
-#' #add examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' outputsByPipeline(p, "pipeline2.py")
 setGeneric("outputsByPipeline", function(project, ...)
     standardGeneric("outputsByPipeline"), signature = "project")
 
@@ -158,7 +170,14 @@ setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineN
 #' @export
 #'
 #' @examples
-#' # add example
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' pifaces = getPipelineInterfaces(p)
+#' getPipelines(pifaces[[1]])
 setGeneric("getPipelines", function(.Object, protocolName=NULL)
     standardGeneric("getPipelines"))
 
@@ -211,7 +230,14 @@ setMethod("getPipelines", "Config",function(.Object, protocolName){
 #' @export
 #'
 #' @examples
-#' # add example
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' pifaces = getPipelineInterfaces(p)
+#' getProtocolMappings(pifaces[[1]])
 setGeneric("getProtocolMappings", function(.Object)
     standardGeneric("getProtocolMappings"))
 
@@ -258,16 +284,19 @@ setMethod("getProtocolMappings","Config",function(.Object){
 #' @export
 #'
 #' @examples
-#' #add examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' samplesByProtocol(samples(p), "PROTO2")
 samplesByProtocol = function(s, protocolName, caseSensitive=FALSE) {
     if (!caseSensitive)
         s[,which(colnames(s) == "protocol")] = 
             tolower(s[,which(colnames(s) == "protocol")])
     subset(s, protocol==tolower(protocolName))
 }
-
-setGeneric("getPipelineInterfaces", function(.Object)
-    standardGeneric("getPipelineInterfaces"))
 
 #' Get the pipeline intraface(s)
 #'
@@ -285,11 +314,15 @@ setGeneric("getPipelineInterfaces", function(.Object)
 #' @examples
 #' projectConfig = system.file("extdata",
 #' "example_peps-master",
-#' "example_subprojects1",
+#' "example_piface",
 #' "project_config.yaml",
-#' package = "pepr")
+#' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' getPipelineInterfaces(p)
+setGeneric("getPipelineInterfaces", function(.Object)
+    standardGeneric("getPipelineInterfaces"))
+
+#' @describeIn getPipelineInterfaces extracts pipeline interfaces defined in a \code{\link{Project-class}} object
 setMethod("getPipelineInterfaces", "Project",function(.Object) {
     if(.hasPipIface(.Object)){
         cfg = config(.Object)

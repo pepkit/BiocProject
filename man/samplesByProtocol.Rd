@@ -20,5 +20,11 @@ a subset of samples that match the protocol
 Get samples that match the protocol
 }
 \examples{
-#add examples
+projectConfig = system.file("extdata",
+"example_peps-master",
+"example_piface",
+"project_config.yaml",
+package = "BiocProject")
+p = Project(file = projectConfig)
+samplesByProtocol(samples(p), "PROTO2")
 }

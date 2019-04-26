@@ -32,5 +32,11 @@ indicated in the \code{\link[pepr]{Project-class}}
 }}
 
 \examples{
-#add examples
+projectConfig = system.file("extdata",
+"example_peps-master",
+"example_piface",
+"project_config.yaml",
+package = "BiocProject")
+p = Project(file = projectConfig)
+outputsByProtocols(p, "PROTO2")
 }

@@ -38,5 +38,11 @@ pipeline (name), the output files of first one will be returned.
 names are returned
 }
 \examples{
-#add examples
+projectConfig = system.file("extdata",
+"example_peps-master",
+"example_piface",
+"project_config.yaml",
+package = "BiocProject")
+p = Project(file = projectConfig)
+outputsByPipeline(p, "pipeline2.py")
 }

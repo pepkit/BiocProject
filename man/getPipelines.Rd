@@ -31,5 +31,12 @@ To get all the pipelines (default) do not specify any \code{protocolName}
 }}
 
 \examples{
-# add example
+projectConfig = system.file("extdata",
+"example_peps-master",
+"example_piface",
+"project_config.yaml",
+package = "BiocProject")
+p = Project(file = projectConfig)
+pifaces = getPipelineInterfaces(p)
+getPipelines(pifaces[[1]])
 }

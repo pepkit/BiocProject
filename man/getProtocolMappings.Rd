@@ -26,5 +26,12 @@ Get protocol mappings defined within a pipeline interface
 }}
 
 \examples{
-# add example
+projectConfig = system.file("extdata",
+"example_peps-master",
+"example_piface",
+"project_config.yaml",
+package = "BiocProject")
+p = Project(file = projectConfig)
+pifaces = getPipelineInterfaces(p)
+getProtocolMappings(pifaces[[1]])
 }
