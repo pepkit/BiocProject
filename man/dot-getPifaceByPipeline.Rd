@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{pipeline}{string, name of the pipeline}
+
+\item{pifaces}{a list of pipeline interfaces \code{\link[pepr]{Config-class}} objects)}
 }
 \value{
 piface \code{\link[pepr]{Config-class}} pipeline interface with the selected pipeline defined

@@ -53,6 +53,8 @@
 #' Get the preferred source of the bioconductor section
 #'
 #' @param p \code{\link[pepr]{Project-class}} object
+#' @param pipelineName name of the pipeline within pipeline interface where 
+#' the 'bioconductor' section should be searched for.
 #'
 #' @return a list with the selected config
 #' @importFrom pepr getPipelineInterfaces checkSection config
@@ -90,6 +92,7 @@
 #' Gets the pipeline interface which defines the pipeline from a list of pipeline interfaces
 #'
 #' @param pipeline string, name of the pipeline
+#' @param pifaces a list of pipeline interfaces \code{\link[pepr]{Config-class}} objects)
 #'
 #' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the selected pipeline defined
 .getPifaceByPipeline = function(pipeline, pifaces){
@@ -157,7 +160,7 @@
         # error handler 
         .wrapFunMessages(e$message,"error")
         message("No data was read. The error message was returned instead.")
-        S4Vectors::List(e$message)
+        S4Vectors::List(errorMessage=e$message, errorSource=e$call)
     } 
     res = withCallingHandlers(
         tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
@@ -168,12 +171,12 @@
     return(res)
 }
 
-# Create an absolute path from a primary target and a parent candidate.
-#
-# @param perhapsRelative: Path to primary target directory.
-# @param parent a path to parent folder to use if target isn't absolute.
-#
-# @return Target itself if already absolute, else target nested within parent.
+#' Create an absolute path from a primary target and a parent candidate.
+#'
+#' @param perhapsRelative Path to primary target directory.
+#' @param parent a path to parent folder to use if target isn't absolute.
+#'
+#' @return Target itself if already absolute, else target nested within parent.
 .makeAbsPath = function(perhapsRelative, parent) {
     if (!.isDefined(perhapsRelative)) return(perhapsRelative)
     perhapsRelative = pepr::.expandPath(perhapsRelative)
@@ -231,11 +234,11 @@
         stop("One of the arguments is not a list")
     nms1 = names(list1)
     nms2 = names(list2)
-    if(is.null(nms2)) nms2 = ""
+    if (is.null(nms2)) nms2 = ""
     counter=1
-    for(n in nms2){
+    for (n in nms2) {
         idx = which(nms1 == n)
-        if(length(idx) > 0){
+        if (length(idx) > 0) {
             if (combine) {
                 list1[[idx]] = append(list1[[idx]], list2[[n]])
             } else {

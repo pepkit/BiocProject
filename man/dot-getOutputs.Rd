@@ -4,17 +4,14 @@
 \alias{.getOutputs}
 \title{Get outputs from pipeline}
 \usage{
-.getOutputs(.Object)
+.getOutputs(pipeline)
 }
 \arguments{
-\item{.Object}{pipeline, an object of \code{\link[pepr]{Config-class}}}
+\item{pipeline}{an object of \code{\link[pepr]{Config-class}}}
 }
 \value{
 named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 }
 \description{
 Extracts the output file templates defined for a given pipeline
-}
-\examples{
-# add example
 }

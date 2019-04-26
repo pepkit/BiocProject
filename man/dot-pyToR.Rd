@@ -17,6 +17,3 @@ Python uses a dot to access attributes, while R uses \code{$}; this function
 converts the python style into R so that we can use R code to populate
 variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
 }
-\examples{
-.pyToR("{sample.name}...{project.source.name}")
-}

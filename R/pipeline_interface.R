@@ -5,8 +5,6 @@
 #' variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
 #' @param str String to recode
 #' @return string with the recoded accession syntax
-#' @examples
-#' .pyToR("{sample.name}...{project.source.name}")
 .pyToR = function(str) {
     # This is the regex where the magic happens
     pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
@@ -27,23 +25,12 @@
 #' in the pipeline interface
 #' 
 #' @param string Variable-encoded string to populate
-#' @param \code{\link[pepr]{Project-class}} object with values to draw from
+#' @param project \code{\link[pepr]{Project-class}} object with values to draw from
 #' @param protocolName string, name of the protocol to select the samples
 #' 
 #' @return a named list of populated strings
 #' @importMethodsFrom pepr samples
 #' @importFrom glue glue
-#' 
-#' @examples
-#' configFile = system.file(
-#'   "extdata",
-#'   "example_peps-master",
-#'   "example_BiocProject",
-#'   "project_config.yaml",
-#'   package = "BiocProject"
-#' )
-#' bp = BiocProject(file=configFile)
-#' .populateString("{sample.sample_name}/{sample.file_path}", bp)
 .populateString = function(string, project, protocolName) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
@@ -64,26 +51,18 @@
 #' 
 #' Extracts the output file templates defined for a given pipeline
 #'
-#' @param .Object pipeline, an object of \code{\link[pepr]{Config-class}} 
+#' @param pipeline an object of \code{\link[pepr]{Config-class}} 
 #'
 #' @return named list of output path templates, like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-#' @export
-#'
-#' @examples
-#' # add example
-setGeneric(".getOutputs", function(.Object)
-    standardGeneric(".getOutputs"))
-
-#' @describeIn .getOutputs extracts output templates from a pipeline
-setMethod(".getOutputs","Config",function(.Object){
-    if(!pepr::checkSection(.Object, OUTPUTS_SECTION)){
-        pipName = ifelse(is.null(.Object$name),"provided",.Object$name)
+.getOutputs = function(pipeline){
+    if(!pepr::checkSection(pipeline, OUTPUTS_SECTION)){
+        pipName = ifelse(is.null(pipeline$name),"provided",pipeline$name)
         warning("There is no '", OUTPUTS_SECTION , 
              "' section in the ", pipName," pipeline.")
         return(invisible(NULL))
     }
-    .Object[[OUTPUTS_SECTION]]
-})
+    pipeline[[OUTPUTS_SECTION]]
+}
 
 #' Populates and returns output files for a given protocol
 #' 
@@ -163,7 +142,7 @@ outputsByProtocols = function(project, protocolNames=NULL) {
 #' names are returned
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param pipelineNames pipeline name to return the outputs for
+#' @param pipelineName pipeline name to return the outputs for
 #' 
 #' @return a named list of output file paths for the requested pipeline
 #' 
@@ -183,13 +162,13 @@ outputsByPipeline = function(project, pipelineName=NULL) {
                 # and return outputs if so
                 matchPips = match(pipelineName, names(protocol))
                 if (!is.na(matchPips)) {
-                    allPips = .unionList(allPips, protocol[matchPips][[1]],T)
+                    allPips = .unionList(allPips, protocol[matchPips][[1]], T)
                 }
             }
         }
     }
-    if (!is.null(pipelineName)){
-        if(length(allPips) < 1){
+    if (!is.null(pipelineName)) {
+        if (length(allPips) < 1) {
             # if no pipelines matched by the requested name, warn 
             warning("No outputs match for the pipeline: ", pipelineName)
             return(invisible(NULL))

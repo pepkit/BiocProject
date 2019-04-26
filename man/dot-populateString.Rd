@@ -9,9 +9,9 @@
 \arguments{
 \item{string}{Variable-encoded string to populate}
 
-\item{protocolName}{string, name of the protocol to select the samples}
+\item{project}{\code{\link[pepr]{Project-class}} object with values to draw from}
 
-\item{\code{\link[pepr]{Project-class}}}{object with values to draw from}
+\item{protocolName}{string, name of the protocol to select the samples}
 }
 \value{
 a named list of populated strings
@@ -20,15 +20,4 @@ a named list of populated strings
 Given a string and a project this function will go through samples and populate
 the variables. Used to return real files for each sample from an output variable
 in the pipeline interface
-}
-\examples{
-configFile = system.file(
-  "extdata",
-  "example_peps-master",
-  "example_BiocProject",
-  "project_config.yaml",
-  package = "BiocProject"
-)
-bp = BiocProject(file=configFile)
-.populateString("{sample.sample_name}/{sample.file_path}", bp)
 }

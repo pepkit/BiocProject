@@ -9,7 +9,7 @@ outputsByPipeline(project, pipelineName = NULL)
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
-\item{pipelineNames}{pipeline name to return the outputs for}
+\item{pipelineName}{pipeline name to return the outputs for}
 }
 \value{
 a named list of output file paths for the requested pipeline

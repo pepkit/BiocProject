@@ -49,20 +49,20 @@ c=function(arg) {
 testChar = "a"
 
 # Test --------------------------------------------------------------------
-context("Test .updateList utility function")
+context("Test .unionList utility function")
 
-test_that(".updateList returns correct object type", {
-  expect_is(.updateList(list(a=1),list(a=2,b=2)), 'list')
+test_that(".unionList returns correct object type", {
+  expect_is(.unionList(list(a=1),list(a=2,b=2)), 'list')
 })
 
-test_that(".updateList returns list of correct length", {
-    expect_equal(length(.updateList(list(a=1),list(a=2,b=2))), 2)
-    expect_equal(length(.updateList(list(a=1,c=3),list(a=2,b=2))), 3)
-    expect_equal(length(.updateList(list(a=1,b=3),list(c=2,d=2))), 4)
+test_that(".unionList returns list of correct length", {
+    expect_equal(length(.unionList(list(a=1),list(a=2,b=2))), 2)
+    expect_equal(length(.unionList(list(a=1,c=3),list(a=2,b=2))), 3)
+    expect_equal(length(.unionList(list(a=1,b=3),list(c=2,d=2))), 4)
 })
 
-test_that(".updateList throws errors", {
-    expect_error(.updateList(list(a=1),2))
+test_that(".unionList throws errors", {
+    expect_error(.unionList(list(a=1),2))
 })
 
 context("Test .makeAbsPath utility function")
@@ -102,7 +102,6 @@ context("Test .callBiocFun untility function")
 
 test_that(".callBiocFun catches errors", {
     expect_error(expect_error(.callBiocFun(a,list(testChar))))
-    expect_equal(.callBiocFun(a,list(testChar)),S4Vectors::List(testChar))
     expect_warning(.callBiocFun(b,list(testChar)))
 })
 

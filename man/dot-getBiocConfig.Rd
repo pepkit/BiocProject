@@ -8,6 +8,9 @@
 }
 \arguments{
 \item{p}{\code{\link[pepr]{Project-class}} object}
+
+\item{pipelineName}{name of the pipeline within pipeline interface where 
+the 'bioconductor' section should be searched for.}
 }
 \value{
 a list with the selected config
