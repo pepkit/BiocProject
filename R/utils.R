@@ -1,3 +1,50 @@
+#' Switches from python to R list accession syntax
+#' 
+#' Python uses a dot to access attributes, while R uses \code{$}; this function
+#' converts the python style into R so that we can use R code to populate
+#' variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
+#' @param str String to recode
+#' @return string with the recoded accession syntax
+.pyToR = function(str) {
+    # This is the regex where the magic happens
+    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
+    # This loop allows multi-layer accession
+    res = str
+    prev = ""
+    while (prev != res) {
+        prev = res
+        res = pytor(res)
+    }
+    return(res)
+}
+
+#' Populates a variable-encoded string with sample/project variables
+#' 
+#' Given a string and a project this function will go through samples and populate
+#' the variables. Used to return real files for each sample from an output variable
+#' in the pipeline interface
+#' 
+#' @param string Variable-encoded string to populate
+#' @param project \code{\link[pepr]{Project-class}} object with values to draw from
+#' @param protocolName string, name of the protocol to select the samples
+#' 
+#' @return a named list of populated strings
+#' @importMethodsFrom pepr samples
+#' @importFrom glue glue
+.populateString = function(string, project, protocolName) {
+    # Apply this glue function on each row in the samples table,
+    # coerced to a list object to allow attribute accession.
+    samplesSubset = samplesByProtocol(samples(project), protocolName)
+    if (NROW(samplesSubset) < 1){
+        warning("No samples matched the ", protocolName," protocol")
+        return(invisible(NULL))
+    }
+    populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
+        with(list(sample=s, project=project), glue(.pyToR(string)))
+    }))
+    names(populatedStrings) = unlist(samplesSubset$sample_name)
+    return(populatedStrings)
+}
 
 #' Insert a PEP metadata in a metadata slot of Annotated
 #' 
@@ -57,7 +104,7 @@
 #' the 'bioconductor' section should be searched for.
 #'
 #' @return a list with the selected config
-#' @importFrom pepr getPipelineInterfaces checkSection config
+#' @importFrom pepr checkSection config
 #' @importFrom methods new
 .getBiocConfig = function(p, pipelineName) {
     if(checkSection(config(p), BIOC_SECTION)){

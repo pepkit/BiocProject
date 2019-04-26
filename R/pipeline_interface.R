@@ -1,52 +1,3 @@
-#' Switches from python to R list accession syntax
-#' 
-#' Python uses a dot to access attributes, while R uses \code{$}; this function
-#' converts the python style into R so that we can use R code to populate
-#' variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
-#' @param str String to recode
-#' @return string with the recoded accession syntax
-.pyToR = function(str) {
-    # This is the regex where the magic happens
-    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
-    # This loop allows multi-layer accession
-    res = str
-    prev = ""
-    while (prev != res) {
-        prev = res
-        res = pytor(res)
-    }
-    return(res)
-}
-
-#' Populates a variable-encoded string with sample/project variables
-#' 
-#' Given a string and a project this function will go through samples and populate
-#' the variables. Used to return real files for each sample from an output variable
-#' in the pipeline interface
-#' 
-#' @param string Variable-encoded string to populate
-#' @param project \code{\link[pepr]{Project-class}} object with values to draw from
-#' @param protocolName string, name of the protocol to select the samples
-#' 
-#' @return a named list of populated strings
-#' @importMethodsFrom pepr samples
-#' @importFrom glue glue
-.populateString = function(string, project, protocolName) {
-    # Apply this glue function on each row in the samples table,
-    # coerced to a list object to allow attribute accession.
-    samplesSubset = samplesByProtocol(samples(project), protocolName)
-    if (NROW(samplesSubset) < 1){
-        warning("No samples matched the ", protocolName," protocol")
-        return(invisible(NULL))
-    }
-    populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
-        with(list(sample=s, project=project), glue(.pyToR(string)))
-    }))
-    names(populatedStrings) = unlist(samplesSubset$sample_name)
-    return(populatedStrings)
-}
-
-
 #' Get outputs from pipeline
 #' 
 #' Extracts the output file templates defined for a given pipeline
@@ -55,9 +6,9 @@
 #'
 #' @return named list of output path templates, 
 #' like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-.getOutputs = function(pipeline){
+.getOutputs = function(pipeline) {
     if (!pepr::checkSection(pipeline, OUTPUTS_SECTION)) {
-        pipName = ifelse(is.null(pipeline$name),"provided",pipeline$name)
+        pipName = ifelse(is.null(pipeline$name), "provided", pipeline$name)
         warning("There is no '", OUTPUTS_SECTION , 
              "' section in the ", pipName," pipeline.")
         return(invisible(NULL))
@@ -82,7 +33,11 @@
 #' @export
 #' @examples 
 #' #add examples
-outputsByProtocols = function(project, protocolNames=NULL) {
+setGeneric("outputsByProtocols", function(project, ...)
+    standardGeneric("outputsByProtocols"), signature="project")
+
+#' @describeIn outputsByProtocols extracts pipeline outputs for a given protocol or set of protocols
+setMethod("outputsByProtocols", c(project="Project"), function(project, protocolNames=NULL) {
     ret = list()
     # make sure no duplicates exist
     protocolNames = unique(protocolNames)
@@ -127,7 +82,7 @@ outputsByProtocols = function(project, protocolNames=NULL) {
         return(invisible(NULL))
     }
     ret
-}
+})
 
 #' Populates and returns output files for a given pipeline
 #' 
@@ -150,7 +105,14 @@ outputsByProtocols = function(project, protocolNames=NULL) {
 #' @export
 #' @examples 
 #' #add examples
-outputsByPipeline = function(project, pipelineName=NULL) {
+setGeneric("outputsByPipeline", function(project, ...)
+    standardGeneric("outputsByPipeline"), signature = "project")
+
+#' @describeIn outputsByPipeline extracts pipeline outputs for a given pipeline
+setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineName=NULL) {
+    if(!is.null(pipelineName) && length(pipelineName) != 1)
+        stop("Only one pipeline can be specified, got ", length(pipelineName),
+             ". To get outputs for all defined pipelines, skip the argument")
     allOutputs = outputsByProtocols(project)
     allPips = list()
     for (piface in allOutputs) {
@@ -180,7 +142,7 @@ outputsByPipeline = function(project, pipelineName=NULL) {
         # return only the unique pipelines in terms of their names
         return(allPips[unique(names(allPips))])
     }
-}
+})
 
 #' Get pipelines by protocol name
 #' 
@@ -201,7 +163,7 @@ setGeneric("getPipelines", function(.Object, protocolName=NULL)
     standardGeneric("getPipelines"))
 
 #' @describeIn getPipelines extracts pipelines from a pipeline interface
-setMethod("getPipelines","Config",function(.Object, protocolName){
+setMethod("getPipelines", "Config",function(.Object, protocolName){
     if(checkSection(.Object, PIPELINES_SECTION)){
         # if PIPELINES_SECTION sectio found, proceed
         if (is.null(protocolName)){
@@ -228,7 +190,7 @@ setMethod("getPipelines","Config",function(.Object, protocolName){
                 return(invisible(NULL))
             }
             selectedPipelines = .Object[[PIPELINES_SECTION]][idx]
-            lapply(selectedPipelines, function(x){
+            lapply(selectedPipelines, function(x) {
                 methods::new("Config", x)
             })
         }
@@ -297,8 +259,8 @@ setMethod("getProtocolMappings","Config",function(.Object){
 #'
 #' @examples
 #' #add examples
-samplesByProtocol = function(s, protocolName, caseSensitive=FALSE){
-    if(!caseSensitive)
+samplesByProtocol = function(s, protocolName, caseSensitive=FALSE) {
+    if (!caseSensitive)
         s[,which(colnames(s) == "protocol")] = 
             tolower(s[,which(colnames(s) == "protocol")])
     subset(s, protocol==tolower(protocolName))
@@ -328,13 +290,13 @@ setGeneric("getPipelineInterfaces", function(.Object)
 #' package = "pepr")
 #' p = Project(file = projectConfig)
 #' getPipelineInterfaces(p)
-setMethod("getPipelineInterfaces", "Project",function(.Object){
+setMethod("getPipelineInterfaces", "Project",function(.Object) {
     if(.hasPipIface(.Object)){
         cfg = config(.Object)
         for(sect in PIP_IFACE_SECTION){
             cfg = cfg[[sect]]
         }
-        lapply(as.list(cfg), function(x){
+        lapply(as.list(cfg), function(x) {
             methods::new("Config", yaml::yaml.load_file(x))
         })
     } else{
@@ -348,7 +310,7 @@ setMethod("getPipelineInterfaces", "Project",function(.Object){
 #' @param p object of \code{\link{Project-class}}
 #'
 #' @return logical indicating whether pipeline interface is defined
-.hasPipIface = function(p){
+.hasPipIface = function(p) {
     checkSection(config(p), PIP_IFACE_SECTION)
 }
 

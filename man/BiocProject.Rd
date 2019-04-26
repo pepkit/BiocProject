@@ -30,7 +30,7 @@ to pass to the \code{func}.
 
 \item{pipelineName}{a string indicating the name of the pipeline in the 
 pipeline interface. It is used for the \code{bioconductor} section 
-selection. If none privided and there's no \code{bioconductor} section in 
+selection. If none provided and there's no \code{bioconductor} section in 
 the config file, the first pipeline in the pipeline interface will be used.}
 }
 \value{
@@ -79,6 +79,9 @@ function may serve similar possibility.
 
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
+}
+\note{
+The \code{bioconductor} section can be read from the project config file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  
