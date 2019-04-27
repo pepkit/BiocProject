@@ -13,6 +13,8 @@ outputsByProtocols(project, ...)
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
+\item{...}{other arguments passed to methods}
+
 \item{protocolNames}{char vector of protocol names to match the pipelines 
 and return their outputs}
 }

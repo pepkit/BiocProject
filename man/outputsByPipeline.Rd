@@ -13,6 +13,8 @@ outputsByPipeline(project, ...)
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
+\item{...}{other arguments passed to methods}
+
 \item{pipelineName}{pipeline name to return the outputs for}
 }
 \value{

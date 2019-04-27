@@ -22,8 +22,7 @@
 #' indicated in the \code{\link[pepr]{Project-class}}
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param protocolNames char vector of protocol names to match the pipelines 
-#' and return their outputs
+#' @param ... other arguments passed to methods
 #' 
 #' @return a list of output file paths. The order of the first level of the 
 #' list corresponds to the order of the pipeline interface files, second level 
@@ -43,6 +42,8 @@ setGeneric("outputsByProtocols", function(project, ...)
     standardGeneric("outputsByProtocols"), signature="project")
 
 #' @describeIn outputsByProtocols extracts pipeline outputs for a given protocol or set of protocols
+#' @param protocolNames char vector of protocol names to match the pipelines 
+#' and return their outputs
 setMethod("outputsByProtocols", c(project="Project"), function(project, protocolNames=NULL) {
     ret = list()
     # make sure no duplicates exist
@@ -104,7 +105,7 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
 #' names are returned
 #' 
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param pipelineName pipeline name to return the outputs for
+#' @param ... other arguments passed to methods
 #' 
 #' @return a named list of output file paths for the requested pipeline
 #' 
@@ -121,6 +122,7 @@ setGeneric("outputsByPipeline", function(project, ...)
     standardGeneric("outputsByPipeline"), signature = "project")
 
 #' @describeIn outputsByPipeline extracts pipeline outputs for a given pipeline
+#' @param pipelineName pipeline name to return the outputs for
 setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineName=NULL) {
     if(!is.null(pipelineName) && length(pipelineName) != 1)
         stop("Only one pipeline can be specified, got ", length(pipelineName),
