@@ -1,3 +1,54 @@
+library(yaml)
+# Prep data ---------------------------------------------------------------
+
+configFile = system.file(
+    "extdata",
+    "example_peps-master",
+    "example_BiocProject",
+    "project_config.yaml",
+    package = "BiocProject"
+)
+
+configFileArgs = system.file(
+    "extdata",
+    "example_peps-master",
+    "example_BiocProject",
+    "project_config_resize.yaml",
+    package = "BiocProject"
+)
+
+configFileMissingFun = system.file(
+    "test_projects",
+    "faulty_project",
+    "project_config_no_function.yaml",
+    package = "BiocProject"
+)
+
+configFileNoSection = system.file(
+    "test_projects",
+    "faulty_project",
+    "project_config_no_section.yaml",
+    package = "BiocProject"
+)
+
+bp = BiocProject(configFile)
+
+a=function(arg) {
+    stop(arg)
+}
+
+b=function(arg) {
+    warning(arg)
+}
+
+c=function(arg) {
+    return(arg)
+}
+
+testChar = "a"
+
+# Test --------------------------------------------------------------------
+
 context("Test .unionList utility function")
 
 test_that(".unionList returns correct object type", {
@@ -53,57 +104,6 @@ test_that(".callBiocFun catches errors", {
     expect_error(expect_error(.callBiocFun(a,list(testChar))))
     expect_warning(.callBiocFun(b,list(testChar)))
 })
-library(yaml)
-# Prep data ---------------------------------------------------------------
-
-configFile = system.file(
-    "extdata",
-    "example_peps-master",
-    "example_BiocProject",
-    "project_config.yaml",
-    package = "BiocProject"
-)
-
-configFileArgs = system.file(
-    "extdata",
-    "example_peps-master",
-    "example_BiocProject",
-    "project_config_resize.yaml",
-    package = "BiocProject"
-)
-
-configFileMissingFun = system.file(
-    "test_projects",
-    "faulty_project",
-    "project_config_no_function.yaml",
-    package = "BiocProject"
-)
-
-configFileNoSection = system.file(
-    "test_projects",
-    "faulty_project",
-    "project_config_no_section.yaml",
-    package = "BiocProject"
-)
-
-
-bp = BiocProject(configFile)
-
-a=function(arg) {
-    stop(arg)
-}
-
-b=function(arg) {
-    warning(arg)
-}
-
-c=function(arg) {
-    return(arg)
-}
-
-testChar = "a"
-
-# Test --------------------------------------------------------------------
 
 test_that(".callBiocFun returns correct object on success", {
     expect_is(.callBiocFun(c,list(testChar)),class(testChar))

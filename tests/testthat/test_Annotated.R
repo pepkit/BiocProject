@@ -31,6 +31,8 @@ configFileNoSection = system.file(
     package = "BiocProject"
 )
 
+bp = BiocProject(configFile)
+
 # Test --------------------------------------------------------------------
 
 context("Test Annotated methods")
