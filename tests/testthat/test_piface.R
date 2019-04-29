@@ -59,7 +59,7 @@ test_that("getPipelines returns a list", {
 })
 
 test_that("getPipelines returns a list of correct length", {
-    expect_equal(length(getPipelines(piface)),length(piface$pipelines))
+    expect_length(getPipelines(piface),length(piface$pipelines))
 })
 
 test_that("getPipelines returns a list of Configs (pipelines)", {
@@ -92,6 +92,7 @@ test_that("getPipelines warns and returns matching pipelines when some of the
 
 test_that("getProtocolMappings returns a list of corect length", {
     expect_is(getProtocolMappings(piface), "list")
+    expect_length(getProtocolMappings(piface), 2)
 })
 
 test_that("getProtocolMappings warns and returns NULL when no pipelines section 
@@ -116,6 +117,24 @@ test_that("samplesByProtocol warns and returns data.table when no samples
                              "data.table"))
 })
 
+test_that("outputsByProtocols works with no protocols specified and returns 
+          a list of corect length", {
+    expect_is(outputsByProtocols(p), "list")
+    expect_length(outputsByProtocols(p), 2)
+})
 
+test_that("outputsByProtocols searches for protocols in multiple pipeline interfaces, if they exist", {
+    expect_length(outputsByProtocols(p, "PROTO1"), 2)
+})
 
+test_that("outputsByProtocols works with multiple protocols", {
+    expect_length(outputsByProtocols(p, c("PROTO2","PROTO1")), 2)
+})
 
+test_that("outputsByProtocols does not fail when at least one of the protocols is valid", {
+    expect_length(outputsByProtocols(p, c("PROTO2","XOXO")), 2)
+})
+
+test_that("outputsByProtocols errors when none of the protocols match", {
+    expect_error(outputsByProtocols(p, c("faultyProto","XOXO")))
+})

@@ -86,7 +86,6 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
     }
     if (length(ret) < 1){
         stop("No pipelines matched the requirements")
-        return(invisible(NULL))
     }
     ret
 })
