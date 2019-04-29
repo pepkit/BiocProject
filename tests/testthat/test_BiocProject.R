@@ -31,6 +31,14 @@ configFileNoSection = system.file(
     package = "BiocProject"
 )
 
+configPiface = system.file(
+    "extdata",
+    "example_peps-master",
+    "example_piface",
+    "project_config.yaml",
+    package = "BiocProject"
+)
+
 
 bp = BiocProject(configFile)
 
@@ -93,6 +101,17 @@ test_that("BiocProject function catches errors when the function specified
           })
 
 test_that("BiocProject function throws a warning and returns a Project object
-          when no bioconductor section found",{
+          when no bioconductor section found", {
     expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
+})
+
+test_that("BiocProject function reads the bioconductor section from the 
+          pipeline interface if not found in the project config", {
+              expect_true(is(BiocProject(configPiface), "Project"))
+})
+
+test_that("BiocProject function returna a valid object when only the output of 
+          a specific pipeline is requested", {
+    expect_true(is(BiocProject(configPiface,
+                               pipelineName = "other_pipeline2.py"), "Project"))
 })
