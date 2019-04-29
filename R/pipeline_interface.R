@@ -297,10 +297,16 @@ setMethod("getProtocolMappings","Config",function(.Object){
 #' p = Project(file = projectConfig)
 #' samplesByProtocol(samples(p), "PROTO2")
 samplesByProtocol = function(s, protocolName, caseSensitive=FALSE) {
+    if (length(protocolName) != 1)
+        stop("Select just one protocol name to select the subset of samples")
     if (!caseSensitive)
         s[,which(colnames(s) == "protocol")] = 
             tolower(s[,which(colnames(s) == "protocol")])
-    subset(s, protocol==tolower(protocolName))
+    
+    ret = subset(s, protocol==tolower(protocolName))
+    if (NROW(ret) == 0)
+        warning(protocolName, " did not match any known protocols")
+    return(ret)
 }
 
 #' Get the pipeline intraface(s)

@@ -23,6 +23,9 @@ piface = pifaces[[1]]
 
 pNoPifaces = pepr::Project(configNoPifaces)
 pifaceNoPips = new("Config",piface[-which(names(piface) == "pipelines")])
+pifaceNoProtoMappings = new("Config",piface[-which(names(piface) == "protocol_mapping")])
+
+samplesTable = samples(p)
 
 # Test --------------------------------------------------------------------
 
@@ -32,15 +35,18 @@ test_that("getPipelineInterfaces function returns a list", {
     expect_is(getPipelineInterfaces(p),"list")
 })
 
-test_that("getPipelineInterfaces function returns an object of correct length", {
+test_that("getPipelineInterfaces function returns an object of 
+          correct length", {
     expect_equal(length(getPipelineInterfaces(p)), 2)
 })
 
-test_that("object returned by getPipelineInterfaces contains the pipeline interfaces", {
+test_that("object returned by getPipelineInterfaces contains the pipeline 
+          interfaces", {
     expect_is(getPipelineInterfaces(p)[[1]], "Config")
 })
 
-test_that("getPipelineInterfaces warns and returns NULL when no piface section not found", {
+test_that("getPipelineInterfaces warns and returns NULL when no piface section 
+          not found", {
     expect_warning(expect_equal(getPipelineInterfaces(pNoPifaces), NULL))
 })
 
@@ -80,7 +86,36 @@ test_that("getPipelines warns and returns matching pipelines when some of the
           protocols do not match the defined ones", {
     expect_warning(expect_is(getPipelines(piface, 
                         c("XOXO", "PROTO1", "PROTO2", "faultyProto")), "list"))
+    expect_warning(expect_equal(length(getPipelines(piface, 
+                        c("XOXO", "PROTO1", "PROTO2", "faultyProto"))), 2))
 })
+
+test_that("getProtocolMappings returns a list of corect length", {
+    expect_is(getProtocolMappings(piface), "list")
+})
+
+test_that("getProtocolMappings warns and returns NULL when no pipelines section 
+      is found", {
+      expect_warning(expect_equal(getProtocolMappings(pifaceNoProtoMappings), 
+                                  NULL))
+})
+
+test_that("samplesByProtocol returns a data.table", {
+    for(pName in unlist(unique(samplesTable$protocol))){
+        expect_is(samplesByProtocol(samplesTable, pName), "data.table")    
+    }
+})
+
+test_that("samplesByProtocol errors when more than one protocol provided", {
+              expect_error(samplesByProtocol(samplesTable,c("XOXO","XOXO")))
+})
+
+test_that("samplesByProtocol warns and returns data.table when no samples 
+          match the protocol", {
+    expect_warning(expect_is(samplesByProtocol(samplesTable,c("XOXO")), 
+                             "data.table"))
+})
+
 
 
 
