@@ -9,9 +9,20 @@ configFile = system.file(
     package = "BiocProject"
 )
 
+configNoPifaces = system.file(
+    "extdata",
+    "example_peps-master",
+    "example_BiocProject",
+    "project_config.yaml",
+    package = "BiocProject"
+)
+
 p = pepr::Project(configFile)
 pifaces = getPipelineInterfaces(p)
 piface = pifaces[[1]]
+
+pNoPifaces = pepr::Project(configNoPifaces)
+pifaceNoPips = new("Config",piface[-which(names(piface) == "pipelines")])
 
 # Test --------------------------------------------------------------------
 
@@ -27,6 +38,10 @@ test_that("getPipelineInterfaces function returns an object of correct length", 
 
 test_that("object returned by getPipelineInterfaces contains the pipeline interfaces", {
     expect_is(getPipelineInterfaces(p)[[1]], "Config")
+})
+
+test_that("getPipelineInterfaces warns and returns NULL when no piface section not found", {
+    expect_warning(expect_equal(getPipelineInterfaces(pNoPifaces), NULL))
 })
 
 test_that("getPipelines errors when executed on a list of pifaces", {
@@ -47,6 +62,25 @@ test_that("getPipelines returns a list of Configs (pipelines)", {
     }
 })
 
+test_that("getPipelines selects them by protocol", {
+    expect_is(getPipelines(piface, names(piface[[1]])[[1]])[[1]], "Config")
+})
+
+test_that("getPipelines warns and returns NULL when no pipelines section not 
+          found", {
+    expect_warning(expect_equal(getPipelines(pifaceNoPips), NULL))
+})
+
+test_that("getPipelines warns and returns NULL when no pipelines match the 
+          selected protocol", {
+    expect_warning(expect_equal(getPipelines(piface, "XOXO"), NULL))
+})
+
+test_that("getPipelines warns and returns matching pipelines when some of the 
+          protocols do not match the defined ones", {
+    expect_warning(expect_is(getPipelines(piface, 
+                        c("XOXO", "PROTO1", "PROTO2", "faultyProto")), "list"))
+})
 
 
 

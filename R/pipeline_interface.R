@@ -197,12 +197,15 @@ setMethod("getPipelines", "Config",function(.Object, protocolName){
             # if a specifc protocol name is requested, find the pipelines 
             # that match to that protocol and return just these
             pipelineNames = getProtocolMappings(.Object)[protocolName]
+            faultyProtoNames = which(is.na(names(pipelineNames)))
+            if (length(faultyProtoNames) > 0) {
+                warning(paste0(protocolName[faultyProtoNames], collapse = ", "), 
+                        " did not match any known protocols")
+            }
             idx = match(unlist(pipelineNames), names(.Object[[PIPELINES_SECTION]]))
             # account for faulty protocol names
             misMatches = which(is.na(idx))
             if (length(misMatches) > 0) {
-                warning(paste0(protocolName[misMatches], collapse = ", "), 
-                        " did not match any known protocols")
                 idx = idx[-misMatches]
             }
             if (length(idx) < 1) {
@@ -325,7 +328,7 @@ setGeneric("getPipelineInterfaces", function(.Object)
     standardGeneric("getPipelineInterfaces"))
 
 #' @describeIn getPipelineInterfaces extracts pipeline interfaces defined in a \code{\link{Project-class}} object
-setMethod("getPipelineInterfaces", "Project",function(.Object) {
+setMethod("getPipelineInterfaces", "Project", function(.Object) {
     if(.hasPipIface(.Object)){
         cfg = config(.Object)
         for(sect in PIP_IFACE_SECTION){
