@@ -159,7 +159,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     cfg[[BIOC_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))
-                        funcPath = .makeAbsPath(funcPath,dirname(p@file))
+                        funcPath = .makeAbsPath(funcPath, dirname(p@file))
                     if (!file.exists(funcPath))
                         stop(
                             "The function does not exist in the environment and file '",

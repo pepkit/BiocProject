@@ -32,6 +32,7 @@ articles:
       - vignette2multipleArguments
       - vignette3simpleCache
       - vignette4remoteData
+      - vignette5piface
       
 reference:
   - title: "BiocProject API"
