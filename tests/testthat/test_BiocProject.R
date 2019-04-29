@@ -66,7 +66,8 @@ test_that("BiocProject function return correct object", {
 
 test_that("BiocProject function works with arguments", {
     expect_is(BiocProject(configFileArgs),"Annotated")
-    expect_is(BiocProject(configFileArgs, funcArgs = list(resize.width=200)), "Annotated")
+    expect_is(BiocProject(configFileArgs, funcArgs = list(resize.width=200)),
+              "Annotated")
 })
 
 test_that("BiocProject function returns Annotated when provided objects of 
@@ -110,8 +111,8 @@ test_that("BiocProject function reads the bioconductor section from the
               expect_true(is(BiocProject(configPiface), "Project"))
 })
 
-test_that("BiocProject function returna a valid object when only the output of 
-          a specific pipeline is requested", {
+test_that("BiocProject function returna a valid object when the bioconductor 
+          section defined in the specific pipeline is requested", {
     expect_true(is(BiocProject(configPiface,
                                pipelineName = "other_pipeline2.py"), "Project"))
 })
