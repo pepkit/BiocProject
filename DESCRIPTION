@@ -9,7 +9,7 @@ Description: A Bioconductor-oriented project management class. It wraps the
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: S4Vectors, pepr (>= 0.2.1), methods, glue
+Depends: S4Vectors, pepr, methods, glue
 Suggests:
     knitr,
     rmarkdown,
