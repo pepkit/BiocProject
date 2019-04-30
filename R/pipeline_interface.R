@@ -304,7 +304,8 @@ samplesByProtocol = function(s, protocolName, caseSensitive=FALSE) {
     
     ret = subset(s, protocol==tolower(protocolName))
     if (NROW(ret) == 0)
-        warning(protocolName, " did not match any known protocols")
+        warning(protocolName, " did not match any known protocols in the",
+                " sample annotation sheet")
     return(ret)
 }
 

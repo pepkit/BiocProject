@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Pipeline interface tells the pipeline submission engine (such as [`looper`](http://code.databio.org/looper/)) how to interact with you project and pipeline. It is just a `yaml` file with two sections:
+Pipeline interface tells the pipeline submission engine (such as [`looper`](http://code.databio.org/looper/)) how to interact with your project and pipelines. It is just a `yaml` file with two sections:
 
 * `protocol_mapping` - maps sample protocol (the assay type, sometimes called "library" or "library strategy") to one or more pipeline program
 * `pipelines` - describes the arguments and resources required by each pipeline
@@ -35,7 +35,7 @@ Let's consider the examples below that illustrate the pipeline interface-related
 
 ## `bioconductor` section in the pipeline interface
 
-The first advantage of pipeline interfce concept is the data processing function declaration possibility in the pipeline interface itself. Since the data processing function is pipeline specific rather that project specific, it is much more convenient to place the `bioconductor` section within the `pipeline` section in the pipeline interface file.
+The first advantage of pipeline interfce concept is the data processing function declaration possibility in the pipeline interface itself. Since the data processing function is pipeline specific rather than project specific, it is much more convenient to place the `bioconductor` section within the `pipeline` section in the pipeline interface file.
 
 ```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 library(BiocProject)

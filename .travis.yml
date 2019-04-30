@@ -6,8 +6,11 @@ r_packages: devtools
 r_github_packages: 
   - pepkit/pepr
   - databio/simpleCache
+  - r-lib/covr
 bioc_packages: 
   - GenomicRanges
   - BiocStyle
   - BiocFileCache
+after_success:
+  - Rscript -e 'covr::coveralls()'
 

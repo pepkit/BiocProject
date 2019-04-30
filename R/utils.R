@@ -35,13 +35,19 @@
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
     samplesSubset = samplesByProtocol(samples(project), protocolName)
-    if (NROW(samplesSubset) < 1){
-        warning("No samples matched the ", protocolName," protocol")
+    if (NROW(samplesSubset) < 1)
         return(invisible(NULL))
-    }
     populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
         with(list(sample=s, project=project), glue(.pyToR(string)))
     }))
+    if (length(populatedStrings) != NROW(samplesSubset)) {
+        warning("Paths templates populating problem: number of paths (",
+             length(populatedStrings),
+             ") does not correspond to the number of samples (",
+             NROW(samplesSubset), "). Path template '", string, 
+             "' will not be populated")
+        return(invisible(NULL))
+    }
     names(populatedStrings) = unlist(samplesSubset$sample_name)
     return(populatedStrings)
 }
