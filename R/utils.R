@@ -2,9 +2,12 @@
 #' 
 #' Python uses a dot to access attributes, while R uses \code{$}; this function
 #' converts the python style into R so that we can use R code to populate
-#' variables with R lists. From this: '\code{sample.name}' to this: '\code{sample$name}'
+#' variables with R lists. From this: '\code{{sample.name}}' to this: '\code{{sample$name}}'
 #' @param str String to recode
 #' @return string with the recoded accession syntax
+#' @export
+#' @examples 
+#' .pyToR("{sample.genome}/{sample.read_type}/test")
 .pyToR = function(str) {
     # This is the regex where the magic happens
     pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
