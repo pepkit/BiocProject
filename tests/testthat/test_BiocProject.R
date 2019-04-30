@@ -116,3 +116,13 @@ test_that("BiocProject function returna a valid object when the bioconductor
     expect_true(is(BiocProject(configPiface,
                                pipelineName = "other_pipeline2.py"), "Project"))
 })
+
+test_that("BiocProject disregards the Project object as a user-privided argument", {
+    expect_warning(expect_true(is(BiocProject(configFile, funcArgs = list(p=Project(configFile))), "Project")))
+})
+
+test_that("BiocProject uses the function from the environment, if possible", {
+    fileName = config(Project(configFile))$bioconductor$readFunPath
+    source(file.path(dirname(configFile), fileName))
+    expect_true(is(BiocProject(configFile), "Project"))
+})

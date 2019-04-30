@@ -141,7 +141,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 message("Used function '", funcName, "' from the environment")
                 return(.insertPEP(readData, p))
             }else{
-                if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
+                if (!is.null(funcName) && 
+                    length(grep("(\\:){2,3}", funcName)) != 0) {
                     # trying to access the function from the namespace that
                     # was specified in the config.yaml FUNCTION_NAME
                     splitted = strsplit(funcName, ":")[[1]]
