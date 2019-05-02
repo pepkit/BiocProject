@@ -122,7 +122,6 @@ test_that("BiocProject disregards the Project object as a user-privided argument
 })
 
 test_that("BiocProject uses the function from the environment, if possible", {
-    fileName = config(Project(configFile))$bioconductor$readFunPath
-    source(file.path(dirname(configFile), fileName))
+    source(config(Project(configFile))$bioconductor$readFunPath)
     expect_true(is(BiocProject(configFile), "Project"))
 })
