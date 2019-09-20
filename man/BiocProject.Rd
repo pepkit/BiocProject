@@ -5,7 +5,7 @@
 \title{Portable Encapsulated Project (PEP) for biological applications}
 \usage{
 BiocProject(file, subproject = NULL, autoLoad = TRUE, func = NULL,
-  funcArgs = NULL)
+  funcArgs = NULL, pipelineName = NULL)
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
@@ -27,6 +27,11 @@ to pass to the \code{func}.
  but if provided regardless, the constructor will disregard it. 
  You can also pass the arguments in a \code{funcArgs} section within 
  the \code{bioconductor} section in the config file.}
+
+\item{pipelineName}{a string indicating the name of the pipeline in the 
+pipeline interface. It is used for the \code{bioconductor} section 
+selection. If none provided and there's no \code{bioconductor} section in 
+the config file, the first pipeline in the pipeline interface will be used.}
 }
 \value{
 an object of \code{\link[S4Vectors]{Annotated-class}} that is 
@@ -74,6 +79,9 @@ function may serve similar possibility.
 
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
+}
+\note{
+The \code{bioconductor} section can be read from the project config file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  

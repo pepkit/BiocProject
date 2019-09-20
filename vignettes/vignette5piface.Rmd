@@ -1,0 +1,97 @@
+---
+title: "Using a pipeline interface in your project"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Using a pipeline interface in your project}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Pipeline interface tells the pipeline submission engine (such as [`looper`](http://code.databio.org/looper/)) how to interact with your project and pipelines. It is just a `yaml` file with two sections:
+
+* `protocol_mapping` - maps sample protocol (the assay type, sometimes called "library" or "library strategy") to one or more pipeline program
+* `pipelines` - describes the arguments and resources required by each pipeline
+
+Read more about the pipeline interface concept in the `looper` documentation sections linked below:
+
+* [How to link a project to a pipeline](http://code.databio.org/looper/linking-a-pipeline/)
+* [How to write a pipeline interface](http://code.databio.org/looper/pipeline-interface/)
+* [How to link to multiple pipelines](http://code.databio.org/looper/linking-multiple-pipelines/)
+
+# Main features
+
+Let's consider the examples below that illustrate the pipeline interface-related functionality of `BiocProject` package. 
+
+## `bioconductor` section in the pipeline interface
+
+The first advantage of pipeline interfce concept is the data processing function declaration possibility in the pipeline interface itself. Since the data processing function is pipeline specific rather than project specific, it is much more convenient to place the `bioconductor` section within the `pipeline` section in the pipeline interface file.
+
+```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
+library(BiocProject)
+configFile = system.file(
+    "extdata",
+    "example_peps-master",
+    "example_piface",
+    "project_config.yaml",
+    package = "BiocProject"
+)
+p=pepr::Project(configFile)
+.printNestedList(getPipelines(getPipelineInterfaces(p)[[1]])[[1]])
+```
+
+## Get output file paths
+
+The `outputs` section in the pipeline interface file and `outputsByPipeline` or `outputsByProtocol` functions privide a convenient access to the list of output file paths that are to be produced. 
+For instance, the pipeline `pipeline1.py` with the set of outputs defined above produces the following set of output files when run on the set of samples indicated below.
+
+```{r, echo=F, message=F}
+knitr::kable(samples(p),format = "html")
+```
+
+```{r}
+outputsByPipeline(project=p, pipelineName="pipeline1.py")
+```
+
+`sample3`, which has `protocol` attribute set to `PROTO2` is not included in the outputs since `pipeline1.py` is mapped only to the `PROTO1` protocol in the `protocol_mapping` section of the pipeline interface file:
+
+```{r}
+getProtocolMappings(getPipelineInterfaces(p)[[1]])
+```
+
+Similarily, the output file paths can be determined for a given protocol or set of protocols, like:
+
+```{r}
+outputsByProtocols(project=p, protocolNames="PROTO1")
+```
+
+# Use case
+
+This functionality provides a convenient way to process the files produced by the pipeline, when used in the data processing funcition indicated in the `bioconductor` section of the pipeline interface file. See the example function below that demonstrates the application of the `outputsByPipeline` function.
+
+```{r echo=FALSE, eval=TRUE, comment=""}
+processFunction = system.file(
+  "extdata",
+  "example_peps-master",
+  "example_piface",
+  "readData.R",
+  package = "BiocProject"
+)
+source(processFunction)
+get(getPipelines(getPipelineInterfaces(p)[[1]])[[1]]$bioconductor$readFunName)
+```
+Such a link between the project and the outputs (declared in the pipeline interface) makes it possible to read and process the pipeline results with just a line of code:
+
+```{r}
+bp = BiocProject(configFile)
+```

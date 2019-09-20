@@ -1,4 +1,5 @@
 [![Travis-CI Build Status](https://travis-ci.org/pepkit/BiocProject.svg?branch=master)](https://travis-ci.org/pepkit/BiocProject)
+[![Coverage Status](https://coveralls.io/repos/github/pepkit/BiocProject/badge.svg?branch=piface)](https://coveralls.io/github/pepkit/BiocProject?branch=piface)
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
 # Description of the BiocProject package

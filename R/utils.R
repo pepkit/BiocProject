@@ -1,3 +1,183 @@
+#' Switches from python to R list accession syntax
+#' 
+#' Python uses a dot to access attributes, while R uses \code{$}; this function
+#' converts the python style into R so that we can use R code to populate
+#' variables with R lists. From this: '\code{{sample.name}}' to this: '\code{{sample$name}}'
+#' @param str String to recode
+#' @return string with the recoded accession syntax
+#' @export
+#' @examples 
+#' .pyToR("{sample.genome}/{sample.read_type}/test")
+.pyToR = function(str) {
+    # This is the regex where the magic happens
+    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", "\\1$", str)
+    # This loop allows multi-layer accession
+    res = str
+    prev = ""
+    while (prev != res) {
+        prev = res
+        res = pytor(res)
+    }
+    return(res)
+}
+
+#' Populates a variable-encoded string with sample/project variables
+#' 
+#' Given a string and a project this function will go through samples and populate
+#' the variables. Used to return real files for each sample from an output variable
+#' in the pipeline interface
+#' 
+#' @param string Variable-encoded string to populate
+#' @param project \code{\link[pepr]{Project-class}} object with values to draw from
+#' @param protocolName string, name of the protocol to select the samples
+#' 
+#' @return a named list of populated strings
+#' @importMethodsFrom pepr samples
+#' @importFrom glue glue
+.populateString = function(string, project, protocolName) {
+    # Apply this glue function on each row in the samples table,
+    # coerced to a list object to allow attribute accession.
+    samplesSubset = samplesByProtocol(samples(project), protocolName)
+    if (NROW(samplesSubset) < 1)
+        return(invisible(NULL))
+    populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
+        with(list(sample=s, project=project), glue(.pyToR(string)))
+    }))
+    if (length(populatedStrings) != NROW(samplesSubset)) {
+        warning("Paths templates populating problem: number of paths (",
+             length(populatedStrings),
+             ") does not correspond to the number of samples (",
+             NROW(samplesSubset), "). Path template '", string, 
+             "' will not be populated")
+        return(invisible(NULL))
+    }
+    names(populatedStrings) = unlist(samplesSubset$sample_name)
+    return(populatedStrings)
+}
+
+#' Insert a PEP metadata in a metadata slot of Annotated
+#' 
+#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
+#' into the metadata slot of objects that 
+#' extend the \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' Additionally, if the object extends the 
+#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+#' as the metadata.
+#' 
+#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
+#' @param pep an object of class \code{\link[pepr]{Project-class}}
+#' 
+#' @return an object of the same class as the object argument but enriched
+#'  with the metadata from the pep argument
+#' 
+#' @examples 
+#' # If the object is of class Annotated
+#' object = S4Vectors::List(result="test")
+#' result = .insertPEP(object, pepr::Project())
+#' metadata(result)
+#' 
+#' # If the object is not of class Annotated
+#' object1 = "test"
+#' result1 = .insertPEP(object1, pepr::Project())
+#' metadata(result1)
+#' @import S4Vectors methods
+#' @export
+.insertPEP = function(object, pep) {
+    if(!methods::is(pep, "Project")) 
+        stop("the pep argument has to be of class 'Project', 
+             got '", class(pep),"'")
+    # do we throw a warning/message saying what happens in the next line?
+    if(methods::is(object, "list"))
+        object = S4Vectors::List(object)
+    if(methods::is(object, "Annotated")){
+        S4Vectors::metadata(object) = list(PEP=pep)
+    } else{
+        warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
+                class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
+        result = S4Vectors::List(result=object)
+        S4Vectors::metadata(result) = list(PEP=pep)
+        object = result
+    }
+    .setShowMethod(object)
+    object
+}
+
+
+#' Get the preferred source of the bioconductor section
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#' @param pipelineName name of the pipeline within pipeline interface where 
+#' the 'bioconductor' section should be searched for.
+#'
+#' @return a list with the selected config
+#' @importFrom pepr checkSection config
+#' @importFrom methods new
+.getBiocConfig = function(p, pipelineName) {
+    if(checkSection(config(p), BIOC_SECTION)){
+        # if the BIOC_SECTION section is found in the project config,
+        # override any other locations
+        message("The '", BIOC_SECTION, "' key found in the Project config")
+        return(config(p))
+    }
+    if (is.null(pipelineName)){
+        # if no pipeline name specified, use the first pipeline defined in 
+        # the pipeline interface file
+        pipelineName = 1
+        piface = getPipelineInterfaces(p)[[1]]
+    } else {
+        # if a pipeline name is specified, find the first pipeline interface 
+        # that defines such a pipeline
+        piface = .getPifaceByPipeline(pipelineName, getPipelineInterfaces(p))
+    }
+        
+    if (!is.null(piface) && checkSection(piface, c(PIPELINES_SECTION, pipelineName, BIOC_SECTION))) {
+        message("The '", BIOC_SECTION, "' key found in the pipeline interface")
+        new("Config", piface[[PIPELINES_SECTION]][[pipelineName]])
+        return(.makeReadFunPathAbs(p, piface[[PIPELINES_SECTION]][[pipelineName]]))
+    } else {
+        warning("The '", BIOC_SECTION, "' key is missing in Project config and pipeline interface")
+        return(invisible(NULL))
+    } 
+}
+
+#' Get the pipeline interface with a pipeline
+#' 
+#' Gets the pipeline interface which defines the pipeline from a list of pipeline interfaces
+#'
+#' @param pipeline string, name of the pipeline
+#' @param pifaces a list of pipeline interfaces \code{\link[pepr]{Config-class}} objects)
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the selected pipeline defined
+.getPifaceByPipeline = function(pipeline, pifaces){
+    for (piface in pifaces) {
+        if (pipeline %in% names(getPipelines(piface))) return(piface)
+    }
+    warning("No pipeline interface defines '", pipeline, "' pipeline")
+    NULL
+}
+
+#' Make readFunPath absolute
+#' 
+#' Uses the absolute pipeline interface path in the config to determine the
+#' absolute path to the readFunPath file that consists of the data processing function
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
+.makeReadFunPathAbs = function(p, piface){
+    pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
+    absReadFunPath = file.path(dirname(pepr::config(p)$metadata$pipeline_interfaces[[1]]), pth)
+    if(!.isAbsolute(absReadFunPath))
+        stop("Failed to make the readFunPath absolute: ", absReadFunPath)
+    piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
+    methods::new("Config", piface)
+}
+
+
 # internal function used for wrapping the user-supplied function meessages 
 # in a box
 .wrapFunMessages = function(messages, type) {
@@ -36,7 +216,7 @@
         # error handler 
         .wrapFunMessages(e$message,"error")
         message("No data was read. The error message was returned instead.")
-        S4Vectors::List(e$message)
+        S4Vectors::List(errorMessage=e$message, errorSource=e$call)
     } 
     res = withCallingHandlers(
         tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
@@ -47,12 +227,12 @@
     return(res)
 }
 
-# Create an absolute path from a primary target and a parent candidate.
-#
-# @param perhapsRelative: Path to primary target directory.
-# @param parent a path to parent folder to use if target isn't absolute.
-#
-# @return Target itself if already absolute, else target nested within parent.
+#' Create an absolute path from a primary target and a parent candidate.
+#'
+#' @param perhapsRelative Path to primary target directory.
+#' @param parent a path to parent folder to use if target isn't absolute.
+#'
+#' @return Target itself if already absolute, else target nested within parent.
 .makeAbsPath = function(perhapsRelative, parent) {
     if (!.isDefined(perhapsRelative)) return(perhapsRelative)
     perhapsRelative = pepr::.expandPath(perhapsRelative)
@@ -94,27 +274,33 @@
 #' 
 #' @param list1 a list to be updated
 #' @param list2 a list to update with
+#' @param combine a logical indicating whether the elements of the second list 
+#' should replace (\code{FALSE}, default) or append to (\code{TRUE}) the first one.
 #' 
 #' @return an updated list
 #' 
 #' @examples 
 #' list1=list(a=1,b=2)
 #' list2=list(a=1,b=1,c=3)
-#' .updateList(list1,list2)
+#' .unionList(list1,list2)
 #' 
 #' @export
-.updateList = function(list1,list2) {
-    if((!is.list(list1)) || (!is.list(list2)))
-        stop("One of the arguments was not a list")
+.unionList = function(list1, list2, combine=FALSE) {
+    if ((!is.list(list1)) || (!is.list(list2)))
+        stop("One of the arguments is not a list")
     nms1 = names(list1)
     nms2 = names(list2)
-    if(is.null(nms2)) nms2 = ""
+    if (is.null(nms2)) nms2 = ""
     counter=1
-    for(n in nms2){
+    for (n in nms2) {
         idx = which(nms1 == n)
-        if(length(idx) > 0){
-            list1[[idx]] = list2[[n]]
-        }else{
+        if (length(idx) > 0) {
+            if (combine) {
+                list1[[idx]] = append(list1[[idx]], list2[[n]])
+            } else {
+                list1[[idx]] = list2[[n]]
+            }
+        } else {
             add = list(list2[[counter]])
             names(add) = n
             list1 = append(list1,add)
@@ -166,3 +352,4 @@
             selectMethod("show","Project")(pep)
         }, where = parent.frame())
 }
+
