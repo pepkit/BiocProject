@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.populateString}
 \alias{.populateString}
-\title{Populates a variable-encoded string with sample/project variables}
+\title{Populate a variable-encoded string with sample/project variables}
 \usage{
 .populateString(string, project, protocolName)
 }

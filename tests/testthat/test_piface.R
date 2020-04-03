@@ -27,7 +27,7 @@ pifaceNoProtoMappings = new("Config",piface[-which(names(piface) == "protocol_ma
 pip = getPipelines(piface)[[1]]
 pipNoOutputs = new("Config", pip[-which(names(pip) == "outputs")])
 
-samplesTable = samples(p)
+samplesTable = sampleTable(p)
 
 # Test --------------------------------------------------------------------
 

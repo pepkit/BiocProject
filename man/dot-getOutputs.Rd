@@ -2,7 +2,7 @@
 % Please edit documentation in R/pipeline_interface.R
 \name{.getOutputs}
 \alias{.getOutputs}
-\title{Get outputs from pipeline}
+\title{Get outputs from pipeline defined in an output schema}
 \usage{
 .getOutputs(pipeline)
 }

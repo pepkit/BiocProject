@@ -1,4 +1,4 @@
-#' Get outputs from pipeline
+#' Get outputs from pipeline defined in an output schema
 #' 
 #' Extracts the output file templates defined for a given pipeline
 #'
@@ -6,14 +6,27 @@
 #'
 #' @return named list of output path templates, 
 #' like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-.getOutputs = function(pipeline) {
-    if (!pepr::checkSection(pipeline, OUTPUTS_SECTION)) {
+.getOutputs = function(pipeline, projectContext=FALSE) {
+    outputSchema = .readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]])
+    sect = "properties"
+    if(!projectContext)
+        sect = SCHEMA_SAMPLE_OUTS
+    if (!pepr::.checkSection(outputSchema, sect)){
         pipName = ifelse(is.null(pipeline$name), "provided", pipeline$name)
-        warning("There is no '", OUTPUTS_SECTION , 
-             "' section in the ", pipName," pipeline.")
+        warning("There is no '", 
+                paste(sect, collapse=":") ,
+                "' section in the ", pipName," pipeline output schema.")
         return(invisible(NULL))
     }
-    pipeline[[OUTPUTS_SECTION]]
+    outputs = outputSchema[[sect]]
+    if("samples" %in% names(outputs))
+        outputs[["samples"]] = NULL
+    x = lapply(outputs, function(x){
+        return(x[["path"]])
+    })
+    if(is.null(unlist(lapply(x, is.null))))
+        return(invisible(NULL))
+    x
 }
 
 #' Populates and returns output files for a given protocol
@@ -44,7 +57,7 @@ setGeneric("outputsByProtocols", function(project, ...)
 #' @describeIn outputsByProtocols extracts pipeline outputs for a given protocol or set of protocols
 #' @param protocolNames char vector of protocol names to match the pipelines 
 #' and return their outputs
-setMethod("outputsByProtocols", c(project="Project"), function(project, protocolNames=NULL) {
+setMethod("outputsByProtocols", c(project="Project"), function(project, protocolNames=NULL, projectContext=FALSE) {
     ret = list()
     # make sure no duplicates exist
     protocolNames = unique(protocolNames)
@@ -70,14 +83,14 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
             pipelines = getPipelines(pifaces[[i]], validProtoNames[j])
             pipRet = list()
             for (k in seq_along(pipelines)) {
-                # get the output templates fot the pipeline
-                pipelineOutputs = .getOutputs(pipelines[[k]])
+                # get the output templates for the pipeline
+                pipelineOutputs = .getOutputs(pipelines[[k]], projectContext)
                 # if there are none, skip iteration
                 if (is.null(pipelineOutputs)) next
                 # populate the templates with the sample data, only samples that
                 # have the protocol attribute matching the protocol are used
                 pipRet[[names(pipelines)[k]]] = 
-                    .populateTemplates(project, pipelineOutputs, validProtoNames[j])
+                    .populateTemplates(project, pipelineOutputs, validProtoNames[j], projectContext)
             }
             pifaceRet[[j]] = pipRet
         }
@@ -163,7 +176,7 @@ setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineN
 #' 
 #' To get all the pipelines (default) do not specify any \code{protocolName}
 #'
-#' @param .Object a pipeline interface, an object of \code{\link[pepr]{Config-class}} 
+#' @param .Object a pipeline interface
 #' @param protocolName a string or vector of strings indicating the protocols 
 #' for which the pipelines should be returned
 #'
@@ -179,19 +192,13 @@ setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineN
 #' p = Project(file = projectConfig)
 #' pifaces = getPipelineInterfaces(p)
 #' getPipelines(pifaces[[1]])
-setGeneric("getPipelines", function(.Object, protocolName=NULL)
-    standardGeneric("getPipelines"))
-
-#' @describeIn getPipelines extracts pipelines from a pipeline interface
-setMethod("getPipelines", "Config",function(.Object, protocolName){
-    if(checkSection(.Object, PIPELINES_SECTION)){
-        # if PIPELINES_SECTION sectio found, proceed
+getPipelines = function(.Object, protocolName=NULL){
+    if(pepr::.checkSection(.Object, PIPELINES_SECTION)){
+        # if PIPELINES_SECTION section found, proceed
         if (is.null(protocolName)){
             # if no protocolName provided, return all pipelines defined 
             # in the pipeline interface
-            lapply(.Object[[PIPELINES_SECTION]], function(x){
-                methods::new("Config", x)
-            })
+            .Object[[PIPELINES_SECTION]]
         } else {
             # if a specifc protocol name is requested, find the pipelines 
             # that match to that protocol and return just these
@@ -212,10 +219,7 @@ setMethod("getPipelines", "Config",function(.Object, protocolName){
                         paste0(protocolName, collapse = ", "))
                 return(invisible(NULL))
             }
-            selectedPipelines = .Object[[PIPELINES_SECTION]][idx]
-            lapply(selectedPipelines, function(x) {
-                methods::new("Config", x)
-            })
+            .Object[[PIPELINES_SECTION]][idx]
         }
     }else{
         # if no PIPELINES_SECTION section found, return null and warn
@@ -223,7 +227,7 @@ setMethod("getPipelines", "Config",function(.Object, protocolName){
                 ,"' section is not defined in the provided pipeline interface.")
         invisible(NULL)
     }
-})
+}
 
 #' Get protocol mappings defined within a pipeline interface
 #'
@@ -242,45 +246,32 @@ setMethod("getPipelines", "Config",function(.Object, protocolName){
 #' p = Project(file = projectConfig)
 #' pifaces = getPipelineInterfaces(p)
 #' getProtocolMappings(pifaces[[1]])
-setGeneric("getProtocolMappings", function(.Object)
-    standardGeneric("getProtocolMappings"))
-
-#' @describeIn getProtocolMappings extracts protocol mappings from a pipeline interface
-setMethod("getProtocolMappings","Config",function(.Object){
-    if(checkSection(.Object, PROTO_MAP_SECTION)){
-        lapply(.Object[[PROTO_MAP_SECTION]], function(x){
-            x
-        })
+getProtocolMappings = function(.Object){
+    if(pepr::.checkSection(.Object, PROTO_MAP_SECTION)){
+        .Object[[PROTO_MAP_SECTION]]
     }else{
         warning("The '", PROTO_MAP_SECTION
                 ,"' section is not defined in the provided pipeline interface.")
         invisible(NULL)
     }
-})
+}
 
 #' Populate list of path templates
 #'
 #' @param project an object of \code{\link[pepr]{Config-class}} 
 #' @param templList list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"
 #' @param protocolName string, name of the protocol to select the samples
+#' @param projectLevel logical indicating whether project context should be applied. Default: sample
 #'
 #' @return list of strings
-.populateTemplates = function(project, templList, protocolName) {
-    cfgMetadata = config(project)$metadata
-    prefix = ifelse(is.null(cfgMetadata$results_subdir),
-                    file.path(cfgMetadata$output_dir,"results_pipeline"),
-                    cfgMetadata$results_subdir)
-    prefix = file.path(prefix, "{sample$sample_name}/")
-    prepend = function(path, prefix) {
-        file.path(prefix, path)
-    }
-    outFilesFull = lapply(templList, prepend, prefix)
-    lapply(outFilesFull, .populateString, project, protocolName)
+.populateTemplates = function(project, templList, protocolName, projectContext=FALSE) {
+    expandedTemplList = lapply(templList, pepr::.expandPath)
+    lapply(expandedTemplList, .populateString, project, protocolName, projectContext)
 }
 
 #' Get samples that match the protocol 
 #'
-#' @param s samples, e.g. output of samples(project)
+#' @param s samples, e.g. output of sampleTable(project)
 #' @param protocolName, string name of the protocol
 #' @param caseSensitive, logical indicatinh whether the protocol match should be case sensitive
 #'
@@ -294,7 +285,7 @@ setMethod("getProtocolMappings","Config",function(.Object){
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
-#' samplesByProtocol(samples(p), "PROTO2")
+#' samplesByProtocol(sampleTable(p), "PROTO2")
 samplesByProtocol = function(s, protocolName, caseSensitive=FALSE) {
     if (length(protocolName) != 1)
         stop("Select just one protocol name to select the subset of samples")
@@ -341,7 +332,7 @@ setMethod("getPipelineInterfaces", "Project", function(.Object) {
             cfg = cfg[[sect]]
         }
         lapply(as.list(cfg), function(x) {
-            methods::new("Config", yaml::yaml.load_file(x))
+           yaml::yaml.load_file(x)
         })
     } else{
         warning("No pipeline interface found in the config")
@@ -355,6 +346,6 @@ setMethod("getPipelineInterfaces", "Project", function(.Object) {
 #'
 #' @return logical indicating whether pipeline interface is defined
 .hasPipIface = function(p) {
-    checkSection(config(p), PIP_IFACE_SECTION)
+    pepr::checkSection(config(p), PIP_IFACE_SECTION)
 }
 

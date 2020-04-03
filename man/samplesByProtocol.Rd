@@ -7,7 +7,7 @@
 samplesByProtocol(s, protocolName, caseSensitive = FALSE)
 }
 \arguments{
-\item{s}{samples, e.g. output of samples(project)}
+\item{s}{samples, e.g. output of sampleTable(project)}
 
 \item{protocolName, }{string name of the protocol}
 
@@ -26,5 +26,5 @@ projectConfig = system.file("extdata",
 "project_config.yaml",
 package = "BiocProject")
 p = Project(file = projectConfig)
-samplesByProtocol(samples(p), "PROTO2")
+samplesByProtocol(sampleTable(p), "PROTO2")
 }

@@ -133,7 +133,7 @@ Since the data processing function returned `GenomicRanges::GRangesList` object,
 The created object provides all the `pepr::Project` methods (which you can find in the [reference documentation for pepr](http://code.databio.org/pepr/reference/index.html)).
 
 ```{r}
-samples(bp)
+sampleTable(bp)
 config(bp)
 ```
 

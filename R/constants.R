@@ -15,8 +15,11 @@ FUNCTION_NAME = "readFunName"
 
 # other constants
 PIPELINES_SECTION = "pipelines"
+COLLATORS_SECTION = "collators"
 PROTO_MAP_SECTION = "protocol_mapping"
-OUTPUTS_SECTION = "outputs"
-METADATA_NAME = "metadata"
+COLL_MAP_SECTION = "collator_mappings"
+OUTPUT_SCHEMA_SECTION = "output_schema"
+LOOPER_SECTION = "looper"
 PIP_IFACE_NAME = "pipeline_interfaces"
-PIP_IFACE_SECTION = c(METADATA_NAME, PIP_IFACE_NAME)
+SCHEMA_SAMPLE_OUTS = c("properties", "samples", "items", "properties")
+PIP_IFACE_SECTION = c(LOOPER_SECTION, PIP_IFACE_NAME)

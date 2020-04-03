@@ -17,7 +17,7 @@ Suggests:
     yaml
 Enhances: BiocFileCache, simpleCache, GenomicRanges
 biocViews: DataImport, DataRepresentation
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 URL: http://code.databio.org/BiocProject/
 BugReports: https://github.com/pepkit/BiocProject/issues
 VignetteBuilder: knitr

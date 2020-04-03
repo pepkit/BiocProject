@@ -38,7 +38,7 @@ bp = BiocProject(configFile)
 context("Test Annotated methods")
 
 test_that("samples returns a correct object", {
-    expect_is(samples(bp),"data.table")
+    expect_is(sampleTable(bp),"data.table")
 })
 
 test_that("config returns a correct object", {

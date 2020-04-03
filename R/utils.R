@@ -28,7 +28,7 @@
     if(.isValidUrl(path)) 
         schema  = yaml::yaml.load(getURLContent(path))
     if(is.null(schema))
-        stop(paste0("Schema has to be either a valid URL or an existing path",
+        stop(paste0("Schema has to be either a valid URL or an existing path. ",
                     "Got: ", path))
     schema
 }
@@ -65,18 +65,21 @@
 #' @param string Variable-encoded string to populate
 #' @param project \code{\link[pepr]{Project-class}} object with values to draw from
 #' @param protocolName string, name of the protocol to select the samples
+#' @param projectContext logical indicating whether project context should be applied for string formatting. Default: sample
 #' 
 #' @return a named list of populated strings
 #' @importMethodsFrom pepr samples
 #' @importFrom glue glue
-.populateString = function(string, project, protocolName) {
+.populateString = function(string, project, protocolName, projectContext=FALSE) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
-    samplesSubset = samplesByProtocol(samples(project), protocolName)
+    samplesSubset = samplesByProtocol(sampleTable(project), protocolName)
     if (NROW(samplesSubset) < 1)
         return(invisible(NULL))
     populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
-        with(list(sample=s, project=project), glue(.pyToR(string)))
+        if(projectContext)
+            return(with(config(project), glue(.pyToR(string))))
+        return(with(s, glue(.pyToR(string))))
     }))
     if (length(populatedStrings) != NROW(samplesSubset)) {
         warning("Paths templates populating problem: number of paths (",

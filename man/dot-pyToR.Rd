@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.pyToR}
 \alias{.pyToR}
-\title{Switches from python to R list accession syntax}
+\title{Switch from python to R list accession syntax}
 \usage{
 .pyToR(str)
 }
