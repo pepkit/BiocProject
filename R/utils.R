@@ -1,4 +1,39 @@
-#' Switches from python to R list accession syntax
+#' Determine whether the string is a valid URL
+#'
+#' @param str string to inspect
+#'
+#' @return logical indicating whether a string is a valid URL
+#' @examples
+#' .isvalidUrl("https://schema.databio.org/PEP/pep.yaml")
+.isValidUrl = function(str) {
+    ans = FALSE
+    if(grepl("www.|http:|https:", str)) {
+        ans = url.exists(str)
+    }
+    ans
+}
+
+#' Read a YAML-formatted schema
+#' 
+#' Remote or local schemas are supported
+#'
+#' @param path path to a local schema or URL pointing to a remote one 
+#' @return list read schema
+#' @examples
+#' .readSchema("https://schema.databio.org/PEP/pep.yaml")
+.readSchema = function(path) {
+    schema = NULL
+    if(file.exists(pepr::.expandPath(path)))
+        schema = yaml::read_yaml(path)
+    if(.isValidUrl(path)) 
+        schema  = yaml::yaml.load(getURLContent(path))
+    if(is.null(schema))
+        stop(paste0("Schema has to be either a valid URL or an existing path",
+                    "Got: ", path))
+    schema
+}
+
+#' Switch from python to R list accession syntax
 #' 
 #' Python uses a dot to access attributes, while R uses \code{$}; this function
 #' converts the python style into R so that we can use R code to populate
@@ -21,7 +56,7 @@
     return(res)
 }
 
-#' Populates a variable-encoded string with sample/project variables
+#' Populate a variable-encoded string with sample/project variables
 #' 
 #' Given a string and a project this function will go through samples and populate
 #' the variables. Used to return real files for each sample from an output variable
@@ -94,7 +129,7 @@
         object = S4Vectors::List(object)
     if(methods::is(object, "Annotated")){
         S4Vectors::metadata(object) = list(PEP=pep)
-    } else{
+    } else {
         warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
                 class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
         result = S4Vectors::List(result=object)

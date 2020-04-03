@@ -13,6 +13,7 @@ FUNCTION_ARGS = "funcArgs"
 FUNCTION_PATH = "readFunPath"
 FUNCTION_NAME = "readFunName"
 
+# other constants
 PIPELINES_SECTION = "pipelines"
 PROTO_MAP_SECTION = "protocol_mapping"
 OUTPUTS_SECTION = "outputs"
