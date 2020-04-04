@@ -6,7 +6,7 @@
 \usage{
 BiocProject(
   file,
-  subproject = NULL,
+  amendments = NULL,
   autoLoad = TRUE,
   func = NULL,
   funcArgs = NULL,

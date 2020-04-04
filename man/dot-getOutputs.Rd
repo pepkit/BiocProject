@@ -4,7 +4,7 @@
 \alias{.getOutputs}
 \title{Get outputs from pipeline defined in an output schema}
 \usage{
-.getOutputs(pipeline)
+.getOutputs(pipeline, projectContext = FALSE)
 }
 \arguments{
 \item{pipeline}{an object of \code{\link[pepr]{Config-class}}}

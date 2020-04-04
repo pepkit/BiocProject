@@ -1,17 +1,19 @@
 library(yaml)
 # Prep data ---------------------------------------------------------------
 
+branch = "cfg2"
+
 configFile = system.file(
-    "extdata",
-    "example_peps-master",
-    "example_piface",
-    "project_config.yaml",
-    package = "BiocProject"
+  "extdata",
+  paste0("example_peps-",branch),
+  "example_piface",
+  "project_config.yaml",
+  package = "BiocProject"
 )
 
 configNoPifaces = system.file(
     "extdata",
-    "example_peps-master",
+    paste0("example_peps-",branch),
     "example_BiocProject",
     "project_config.yaml",
     package = "BiocProject"
@@ -22,10 +24,9 @@ pifaces = getPipelineInterfaces(p)
 piface = pifaces[[1]]
 
 pNoPifaces = pepr::Project(configNoPifaces)
-pifaceNoPips = new("Config",piface[-which(names(piface) == "pipelines")])
-pifaceNoProtoMappings = new("Config",piface[-which(names(piface) == "protocol_mapping")])
+pifaceNoPips = piface[-which(names(piface) == "pipelines")]
+pifaceNoProtoMappings = piface[-which(names(piface) == "protocol_mapping")]
 pip = getPipelines(piface)[[1]]
-pipNoOutputs = new("Config", pip[-which(names(pip) == "outputs")])
 
 samplesTable = sampleTable(p)
 
@@ -44,7 +45,7 @@ test_that("getPipelineInterfaces function returns an object of
 
 test_that("object returned by getPipelineInterfaces contains the pipeline 
           interfaces", {
-    expect_is(getPipelineInterfaces(p)[[1]], "Config")
+    expect_is(getPipelineInterfaces(p)[[1]], "list")
 })
 
 test_that("getPipelineInterfaces warns and returns NULL when no piface section 
@@ -53,10 +54,6 @@ test_that("getPipelineInterfaces warns and returns NULL when no piface section
 })
 
 context("Test getPipelines function")
-
-test_that("getPipelines errors when executed on a list of pifaces", {
-    expect_error(getPipelines(pifaces))
-})
 
 test_that("getPipelines returns a list", {
     expect_is(getPipelines(piface),"list")
@@ -68,12 +65,12 @@ test_that("getPipelines returns a list of correct length", {
 
 test_that("getPipelines returns a list of Configs (pipelines)", {
     for(c in getPipelines(piface)){
-        expect_is(c,"Config")
+        expect_is(c,"list")
     }
 })
 
 test_that("getPipelines selects them by protocol", {
-    expect_is(getPipelines(piface, names(piface[[1]])[[1]])[[1]], "Config")
+    expect_is(getPipelines(piface, names(piface[[1]])[[1]])[[1]], "list")
 })
 
 test_that("getPipelines warns and returns NULL when no pipelines section not 
@@ -182,10 +179,3 @@ test_that(".hasPipIface detects projects with a pipeline interface section", {
 test_that(".getOutputs returns a list", {
     expect_is(.getOutputs(pip), "list")
 })
-
-test_that(".getOutputs warns and returns NULL when no outputs section found", {
-    expect_warning(expect_null(.getOutputs(pipNoOutputs)))
-})
-
-
-

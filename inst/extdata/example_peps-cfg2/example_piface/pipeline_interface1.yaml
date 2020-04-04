@@ -1,0 +1,47 @@
+protocol_mapping:
+  PROTO1: pipeline1.py
+  PROTO2: pipeline2.py 
+
+pipelines:
+  pipeline1.py:
+    name: PIPELINE1
+    path: pipelines/pipeline1.py
+    output_schema: output_schema.yaml
+    command_template: >
+      {pipeline.path} --sample-name {sample.sample_name}
+    bioconductor:
+      readFunName: readData
+      readFunPath: readData.R
+  pipeline2.py:
+    name: PIPELINE2
+    path: pipelines/pipeline2.py
+    output_schema: output_schema.yaml
+    command_template: >
+      {pipeline.path} --sample-name {sample.sample_name}
+    bioconductor:
+      readFunName: readData
+      readFunPath: readData.R
+
+
+collator_mappings:
+  PROTO1: pipeline1.py
+  PROTO2: pipeline2.py
+
+collators:
+  col_pipeline1.py:
+    name: PIPELINE1
+    path: pipelines/col_pipeline1.py
+    output_schema: output_schema.yaml
+    command_template: >
+      {pipeline.path} --sample-name {sample.sample_name}
+    bioconductor:
+      readFunName: readData
+      readFunPath: readData.R
+  col_pipeline2.py:
+    name: PIPELINE2
+    path: pipelines/col_pipeline2.py
+    command_template: >
+      {pipeline.path} --sample-name {sample.sample_name}
+    bioconductor:
+      readFunName: readData
+      readFunPath: readData.R

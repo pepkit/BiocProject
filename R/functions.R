@@ -50,7 +50,7 @@
 #'
 #'
 #' @param file a character vector with a path to the PEP config file
-#' @param subproject a character vector with a name of the subproject
+#' @param amendments a character vector with a name of the subproject
 #' to be activated
 #' @param func a anonymous function that reads and/or processess the data, 
 #' it must take 
@@ -86,9 +86,9 @@
 #' @seealso \url{https://pepkit.github.io/}
 #' @import pepr
 #' @export BiocProject
-BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL, 
+BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL, 
                         funcArgs = NULL, pipelineName = NULL) {
-    p = pepr::Project(file=file, subproject=subproject)
+    p = pepr::Project(file=file, amendments = amendments)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
@@ -103,7 +103,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
     cfg = .getBiocConfig(p, pipelineName)
     if(is.null(cfg))
         cfg = pepr::config(p)
-    if(pepr::checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
+    if(pepr::.checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
         args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
@@ -126,7 +126,7 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                                     got '", class(autoLoad),"'")
         if (autoLoad) {
             # check if the config consists of BIOC_SECTION section
-            if(!pepr::checkSection(cfg, BIOC_SECTION)){
+            if(!pepr::.checkSection(cfg, BIOC_SECTION)){
                 message("No data was read. Returning a Project object")
                 warning("The config YAML is missing the '",
                         BIOC_SECTION,"' section.")

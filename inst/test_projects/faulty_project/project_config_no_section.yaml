@@ -1,4 +1,4 @@
 # This is a faulty PEP.
 # The bioconductor section does not exist
-metadata:
-  sample_table: sample_table.csv
+pep_version: 2.0.0
+sample_table: sample_table.csv

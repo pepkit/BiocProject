@@ -41,14 +41,14 @@ The first advantage of pipeline interfce concept is the possibility to declaret 
 
 ```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 library(BiocProject)
+branch = "cfg2"
 configFile = system.file(
     "extdata",
-    "example_peps-master",
+    paste0("example_peps-", branch),
     "example_piface",
     "project_config.yaml",
     package = "BiocProject"
 )
-configFile="/Users/mstolarczyk/Desktop/testing/bedstat/test_bedstat.yaml"
 p=pepr::Project(configFile)
 .printNestedList(getPipelines(getPipelineInterfaces(p)[[1]])[[1]])
 ```
@@ -83,9 +83,10 @@ outputsByProtocols(project=p, protocolNames="PROTO1")
 This functionality provides a convenient way to process the files produced by the pipeline, when used in the data processing function indicated in the `bioconductor` section of the pipeline interface file. See the example function below that demonstrates the application of the `outputsByPipeline` function.
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
+branch = "cfg2"
 processFunction = system.file(
   "extdata",
-  "example_peps-master",
+  paste0("example_peps-", branch),
   "example_piface",
   "readData.R",
   package = "BiocProject"

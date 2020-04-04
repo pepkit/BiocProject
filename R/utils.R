@@ -8,7 +8,7 @@
 .isValidUrl = function(str) {
     ans = FALSE
     if(grepl("www.|http:|https:", str)) {
-        ans = url.exists(str)
+        ans = RCurl::url.exists(str)
     }
     ans
 }
@@ -21,12 +21,14 @@
 #' @return list read schema
 #' @examples
 #' .readSchema("https://schema.databio.org/PEP/pep.yaml")
-.readSchema = function(path) {
+.readSchema = function(path, parent) {
     schema = NULL
-    if(file.exists(pepr::.expandPath(path)))
-        schema = yaml::read_yaml(path)
     if(.isValidUrl(path)) 
         schema  = yaml::yaml.load(getURLContent(path))
+    file = pepr::.makeAbsPath(path, parent)
+    if(file.exists(file)){
+        schema = yaml::read_yaml(file)
+    }
     if(is.null(schema))
         stop(paste0("Schema has to be either a valid URL or an existing path. ",
                     "Got: ", path))
@@ -171,9 +173,8 @@
         piface = .getPifaceByPipeline(pipelineName, getPipelineInterfaces(p))
     }
         
-    if (!is.null(piface) && checkSection(piface, c(PIPELINES_SECTION, pipelineName, BIOC_SECTION))) {
+    if (!is.null(piface) && pepr::.checkSection(piface, c(PIPELINES_SECTION, pipelineName, BIOC_SECTION))) {
         message("The '", BIOC_SECTION, "' key found in the pipeline interface")
-        new("Config", piface[[PIPELINES_SECTION]][[pipelineName]])
         return(.makeReadFunPathAbs(p, piface[[PIPELINES_SECTION]][[pipelineName]]))
     } else {
         warning("The '", BIOC_SECTION, "' key is missing in Project config and pipeline interface")
@@ -208,11 +209,11 @@
 #' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
 .makeReadFunPathAbs = function(p, piface){
     pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
-    absReadFunPath = file.path(dirname(pepr::config(p)$metadata$pipeline_interfaces[[1]]), pth)
+    absReadFunPath = file.path(dirname(config(p)[[LOOPER_SECTION]]$pipeline_interfaces[[1]]), pth)
     if(!.isAbsolute(absReadFunPath))
         stop("Failed to make the readFunPath absolute: ", absReadFunPath)
     piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
-    methods::new("Config", piface)
+    piface
 }
 
 

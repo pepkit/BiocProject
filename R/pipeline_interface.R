@@ -6,8 +6,10 @@
 #'
 #' @return named list of output path templates, 
 #' like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-.getOutputs = function(pipeline, projectContext=FALSE) {
-    outputSchema = .readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]])
+.getOutputs = function(pipeline, projectContext=FALSE, parent) {
+    if(!OUTPUT_SCHEMA_SECTION %in% names(pipeline))
+        return(invisible(NULL))
+    outputSchema = .readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]], parent)
     sect = "properties"
     if(!projectContext)
         sect = SCHEMA_SAMPLE_OUTS
@@ -63,6 +65,8 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
     protocolNames = unique(protocolNames)
     pifaces = getPipelineInterfaces(project)
     for (i in seq_along(pifaces)) {
+        prnt = 
+            dirname(config(project)[[LOOPER_SECTION]][["pipeline_interfaces"]][i])
         pifaceRet = list()
         protoMappings = getProtocolMappings(pifaces[[i]])
         pifaceProtoNames = names(protoMappings)
@@ -84,7 +88,7 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
             pipRet = list()
             for (k in seq_along(pipelines)) {
                 # get the output templates for the pipeline
-                pipelineOutputs = .getOutputs(pipelines[[k]], projectContext)
+                pipelineOutputs = .getOutputs(pipelines[[k]], projectContext, prnt)
                 # if there are none, skip iteration
                 if (is.null(pipelineOutputs)) next
                 # populate the templates with the sample data, only samples that

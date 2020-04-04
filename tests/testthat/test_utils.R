@@ -1,9 +1,11 @@
 library(yaml)
 # Prep data ---------------------------------------------------------------
 
+branch = "cfg2"
+
 configFile = system.file(
     "extdata",
-    "example_peps-master",
+    paste0("example_peps-",branch),
     "example_BiocProject",
     "project_config.yaml",
     package = "BiocProject"
@@ -11,7 +13,7 @@ configFile = system.file(
 
 configFileArgs = system.file(
     "extdata",
-    "example_peps-master",
+    paste0("example_peps-",branch),
     "example_BiocProject",
     "project_config_resize.yaml",
     package = "BiocProject"

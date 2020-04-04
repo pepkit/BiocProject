@@ -7,7 +7,7 @@
 \usage{
 outputsByProtocols(project, ...)
 
-\S4method{outputsByProtocols}{Project}(project, protocolNames = NULL)
+\S4method{outputsByProtocols}{Project}(project, protocolNames = NULL, projectContext = FALSE)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
