@@ -32,20 +32,20 @@
 }
 
 #' Populates and returns output files for a given protocol
-#' 
-#' Returns the pipeline outputs which are defined in the pipeline interface 
+#'
+#' Returns the pipeline outputs which are defined in the pipeline interface
 #' indicated in the \code{\link[pepr]{Project-class}}
-#' 
+#'
 #' @param project \code{\link[pepr]{Project-class}} object
 #' @param ... other arguments passed to methods
-#' 
-#' @return a list of output file paths. The order of the first level of the 
-#' list corresponds to the order of the pipeline interface files, second level 
-#' order (named) reflects the pipelines within the files, the last level is a 
+#'
+#' @return a list of output file paths. The order of the first level of the
+#' list corresponds to the order of the pipeline interface files, second level
+#' order (named) reflects the pipelines within the files, the last level is a
 #' named list of file paths populated by the samples
-#' 
+#'
 #' @export
-#' @examples 
+#' @examples
 #' projectConfig = system.file("extdata",
 #' "example_peps-master",
 #' "example_piface",
@@ -57,7 +57,7 @@ setGeneric("outputsByProtocols", function(project, ...)
     standardGeneric("outputsByProtocols"), signature="project")
 
 #' @describeIn outputsByProtocols extracts pipeline outputs for a given protocol or set of protocols
-#' @param protocolNames char vector of protocol names to match the pipelines 
+#' @param protocolNames char vector of protocol names to match the pipelines
 #' and return their outputs
 setMethod("outputsByProtocols", c(project="Project"), function(project, protocolNames=NULL, projectContext=FALSE) {
     ret = list()
@@ -65,13 +65,13 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
     protocolNames = unique(protocolNames)
     pifaces = getPipelineInterfaces(project)
     for (i in seq_along(pifaces)) {
-        prnt = 
+        prnt =
             dirname(config(project)[[LOOPER_SECTION]][["pipeline_interfaces"]][i])
         pifaceRet = list()
         protoMappings = getProtocolMappings(pifaces[[i]])
         pifaceProtoNames = names(protoMappings)
-        # find protocol names that both exist in the pipeline interface 
-        # and were requested. If none are requested, return all the info held 
+        # find protocol names that both exist in the pipeline interface
+        # and were requested. If none are requested, return all the info held
         # in all the pipeline interfaces
         if (is.null(protocolNames)) {
             validProtoNames = pifaceProtoNames
@@ -93,7 +93,7 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
                 if (is.null(pipelineOutputs)) next
                 # populate the templates with the sample data, only samples that
                 # have the protocol attribute matching the protocol are used
-                pipRet[[names(pipelines)[k]]] = 
+                pipRet[[names(pipelines)[k]]] =
                     .populateTemplates(project, pipelineOutputs, validProtoNames[j], projectContext)
             }
             pifaceRet[[j]] = pipRet
@@ -106,6 +106,67 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
     }
     ret
 })
+
+#' Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
+#'
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param ... other arguments passed to methods
+#'
+#' @return a list of pipeline interface file paths.
+#'
+#' @export
+#' @examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' gatherPipelineInterfaces(p)
+#' gatherPipelineInterfaces(p, TRUE)
+setGeneric("gatherPipelineInterfaces", function(project, ...)
+    standardGeneric("gatherPipelineInterfaces"), signature = "project")
+
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#' should be considered. Otherwise, only sample-level ones are.
+setMethod("gatherPipelineInterfaces", c(project="Project"), function(project, projectLevel=FALSE) {
+    if(!projectLevel){
+        return(.gatherSamplePipelineInterfaces(project))
+    } else{
+        pik = PIP_IFACE_NAME
+        if(!is.null(config(project)[[LOOPER_SECTION]][[PIP_IFACE_KEY]]))
+            pik = config(project)[[LOOPER_SECTION]][[PIP_IFACE_KEY]]
+        if(!is.null(config(project)[[LOOPER_SECTION]][[pik]]))
+            return(setNames(vapply(
+                unlist(config(project)[[LOOPER_SECTION]][[pik]]), 
+                function(x){
+                    pepr::.makeAbsPath(x, parent=dirname(project@file))
+                }, 
+                character(1)
+            ), NULL))
+        return(.gatherSamplePipelineInterfaces(project))
+    }
+})
+
+setGeneric(".gatherSamplePipelineInterfaces", function(project)
+    standardGeneric(".gatherSamplePipelineInterfaces"), signature = "project")
+
+#' @describeIn gatherPipelineInterfaces extracts pipeline outputs for a given pipeline
+setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(project) {
+    t = sampleTable(project)
+    if (PIP_IFACE_NAME %in% colnames(t)) 
+        return(setNames(vapply(
+            unique(unlist(t[,PIP_IFACE_NAME])), 
+            function(x){
+                pepr::.makeAbsPath(x, parent=dirname(project@file))
+            }, 
+            character(1)
+            ), NULL)
+        )
+    return(invisible(NULL))
+})
+
+
 
 #' Populates and returns output files for a given pipeline
 #' 
@@ -147,17 +208,8 @@ setMethod("outputsByPipeline", c(project="Project"), function(project, pipelineN
     allPips = list()
     for (piface in allOutputs) {
         for (protocol in piface) {
-            if (is.null(pipelineName)) {
-                # if no pipelines requested, collect ouput info 
-                allPips = append(allPips, protocol)
-            } else {
-                # if pipeline requested, check for name match 
-                # and return outputs if so
-                matchPips = match(pipelineName, names(protocol))
-                if (!is.na(matchPips)) {
-                    allPips = .unionList(allPips, protocol[matchPips][[1]], T)
-                }
-            }
+            # if no pipelines requested, collect ouput info 
+            allPips = append(allPips, protocol)
         }
     }
     if (!is.null(pipelineName)) {
