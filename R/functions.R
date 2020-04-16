@@ -75,7 +75,7 @@
 #' element of the list in its medatada slot 
 #' 
 #' @examples 
-#' projectConfig = system.file("extdata", "example_peps-master",
+#' projectConfig = system.file("extdata", "example_peps-cfg2",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' bp=BiocProject(projectConfig)
 #' 
@@ -87,7 +87,7 @@
 #' @import pepr
 #' @export BiocProject
 BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL, 
-                        funcArgs = NULL, pipelineName = NULL) {
+                        funcArgs = NULL, projectLevel = FALSE) {
     p = pepr::Project(file=file, amendments = amendments)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
@@ -100,7 +100,7 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
         }
     }
     args = append(list(p), funcArgs)
-    cfg = .getBiocConfig(p, pipelineName)
+    cfg = .getBiocConfig(p, projectLevel)
     if(is.null(cfg))
         cfg = pepr::config(p)
     if(pepr::.checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){

@@ -4,12 +4,12 @@ name: test
 sample_table: annotation_sheet.csv
 looper:
   output_dir: ../output
+  #pifaces: ["~/proj_piface.yml", "pipeline_interface2.yaml"]
+  pipeline_interfaces_key: pifaces
 
 sample_modifiers: 
   append:
-    pipeline_interfaces: 
-      - pipeline_interface1.yaml
-      - pipeline_interface2.yaml
+    pipeline_interfaces: ["pipeline_interface1.yaml", "pipeline_interface2.yaml"]
   derive:
     attributes: [read1, read2]
     sources:

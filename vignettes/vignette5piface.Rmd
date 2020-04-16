@@ -37,7 +37,7 @@ Let's consider the examples below that illustrate the pipeline interface-related
 
 ## `bioconductor` section in the pipeline interface
 
-The first advantage of pipeline interfce concept is the possibility to declaret the data processing function in the pipeline interface itself. Since the data processing function is pipeline specific rather than project specific, it is much more convenient to place the `bioconductor` section within the `pipeline` section in the pipeline interface file.
+The first advantage of pipeline interfce concept is the possibility to declare the data processing function in the pipeline interface itself. Since the data processing function is pipeline specific rather than project specific, it is much more convenient to place the `bioconductor` section in the pipeline interface file.
 
 ```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 library(BiocProject)
@@ -50,37 +50,40 @@ configFile = system.file(
     package = "BiocProject"
 )
 p=pepr::Project(configFile)
-.printNestedList(getPipelines(getPipelineInterfaces(p)[[1]])[[1]])
+.printNestedList(yaml::read_yaml(pipelineInterfacesBySample(p)[[1]][1]))
 ```
 
 ## Get output file paths
 
-The `outputs` section in the pipeline interface file and `outputsByPipeline` or `outputsByProtocol` functions provide a convenient access to the list of output file paths that are to be produced. 
-For instance, the pipeline `pipeline1.py` with the set of outputs defined above produces the following set of output files when run on the set of samples indicated below.
-
+Pipeline outputs can be defined in a schema. As shown in the example above, pipeline interface specifies a path to a schema in a top-level `output_schema` section. 
+Example of a schema defining pipeline outputs:
 ```{r, echo=F, message=F}
-knitr::kable(sampleTable(p),format = "html")
+pifaceSource = pipelineInterfacesBySample(p)[[1]][1]
+piface = yaml::read_yaml(pifaceSource)
+.printNestedList(.readSchema(piface$sample_pipeline$output_schema, dirname(pifaceSource)))
 ```
 
+### Sample-level
+
+Pipeline interface system divides pipelines (and their outputs) into project- and sample-level. 
+
+In order to list the outputs for a sample, or all the samples use `getOutputsBySample` method:
 ```{r}
-outputsByPipeline(project=p, pipelineName="pipeline1.py")
+getOutputsBySample(p)
+getOutputsBySample(p, sampleNames=c("sample1", "sample2"))
 ```
 
-`sample3`, which has `protocol` attribute set to `PROTO2` is not included in the outputs since `pipeline1.py` is mapped only to the `PROTO1` protocol in the `protocol_mapping` section of the pipeline interface file:
+### Project-level
+
+In order to list the outputs for the project use `getProjectOutputs` method:
 
 ```{r}
-getProtocolMappings(getPipelineInterfaces(p)[[1]])
-```
-
-Similarly, the output file paths can be determined for a given protocol or set of protocols, like:
-
-```{r}
-outputsByProtocols(project=p, protocolNames="PROTO1")
+getProjectOutputs(p)
 ```
 
 # Use case
 
-This functionality provides a convenient way to process the files produced by the pipeline, when used in the data processing function indicated in the `bioconductor` section of the pipeline interface file. See the example function below that demonstrates the application of the `outputsByPipeline` function.
+This functionality provides a convenient way to process the files produced by the pipeline, when used in the data processing function indicated in the `bioconductor` section of the pipeline interface file. See the example function below that demonstrates the application of the `getSampleOutputs` function.
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
 branch = "cfg2"
@@ -92,10 +95,11 @@ processFunction = system.file(
   package = "BiocProject"
 )
 source(processFunction)
-get(getPipelines(getPipelineInterfaces(p)[[1]])[[1]]$bioconductor$readFunName)
+piface = yaml::read_yaml(pipelineInterfacesBySample(p)[[1]][1])
+get(piface$bioconductor$readFunName)
 ```
 Such a link between the project and the outputs (declared in the pipeline interface) makes it possible to read and process the pipeline results with just a line of code:
 
-```{r}
+```
 bp = BiocProject(configFile)
 ```

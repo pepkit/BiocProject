@@ -157,27 +157,23 @@
 #' @return a list with the selected config
 #' @importFrom pepr checkSection config
 #' @importFrom methods new
-.getBiocConfig = function(p, pipelineName) {
+.getBiocConfig = function(p, projectLevel=FALSE) {
     if(checkSection(config(p), BIOC_SECTION)){
         # if the BIOC_SECTION section is found in the project config,
         # override any other locations
         message("The '", BIOC_SECTION, "' key found in the Project config")
         return(config(p))
     }
-    if (is.null(pipelineName)){
-        # if no pipeline name specified, use the first pipeline defined in 
-        # the pipeline interface file
-        pipelineName = 1
-        piface = getPipelineInterfaces(p)[[1]]
-    } else {
-        # if a pipeline name is specified, find the first pipeline interface 
-        # that defines such a pipeline
-        piface = .getPifaceByPipeline(pipelineName, getPipelineInterfaces(p))
+    # check for BIOC_SECTION in pipeline interfaces        
+    pifaceSources = gatherPipelineInterfaces(p, projectLevel=projectLevel)
+    if(length(pifaceSources) > 0){
+        pifaceSource = pifaceSources[1]
+        message("Muliple pipeline interface sources matched. Using the first one: ", pifaceSource)
     }
-        
-    if (!is.null(piface) && pepr::.checkSection(piface, c(PIPELINES_SECTION, pipelineName, BIOC_SECTION))) {
+    piface = yaml::read_yaml(pifaceSource)
+    if (!is.null(piface) && pepr::.checkSection(piface, BIOC_SECTION)) {
         message("The '", BIOC_SECTION, "' key found in the pipeline interface")
-        return(.makeReadFunPathAbs(p, piface[[PIPELINES_SECTION]][[pipelineName]]))
+        return(.makeReadFunPathAbs(piface, parent=dirname(pifaceSource)))
     } else {
         warning("The '", BIOC_SECTION, "' key is missing in Project config and pipeline interface")
         return(invisible(NULL))
@@ -209,9 +205,9 @@
 #' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
 #'
 #' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
-.makeReadFunPathAbs = function(p, piface){
+.makeReadFunPathAbs = function(piface, parent){
     pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
-    absReadFunPath = file.path(dirname(config(p)[[LOOPER_SECTION]]$pipeline_interfaces[[1]]), pth)
+    absReadFunPath = .makeAbsPath(pth, parent)
     if(!.isAbsolute(absReadFunPath))
         stop("Failed to make the readFunPath absolute: ", absReadFunPath)
     piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
