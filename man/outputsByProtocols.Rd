@@ -14,17 +14,17 @@ outputsByProtocols(project, ...)
 
 \item{...}{other arguments passed to methods}
 
-\item{protocolNames}{char vector of protocol names to match the pipelines 
+\item{protocolNames}{char vector of protocol names to match the pipelines
 and return their outputs}
 }
 \value{
-a list of output file paths. The order of the first level of the 
-list corresponds to the order of the pipeline interface files, second level 
-order (named) reflects the pipelines within the files, the last level is a 
+a list of output file paths. The order of the first level of the
+list corresponds to the order of the pipeline interface files, second level
+order (named) reflects the pipelines within the files, the last level is a
 named list of file paths populated by the samples
 }
 \description{
-Returns the pipeline outputs which are defined in the pipeline interface 
+Returns the pipeline outputs which are defined in the pipeline interface
 indicated in the \code{\link[pepr]{Project-class}}
 }
 \section{Methods (by class)}{

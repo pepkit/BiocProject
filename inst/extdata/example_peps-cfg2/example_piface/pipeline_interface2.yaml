@@ -1,48 +1,17 @@
-protocol_mapping:
-  PROTO1: other_pipeline1.py
-  PROTO2: other_pipeline2.py 
+sample_pipeline:
+  name: OTHER_PIPELINE2
+  path: pipelines/other_pipeline2.py
+  output_schema: output_schema.yaml
+  command_template: >
+    {pipeline.path} --sample-name {sample.sample_name}
 
-pipelines:
-  other_pipeline1.py:
-    name: OTHER_PIPELINE1
-    path: pipelines/other_pipeline1.py
-    output_schema: output_schema.yaml
-    command_template: >
-      {pipeline.path} --sample-name {sample.sample_name}
-    bioconductor:
-      readFunName: readData
-      readFunPath: readData.R
-  other_pipeline2.py:
-    name: OTHER_PIPELINE2
-    path: pipelines/other_pipeline2.py
-    output_schema: output_schema.yaml
-    command_template: >
-      {pipeline.path} --sample-name {sample.sample_name}
-    bioconductor:
-      readFunName: readData
-      readFunPath: readData.R
+project_pipeline:
+  name: OTHER_PIPELINE2
+  path: pipelines/col_pipeline2.py
+  output_schema: output_schema.yaml
+  command_template: >
+    {pipeline.path} --sample-name {sample.sample_name}
 
-
-collator_mappings:
-  PROTO1: other_pipeline1.py
-  PROTO2: other_pipeline2.py
-
-collators:
-  col_pipeline1.py:
-    name: OTHER_PIPELINE1
-    path: pipelines/col_pipeline1.py
-    output_schema: output_schema.yaml
-    command_template: >
-      {pipeline.path} --sample-name {sample.sample_name}
-    bioconductor:
-      readFunName: readData
-      readFunPath: readData.R
-  col_pipeline2.py:
-    name: OTHER_PIPELINE2
-    path: pipelines/col_pipeline2.py
-    output_schema: output_schema.yaml
-    command_template: >
-      {pipeline.path} --sample-name {sample.sample_name}
-    bioconductor:
-      readFunName: readData
-      readFunPath: readData.R
+bioconductor:
+  readFunName: readData
+  readFunPath: readData.R

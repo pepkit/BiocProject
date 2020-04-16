@@ -153,20 +153,47 @@ setGeneric(".gatherSamplePipelineInterfaces", function(project)
 
 #' @describeIn gatherPipelineInterfaces extracts pipeline outputs for a given pipeline
 setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(project) {
-    t = sampleTable(project)
+    t = pepr::sampleTable(project)
+    .mkAbs = pryr::partial(.mkPathsAbs, parent = dirname(project@file))
     if (PIP_IFACE_NAME %in% colnames(t)) 
-        return(setNames(vapply(
-            unique(unlist(t[,PIP_IFACE_NAME])), 
-            function(x){
-                pepr::.makeAbsPath(x, parent=dirname(project@file))
-            }, 
-            character(1)
-            ), NULL)
+        return(setNames(vapply(unique(unlist(t[,PIP_IFACE_NAME])), .mkAbs, 
+                               character(1)), NULL)
         )
     return(invisible(NULL))
 })
 
+#' Get pipeline interfaces by sample
+#' 
+#' Collects all relevant pipeline interfaces for this 
+#' \code{\link[pepr]{Project-class}} and provides a sample to interfaces mapping
+#'
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param ... other arguments passed to methods
+#'
+#' @return a list of pipeline interface file paths keyed by sample names
+#'
+#' @export
+#' @examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' pipelineInterfacesBySample(p)
+setGeneric("pipelineInterfacesBySample", function(project)
+    standardGeneric("pipelineInterfacesBySample"), signature = "project")
 
+setMethod("pipelineInterfacesBySample", c(project="Project"), function(project) {
+    t = pepr::sampleTable(project)
+    if (PIP_IFACE_NAME %in% colnames(t)){
+        .mkAbs = pryr::partial(.mkPathsAbs, parent = dirname(project@file))
+        pifaces = t[, PIP_IFACE_NAME]
+        names(pifaces) = unlist(t[, "sample_name"])
+        return(lapply(pifaces, .mkAbs))
+    }
+    return(invisible(NULL))
+})
 
 #' Populates and returns output files for a given pipeline
 #' 
@@ -395,13 +422,4 @@ setMethod("getPipelineInterfaces", "Project", function(.Object) {
         invisible(NULL)
     }
 })
-
-#' Check if project defines pipeline interface
-#'
-#' @param p object of \code{\link{Project-class}}
-#'
-#' @return logical indicating whether pipeline interface is defined
-.hasPipIface = function(p) {
-    pepr::checkSection(config(p), PIP_IFACE_SECTION)
-}
 

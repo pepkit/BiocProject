@@ -392,3 +392,15 @@
         }, where = parent.frame())
 }
 
+#' Make all paths absolute by parent dir
+#'
+#' @param path path to make absolute 
+#' @param parent parent directory
+#'
+#' @return string, a path amde absolute
+.mkPathsAbs <- function(paths, parent) {
+    return(as.vector(vapply(paths, 
+                     function(x){pepr::.makeAbsPath(x, parent)}, 
+                     character(1))
+              ))
+}

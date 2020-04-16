@@ -16,7 +16,7 @@ BiocProject(
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
 
-\item{subproject}{a character vector with a name of the subproject
+\item{amendments}{a character vector with a name of the subproject
 to be activated}
 
 \item{autoLoad}{a logical indicating whether the data should be loaded

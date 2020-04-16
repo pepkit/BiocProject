@@ -4,7 +4,7 @@
 \alias{.readSchema}
 \title{Read a YAML-formatted schema}
 \usage{
-.readSchema(path)
+.readSchema(path, parent)
 }
 \arguments{
 \item{path}{path to a local schema or URL pointing to a remote one}
