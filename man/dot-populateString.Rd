@@ -4,7 +4,7 @@
 \alias{.populateString}
 \title{Populate a variable-encoded string with sample/project variables}
 \usage{
-.populateString(string, project, sampleName, projectContext = FALSE)
+.populateString(string, project, sampleName = NULL, projectContext = FALSE)
 }
 \arguments{
 \item{string}{Variable-encoded string to populate}

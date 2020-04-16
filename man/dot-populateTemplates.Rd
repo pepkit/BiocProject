@@ -4,7 +4,12 @@
 \alias{.populateTemplates}
 \title{Populate list of path templates}
 \usage{
-.populateTemplates(project, templList, sampleName, projectContext = FALSE)
+.populateTemplates(
+  project,
+  templList,
+  sampleName = NULL,
+  projectContext = FALSE
+)
 }
 \arguments{
 \item{project}{an object of \code{\link[pepr]{Config-class}}}

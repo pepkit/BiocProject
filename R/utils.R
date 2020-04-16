@@ -72,18 +72,20 @@
 #' @return a named list of populated strings
 #' @importMethodsFrom pepr samples
 #' @importFrom glue glue
-.populateString = function(string, project, sampleName, projectContext=FALSE) {
+.populateString = function(string, project, sampleName=NULL, projectContext=FALSE) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
     samplesSubset = subset(sampleTable(project), sample_name == sampleName)
-    if (NROW(samplesSubset) < 1)
+    if (!projectContext && NROW(samplesSubset) < 1)
         return(invisible(NULL))
-    populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
-        if(projectContext)
-            return(with(config(project), glue(.pyToR(string))))
-        return(with(s, glue(.pyToR(string))))
-    }))
-    if (length(populatedStrings) != NROW(samplesSubset)) {
+    if(projectContext){
+        populatedStrings = with(config(project), glue(.pyToR(string)))
+    } else{
+        populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
+            return(with(s, glue(.pyToR(string))))
+        }))
+    }
+    if (!projectContext && length(populatedStrings) != NROW(samplesSubset)) {
         warning("Paths templates populating problem: number of paths (",
              length(populatedStrings),
              ") does not correspond to the number of samples (",
