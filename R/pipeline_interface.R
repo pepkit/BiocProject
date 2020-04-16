@@ -107,6 +107,56 @@ setMethod("outputsByProtocols", c(project="Project"), function(project, protocol
     ret
 })
 
+
+#' Populates and returns output files for a given sample
+#'
+#' Returns the pipeline outputs which are defined in the pipeline interface
+#' indicated in the \code{\link[pepr]{Project-class}}
+#'
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param ... other arguments passed to methods
+#'
+#' @return a list of output file paths
+#'
+#' @export
+#' @examples
+#' projectConfig = system.file("extdata",
+#' "example_peps-master",
+#' "example_piface",
+#' "project_config.yaml",
+#' package = "BiocProject")
+#' p = Project(file = projectConfig)
+#' outputsBySample(p, "PROTO2")
+setGeneric("outputsBySample", function(project, ...)
+    standardGeneric("outputsBySample"), signature="project")
+
+#' and return their outputs
+setMethod("outputsBySample", c(project="Project"), function(project, sampleNames=NULL) {
+    pifacesBySample = pipelineInterfacesBySample(project = project)
+    defSampleNames = names(pifacesBySample)
+    if(!is.null(sampleNames))
+        defSampleNames = intersect(sampleNames, defSampleNames)
+    if(length(defSampleNames) < 1)
+        stop("No samples matched by: ", paste0(sampleNames, collapse=","))
+    ret = list()
+    for(sampleName in defSampleNames){
+        sampleRet = list()
+        pifaceSources = pifacesBySample[[sampleName]]
+        for(pifaceSource in pifaceSources){
+            piface = yaml::yaml.load_file(pifaceSource)
+            if(!pepr::.checkSection(piface, S_PIP_SECTION))
+                return(invisible(NULL))
+            samplePipeline = piface[[S_PIP_SECTION]]
+            outputs = .getOutputs(samplePipeline, parent=dirname(pifaceSource))
+            sampleRet[[pifaceSource]] =
+                .populateTemplates(project, outputs, sampleName)
+        }
+        ret[[sampleName]] = sampleRet
+    }
+    ret
+})
+
+
 #' Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
@@ -343,13 +393,13 @@ getProtocolMappings = function(.Object){
 #'
 #' @param project an object of \code{\link[pepr]{Config-class}} 
 #' @param templList list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"
-#' @param protocolName string, name of the protocol to select the samples
+#' @param sampleName string, name of the protocol to select the samples
 #' @param projectLevel logical indicating whether project context should be applied. Default: sample
 #'
 #' @return list of strings
-.populateTemplates = function(project, templList, protocolName, projectContext=FALSE) {
+.populateTemplates = function(project, templList, sampleName, projectContext=FALSE) {
     expandedTemplList = lapply(templList, pepr::.expandPath)
-    lapply(expandedTemplList, .populateString, project, protocolName, projectContext)
+    lapply(expandedTemplList, .populateString, project, sampleName, projectContext)
 }
 
 #' Get samples that match the protocol 

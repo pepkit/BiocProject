@@ -72,10 +72,10 @@
 #' @return a named list of populated strings
 #' @importMethodsFrom pepr samples
 #' @importFrom glue glue
-.populateString = function(string, project, protocolName, projectContext=FALSE) {
+.populateString = function(string, project, sampleName, projectContext=FALSE) {
     # Apply this glue function on each row in the samples table,
     # coerced to a list object to allow attribute accession.
-    samplesSubset = samplesByProtocol(sampleTable(project), protocolName)
+    samplesSubset = subset(sampleTable(project), sample_name == sampleName)
     if (NROW(samplesSubset) < 1)
         return(invisible(NULL))
     populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
