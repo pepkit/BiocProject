@@ -22,7 +22,7 @@ indicated in the \code{\link[pepr]{Project-class}}
 }
 \examples{
 projectConfig = system.file("extdata",
-"example_peps-master",
+"example_peps-cfg2",
 "example_piface",
 "project_config.yaml",
 package = "BiocProject")

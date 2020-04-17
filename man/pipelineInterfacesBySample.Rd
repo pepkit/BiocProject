@@ -20,7 +20,7 @@ Collects all relevant pipeline interfaces for this
 }
 \examples{
 projectConfig = system.file("extdata",
-"example_peps-master",
+"example_peps-cfg2",
 "example_piface",
 "project_config.yaml",
 package = "BiocProject")

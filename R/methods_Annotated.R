@@ -22,7 +22,7 @@ setMethod(".is.project","Annotated",function(.Object){
 #' @return an object of \code{\link[pepr]{Project-class}}
 #' 
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
+#' projectConfig = system.file("extdata", "example_peps-cfg2",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
 #' getProject(p)
@@ -51,7 +51,7 @@ setMethod("getProject","Annotated",function(.Object){
 #'
 #' @return a data.table with the with metadata about samples
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
+#' projectConfig = system.file("extdata", "example_peps-cfg2",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
 #' sampleTable(p)
@@ -76,7 +76,7 @@ setMethod(
 #' @return a list with the config file
 #'
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
+#' projectConfig = system.file("extdata", "example_peps-cfg2",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
 #' config(p)

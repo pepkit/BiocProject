@@ -3,8 +3,6 @@
 #' @param str string to inspect
 #'
 #' @return logical indicating whether a string is a valid URL
-#' @examples
-#' .isvalidUrl("https://schema.databio.org/PEP/pep.yaml")
 .isValidUrl = function(str) {
     ans = FALSE
     if(grepl("www.|http:|https:", str)) {
@@ -19,20 +17,19 @@
 #'
 #' @param path path to a local schema or URL pointing to a remote one 
 #' @return list read schema
+#' @export
+#' @importFrom RCurl getURLContent
 #' @examples
-#' .readSchema("https://schema.databio.org/PEP/pep.yaml")
-.readSchema = function(path, parent) {
-    schema = NULL
+#' readSchema("https://schema.databio.org/PEP/pep.yaml")
+readSchema = function(path, parent=NULL) {
     if(.isValidUrl(path)) 
-        schema  = yaml::yaml.load(getURLContent(path))
+        return(yaml::yaml.load(getURLContent(path)))
     file = pepr::.makeAbsPath(path, parent)
     if(file.exists(file)){
-        schema = yaml::read_yaml(file)
+        return(yaml::read_yaml(file))
     }
-    if(is.null(schema))
-        stop(paste0("Schema has to be either a valid URL or an existing path. ",
+    stop(paste0("Schema has to be either a valid URL or an existing path. ",
                     "Got: ", path))
-    schema
 }
 
 #' Switch from python to R list accession syntax
@@ -164,19 +161,26 @@
         return(config(p))
     }
     # check for BIOC_SECTION in pipeline interfaces        
-    pifaceSources = gatherPipelineInterfaces(p, projectLevel=projectLevel)
-    if(length(pifaceSources) > 0){
-        pifaceSource = pifaceSources[1]
+    pifaceSource = gatherPipelineInterfaces(p, projectLevel=projectLevel)
+    if(length(pifaceSource) > 0){
+        pifaceSource = pifaceSource[1]
         message("Muliple pipeline interface sources matched. Using the first one: ", pifaceSource)
     }
-    piface = yaml::read_yaml(pifaceSource)
-    if (!is.null(piface) && pepr::.checkSection(piface, BIOC_SECTION)) {
-        message("The '", BIOC_SECTION, "' key found in the pipeline interface")
-        return(.makeReadFunPathAbs(piface, parent=dirname(pifaceSource)))
+    
+    
+    if (!is.null(pifaceSource)){
+        piface = yaml::read_yaml(pifaceSource)
+        if (pepr::.checkSection(piface, BIOC_SECTION)) {
+            message("The '", BIOC_SECTION, "' key found in the pipeline interface")
+            return(.makeReadFunPathAbs(piface, parent=dirname(pifaceSource)))
+        } else {
+            warning("The '", BIOC_SECTION, "' key is missing in Project config and pipeline interface")
+            return(invisible(NULL))
+        } 
     } else {
         warning("The '", BIOC_SECTION, "' key is missing in Project config and pipeline interface")
         return(invisible(NULL))
-    } 
+    }
 }
 
 #' Get the pipeline interface with a pipeline

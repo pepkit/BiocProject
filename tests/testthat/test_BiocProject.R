@@ -113,10 +113,8 @@ test_that("BiocProject function reads the bioconductor section from the
               expect_true(is(BiocProject(configPiface), "Project"))
 })
 
-test_that("BiocProject function returna a valid object when the bioconductor 
-          section defined in the specific pipeline is requested", {
-    expect_true(is(BiocProject(configPiface,
-                               pipelineName = "other_pipeline2.py"), "Project"))
+test_that("BiocProject function returns a valid object when project pipeline outputs requested", {
+    expect_true(is(BiocProject(configPiface, projectLevel=TRUE), "Project"))
 })
 
 test_that("BiocProject disregards the Project object as a user-privided argument", {

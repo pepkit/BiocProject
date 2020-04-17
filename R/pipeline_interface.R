@@ -9,7 +9,7 @@
 .getOutputs = function(pipeline, projectContext=FALSE, parent) {
     if(!OUTPUT_SCHEMA_SECTION %in% names(pipeline))
         return(invisible(NULL))
-    outputSchema = .readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]], parent)
+    outputSchema = readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]], parent)
     sect = "properties"
     if(!projectContext)
         sect = SCHEMA_SAMPLE_OUTS
@@ -46,7 +46,7 @@
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-master",
+#' "example_peps-cfg2",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
@@ -96,13 +96,12 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-master",
+#' "example_peps-cfg2",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' getProjectOutputs(p)
-#' getProjectOutputs(p, "sample1")
 setGeneric("getProjectOutputs", function(project)
     standardGeneric("getProjectOutputs"), signature="project")
 
@@ -132,7 +131,7 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-master",
+#' "example_peps-cfg2",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
@@ -188,7 +187,7 @@ setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(proj
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-master",
+#' "example_peps-cfg2",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")

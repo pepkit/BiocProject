@@ -15,6 +15,3 @@ logical indicating whether a string is a valid URL
 \description{
 Determine whether the string is a valid URL
 }
-\examples{
-.isvalidUrl("https://schema.databio.org/PEP/pep.yaml")
-}
