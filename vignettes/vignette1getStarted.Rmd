@@ -53,7 +53,7 @@ library(BiocProject)
 
 configFile = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "project_config.yaml",
   package = "BiocProject"
@@ -65,7 +65,7 @@ configFile
 # Run some stuff we need for the vignette
 processFunction = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "readBedFiles.R",
   package = "BiocProject"
@@ -87,7 +87,7 @@ This configuration file points to the second major part of a PEP: the sample ann
 library(knitr)
 sampleAnnotation = system.file(
 "extdata",
-"example_peps-master",
+"example_peps-cfg2",
 "example_BiocProject",
 "sample_table.csv",
 package = "BiocProject"
@@ -181,7 +181,7 @@ Consider the [readBedFiles function](https://github.com/pepkit/example_peps/blob
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "readBedFiles.R",
   package = "BiocProject"
@@ -196,7 +196,7 @@ The `BiocProject` function provides a way to rigorously monitor exceptions relat
 ```{r}
 configFile = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject_exceptions",
   "project_config.yaml",
   package = "BiocProject"

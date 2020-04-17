@@ -12,7 +12,6 @@ bioc_packages:
   - BiocStyle
   - BiocFileCache
 before_install:
-before_install:
   - Rscript -e 'install.packages("devtools");devtools::install_github(repo = "pepkit/pepr",ref = "dev")'
 after_success:
   - Rscript -e 'covr::coveralls()'

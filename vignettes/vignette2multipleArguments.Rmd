@@ -25,7 +25,7 @@ Get paths to the files used in this vignette
 library(BiocProject)
 ProjectConfigArgs = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "project_config_resize.yaml",
   package = "BiocProject"
@@ -33,7 +33,7 @@ ProjectConfigArgs = system.file(
 
 readBedFiles_resize =  system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "readBedFiles_resize.R",
   package = "BiocProject"
@@ -48,7 +48,7 @@ For reference consider the `readBedFiles_resize.R` function and its interface. T
 ```{r include=FALSE, eval=TRUE}
 processFunction =  system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "readBedFiles_resize.R",
   package="BiocProject"
@@ -74,7 +74,7 @@ The easiest way to provide addtional arguments to your data reading/processing f
 library(pepr)
 config_resize = configFile = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "project_config_resize.yaml",
   package = "BiocProject"
@@ -99,7 +99,7 @@ Read the function into R environment and run the `BiocProject` function with the
 library(BiocProject)
 ProjectConfigArgs = system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "project_config_resize.yaml",
   package = "BiocProject"
@@ -107,7 +107,7 @@ ProjectConfigArgs = system.file(
 
 readBedFiles_resize =  system.file(
   "extdata",
-  "example_peps-master",
+  "example_peps-cfg2",
   "example_BiocProject",
   "readBedFiles_resize.R",
   package = "BiocProject"

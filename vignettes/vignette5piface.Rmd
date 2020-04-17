@@ -60,7 +60,8 @@ Example of a schema defining pipeline outputs:
 ```{r, echo=F, message=F}
 pifaceSource = pipelineInterfacesBySample(p)[[1]][1]
 piface = yaml::read_yaml(pifaceSource)
-.printNestedList(.readSchema(piface$sample_pipeline$output_schema, dirname(pifaceSource)))
+schemaPath = file.path(dirname(pifaceSource), piface$sample_pipeline$output_schema)
+.printNestedList(yaml::read_yaml(schemaPath))
 ```
 
 ### Sample-level
