@@ -4,12 +4,12 @@
 \alias{.makeReadFunPathAbs}
 \title{Make readFunPath absolute}
 \usage{
-.makeReadFunPathAbs(p, piface)
+.makeReadFunPathAbs(piface, parent)
 }
 \arguments{
-\item{p}{\code{\link[pepr]{Project-class}} object}
-
 \item{piface}{\code{\link[pepr]{Config-class}}/list with a pipeline interface}
+
+\item{p}{\code{\link[pepr]{Project-class}} object}
 }
 \value{
 piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute

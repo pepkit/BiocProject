@@ -8,6 +8,8 @@ getProjectOutputs(project)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
+
+\item{sampleNames}{names of the samples}
 }
 \value{
 a list of output file paths. The order of the first level of the

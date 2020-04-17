@@ -12,7 +12,8 @@ gatherPipelineInterfaces(project, ...)
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
-\item{...}{other arguments passed to methods}
+\item{projectLevel}{logical indicating whether a only project-level pifaces 
+should be considered. Otherwise, only sample-level ones are.}
 }
 \value{
 a list of pipeline interface file paths.

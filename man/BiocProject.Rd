@@ -10,7 +10,7 @@ BiocProject(
   autoLoad = TRUE,
   func = NULL,
   funcArgs = NULL,
-  pipelineName = NULL
+  projectLevel = FALSE
 )
 }
 \arguments{
@@ -98,7 +98,7 @@ for more detailed explanation with examples.
 }
 
 \examples{
-projectConfig = system.file("extdata", "example_peps-master",
+projectConfig = system.file("extdata", "example_peps-cfg2",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
 bp=BiocProject(projectConfig)
 

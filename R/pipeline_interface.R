@@ -37,7 +37,7 @@
 #' indicated in the \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param ... other arguments passed to methods
+#' @param sampleNames names of the samples 
 #'
 #' @return a list of output file paths. The order of the first level of the
 #' list corresponds to the order of the pipeline interface files, second level 
@@ -56,8 +56,6 @@
 setGeneric("getOutputsBySample", function(project, ...)
     standardGeneric("getOutputsBySample"), signature="project")
 
-#' @describeIn outputsByProtocols extracts pipeline outputs for a set of samples or all, if no sample names specified
-#' @param sampleNames names of the samples 
 setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNames=NULL) {
     pifacesBySample = pipelineInterfacesBySample(project = project)
     defSampleNames = names(pifacesBySample)
@@ -89,6 +87,7 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
 #' indicated in the \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
+#' @param sampleNames names of the samples 
 #'
 #' @return a list of output file paths. The order of the first level of the
 #' list corresponds to the order of the pipeline interface files, second level 
@@ -107,8 +106,6 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
 setGeneric("getProjectOutputs", function(project)
     standardGeneric("getProjectOutputs"), signature="project")
 
-#' @describeIn outputsByProtocols extracts pipeline outputs for a set of samples or all, if no sample names specified
-#' @param sampleNames names of the samples 
 setMethod("getProjectOutputs", c(project="Project"), function(project) {
     pifaceSources = gatherPipelineInterfaces(project, projectLevel=TRUE)
     ret = list()
@@ -127,7 +124,8 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
 #' Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param ... other arguments passed to methods
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#' should be considered. Otherwise, only sample-level ones are.
 #'
 #' @return a list of pipeline interface file paths.
 #'
@@ -144,8 +142,6 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
 setGeneric("gatherPipelineInterfaces", function(project, ...)
     standardGeneric("gatherPipelineInterfaces"), signature = "project")
 
-#' @param projectLevel logical indicating whether a only project-level pifaces 
-#' should be considered. Otherwise, only sample-level ones are.
 setMethod("gatherPipelineInterfaces", c(project="Project"), function(project, projectLevel=FALSE) {
     if(!projectLevel){
         return(.gatherSamplePipelineInterfaces(project))

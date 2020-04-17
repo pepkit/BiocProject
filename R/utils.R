@@ -70,7 +70,6 @@
 #' @param projectContext logical indicating whether project context should be applied for string formatting. Default: sample
 #' 
 #' @return a named list of populated strings
-#' @importMethodsFrom pepr samples
 #' @importFrom glue glue
 .populateString = function(string, project, sampleName=NULL, projectContext=FALSE) {
     # Apply this glue function on each row in the samples table,

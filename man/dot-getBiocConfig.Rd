@@ -4,7 +4,7 @@
 \alias{.getBiocConfig}
 \title{Get the preferred source of the bioconductor section}
 \usage{
-.getBiocConfig(p, pipelineName)
+.getBiocConfig(p, projectLevel = FALSE)
 }
 \arguments{
 \item{p}{\code{\link[pepr]{Project-class}} object}
