@@ -14,7 +14,8 @@
     if(!projectContext)
         sect = SCHEMA_SAMPLE_OUTS
     if (!pepr::.checkSection(outputSchema, sect)){
-        pipName = ifelse(is.null(pipeline$name), "provided", pipeline$name)
+        pipName = ifelse(is.null(pipeline[[PIP_NAME_KEY]]), "provided", 
+                         pipeline[[PIP_NAME_KEY]])
         warning("There is no '", 
                 paste(sect, collapse=":") ,
                 "' section in the ", pipName," pipeline output schema.")
@@ -69,11 +70,10 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
         pifaceSources = pifacesBySample[[sampleName]]
         for(pifaceSource in pifaceSources){
             piface = yaml::yaml.load_file(pifaceSource)
-            if(!pepr::.checkSection(piface, S_PIP_SECTION))
+            if (!.checkPifaceType(piface, "sample"))
                 return(invisible(NULL))
-            samplePipeline = piface[[S_PIP_SECTION]]
-            outputs = .getOutputs(samplePipeline, parent=dirname(pifaceSource))
-            sampleRet[[pifaceSource]] =
+            outputs = .getOutputs(piface, parent=dirname(pifaceSource))
+            sampleRet[[pifaceSource]] = 
                 .populateTemplates(project, outputs, sampleName)
         }
         ret[[sampleName]] = sampleRet
@@ -110,10 +110,9 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
     ret = list()
     for(pifaceSource in pifaceSources){
         piface = yaml::yaml.load_file(pifaceSource)
-        if(!pepr::.checkSection(piface, P_PIP_SECTION))
+        if (!.checkPifaceType(piface, "project"))
             return(invisible(NULL))
-        pipeline = piface[[P_PIP_SECTION]]
-        outputs = .getOutputs(pipeline, parent=dirname(pifaceSource), projectContext=TRUE)
+        outputs = .getOutputs(piface, parent=dirname(pifaceSource), projectContext=TRUE)
         ret[[pifaceSource]] = .populateTemplates(project, outputs, projectContext=TRUE)
     }
     ret
@@ -156,7 +155,8 @@ setMethod("gatherPipelineInterfaces", c(project="Project"), function(project, pr
                 }, 
                 character(1)
             ), NULL))
-        return(.gatherSamplePipelineInterfaces(project))
+        warning("No project pipeline interfaces defined")
+        return(invisible(NULL))
     }
 })
 

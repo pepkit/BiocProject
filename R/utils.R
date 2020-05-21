@@ -405,3 +405,14 @@ readSchema = function(path, parent=NULL) {
                      character(1))
               ))
 }
+
+.checkPifaceType <- function(piface, type) {
+    if(!pepr::.checkSection(piface, PIP_TYPE_KEY) 
+       || piface[[PIP_TYPE_KEY]] != type){
+        warning(sprintf(
+            "%s pipeline interface has to specify '%s' pipeline type in '%s'", 
+            type, type, PIP_TYPE_KEY))
+        return(FALSE)
+    }
+    return(TRUE)
+}

@@ -14,10 +14,8 @@ FUNCTION_PATH = "readFunPath"
 FUNCTION_NAME = "readFunName"
 
 # other constants
-S_PIP_SECTION = "sample_pipeline"
-P_PIP_SECTION = "project_pipeline"
-PROTO_MAP_SECTION = "protocol_mapping"
-COLL_MAP_SECTION = "collator_mappings"
+PIP_TYPE_KEY = "pipeline_type"
+PIP_NAME_KEY = "pipeline_name"
 OUTPUT_SCHEMA_SECTION = "output_schema"
 LOOPER_SECTION = "looper"
 PIP_IFACE_NAME = "pipeline_interfaces"

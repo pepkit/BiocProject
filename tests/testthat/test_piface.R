@@ -1,11 +1,11 @@
 library(yaml)
 # Prep data ---------------------------------------------------------------
 
-branch = "cfg2"
+branch = "master"
 
 configFile = system.file(
   "extdata",
-  paste0("example_peps-",branch),
+  paste0("example_peps-", branch),
   "example_piface",
   "project_config.yaml",
   package = "BiocProject"
@@ -13,7 +13,7 @@ configFile = system.file(
 
 configNoPifaces = system.file(
   "extdata",
-  paste0("example_peps-",branch),
+  paste0("example_peps-", branch),
   "example_BiocProject",
   "project_config.yaml",
   package = "BiocProject"
@@ -45,8 +45,8 @@ test_that("gatherPipelineInterfaces returns NULL when no piface section
   expect_null(gatherPipelineInterfaces(pNoPifaces))
 })
 
-test_that("gatherPipelineInterfaces works for project", {
-  expect_null(gatherPipelineInterfaces(pNoPifaces, projectLevel=TRUE))
+test_that("gatherPipelineInterfaces works for project with no pipeline interfaces defined", {
+  expect_warning(expect_null(gatherPipelineInterfaces(pNoPifaces, projectLevel=TRUE)))
 })
 
 context("Test output getters")
