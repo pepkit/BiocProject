@@ -32,6 +32,10 @@
     x
 }
 
+
+setGeneric("getOutputsBySample", function(project, ...)
+    standardGeneric("getOutputsBySample"), signature="project")
+
 #' Populates and returns output files for a given sample
 #'
 #' Returns the pipeline outputs which are defined in the pipeline interface
@@ -47,16 +51,13 @@
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-cfg2",
+#' "example_peps-master",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' getOutputsBySample(p)
 #' getOutputsBySample(p, "sample1")
-setGeneric("getOutputsBySample", function(project, ...)
-    standardGeneric("getOutputsBySample"), signature="project")
-
 setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNames=NULL) {
     pifacesBySample = pipelineInterfacesBySample(project = project)
     defSampleNames = names(pifacesBySample)
@@ -81,6 +82,10 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
     ret
 })
 
+
+setGeneric("getProjectOutputs", function(project)
+    standardGeneric("getProjectOutputs"), signature="project")
+
 #' Populates and returns output files for a given  \code{\link[pepr]{Project-class}}
 #'
 #' Returns the pipeline outputs which are defined in the pipeline interface
@@ -96,15 +101,12 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-cfg2",
+#' "example_peps-master",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' getProjectOutputs(p)
-setGeneric("getProjectOutputs", function(project)
-    standardGeneric("getProjectOutputs"), signature="project")
-
 setMethod("getProjectOutputs", c(project="Project"), function(project) {
     pifaceSources = gatherPipelineInterfaces(project, projectLevel=TRUE)
     ret = list()
@@ -119,6 +121,11 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
 })
 
 
+setGeneric("gatherPipelineInterfaces", function(project, ...)
+    standardGeneric("gatherPipelineInterfaces"), signature = "project")
+
+#' Collect all pipeline interfaces
+#' 
 #' Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
@@ -130,16 +137,13 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-cfg2",
+#' "example_peps-master",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' gatherPipelineInterfaces(p)
 #' gatherPipelineInterfaces(p, TRUE)
-setGeneric("gatherPipelineInterfaces", function(project, ...)
-    standardGeneric("gatherPipelineInterfaces"), signature = "project")
-
 setMethod("gatherPipelineInterfaces", c(project="Project"), function(project, projectLevel=FALSE) {
     if(!projectLevel){
         return(.gatherSamplePipelineInterfaces(project))
@@ -174,6 +178,10 @@ setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(proj
     return(invisible(NULL))
 })
 
+
+setGeneric("pipelineInterfacesBySample", function(project)
+    standardGeneric("pipelineInterfacesBySample"), signature = "project")
+
 #' Get pipeline interfaces by sample
 #' 
 #' Collects all relevant pipeline interfaces for this 
@@ -187,15 +195,12 @@ setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(proj
 #' @export
 #' @examples
 #' projectConfig = system.file("extdata",
-#' "example_peps-cfg2",
+#' "example_peps-master",
 #' "example_piface",
 #' "project_config.yaml",
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' pipelineInterfacesBySample(p)
-setGeneric("pipelineInterfacesBySample", function(project)
-    standardGeneric("pipelineInterfacesBySample"), signature = "project")
-
 setMethod("pipelineInterfacesBySample", c(project="Project"), function(project) {
     t = pepr::sampleTable(project)
     if (PIP_IFACE_NAME %in% colnames(t)){

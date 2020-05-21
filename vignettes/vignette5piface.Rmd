@@ -41,7 +41,7 @@ The first advantage of pipeline interfce concept is the possibility to declare t
 
 ```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 library(BiocProject)
-branch = "cfg2"
+branch = "master"
 configFile = system.file(
     "extdata",
     paste0("example_peps-", branch),
@@ -60,7 +60,7 @@ Example of a schema defining pipeline outputs:
 ```{r, echo=F, message=F}
 pifaceSource = pipelineInterfacesBySample(p)[[1]][1]
 piface = yaml::read_yaml(pifaceSource)
-schemaPath = file.path(dirname(pifaceSource), piface$sample_pipeline$output_schema)
+schemaPath = file.path(dirname(pifaceSource), piface$output_schema)
 .printNestedList(yaml::read_yaml(schemaPath))
 ```
 
@@ -87,7 +87,7 @@ getProjectOutputs(p)
 This functionality provides a convenient way to process the files produced by the pipeline, when used in the data processing function indicated in the `bioconductor` section of the pipeline interface file. See the example function below that demonstrates the application of the `getSampleOutputs` function.
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
-branch = "cfg2"
+branch = "master"
 processFunction = system.file(
   "extdata",
   paste0("example_peps-", branch),

@@ -16,5 +16,5 @@ list read schema
 Remote or local schemas are supported
 }
 \examples{
-readSchema("https://schema.databio.org/PEP/pep.yaml")
+readSchema("https://schema.databio.org/pep/2.0.0.yaml")
 }

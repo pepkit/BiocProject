@@ -27,7 +27,7 @@ There is *no limit* to the data processing function complexity. For example, the
 ```{r echo=FALSE, eval=TRUE}
 processFunction =  system.file(
   "extdata",
-  "example_peps-cfg2",
+  "example_peps-master",
   "example_BiocProject_remote",
   "readRemoteData.R",
   package="BiocProject"
@@ -46,7 +46,7 @@ and the [PEP](https://pepkit.github.io/) that it uses:
 ```{r echo=FALSE, eval=TRUE, comment=""}
 sampleAnnotation =  system.file(
   "extdata",
-  "example_peps-cfg2",
+  "example_peps-master",
   "example_BiocProject_remote",
   "sample_table.csv",
   package="BiocProject"
@@ -60,7 +60,7 @@ knitr::kable(sampleAnnotationDF, format = "html")
 ```{r echo=FALSE, eval=TRUE, comment=""}
 configFile =  system.file(
   "extdata",
-  "example_peps-cfg2",
+  "example_peps-master",
   "example_BiocProject_remote",
   "project_config.yaml",
   package="BiocProject"
@@ -76,7 +76,7 @@ Get path to the config file
 library(BiocProject)
 ProjectConfigRemote = system.file(
   "extdata",
-  "example_peps-cfg2",
+  "example_peps-master",
   "example_BiocProject_remote",
   "project_config.yaml",
   package = "BiocProject"

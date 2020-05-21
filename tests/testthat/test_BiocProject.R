@@ -1,7 +1,7 @@
 library(yaml)
 # Prep data ---------------------------------------------------------------
 
-branch = "cfg2"
+branch = "master"
 
 configFile = system.file(
     "extdata",

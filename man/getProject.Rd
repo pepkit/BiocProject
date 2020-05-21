@@ -26,7 +26,7 @@ This method can be used to extract the project metadata from objects of
 }}
 
 \examples{
-projectConfig = system.file("extdata", "example_peps-cfg2",
+projectConfig = system.file("extdata", "example_peps-master",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
 p=BiocProject(projectConfig)
 getProject(p)

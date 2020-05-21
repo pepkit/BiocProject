@@ -98,7 +98,7 @@ for more detailed explanation with examples.
 }
 
 \examples{
-projectConfig = system.file("extdata", "example_peps-cfg2",
+projectConfig = system.file("extdata", "example_peps-master",
 "example_BiocProject", "project_config.yaml", package="BiocProject")
 bp=BiocProject(projectConfig)
 

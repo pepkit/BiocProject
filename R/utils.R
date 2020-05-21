@@ -20,7 +20,7 @@
 #' @export
 #' @importFrom RCurl getURLContent
 #' @examples
-#' readSchema("https://schema.databio.org/PEP/pep.yaml")
+#' readSchema("https://schema.databio.org/pep/2.0.0.yaml")
 readSchema = function(path, parent=NULL) {
     if(.isValidUrl(path)) 
         return(yaml::yaml.load(getURLContent(path)))
