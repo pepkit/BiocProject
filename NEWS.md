@@ -1,4 +1,4 @@
-# BiocProject 0.2.1 - unreleased
+# BiocProject 0.2.1 - 2020-05-26
 
 ## Added
 
