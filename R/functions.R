@@ -64,10 +64,8 @@
 #'  the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
-#' @param pipelineName a string indicating the name of the pipeline in the 
-#'  pipeline interface. It is used for the \code{bioconductor} section 
-#'  selection. If none provided and there's no \code{bioconductor} section in 
-#'  the config file, the first pipeline in the pipeline interface will be used. 
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return an object of \code{\link[S4Vectors]{Annotated-class}} that is 
 #' returned by the user provided function with 

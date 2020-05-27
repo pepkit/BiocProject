@@ -18,7 +18,7 @@
 
 \item{sampleName}{string, name of the protocol to select the samples}
 
-\item{projectLevel}{logical indicating whether project context should be applied. Default: sample}
+\item{projectContext}{logical indicating whether project context should be applied. Default: sample}
 }
 \value{
 list of strings

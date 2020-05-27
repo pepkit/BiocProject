@@ -16,6 +16,7 @@
 #' Remote or local schemas are supported
 #'
 #' @param path path to a local schema or URL pointing to a remote one 
+#' @param parent a path to parent folder to use
 #' @return list read schema
 #' @export
 #' @importFrom RCurl getURLContent
@@ -63,7 +64,7 @@ readSchema = function(path, parent=NULL) {
 #' 
 #' @param string Variable-encoded string to populate
 #' @param project \code{\link[pepr]{Project-class}} object with values to draw from
-#' @param protocolName string, name of the protocol to select the samples
+#' @param sampleName string, name of the sample to use
 #' @param projectContext logical indicating whether project context should be applied for string formatting. Default: sample
 #' 
 #' @return a named list of populated strings
@@ -147,8 +148,8 @@ readSchema = function(path, parent=NULL) {
 #' Get the preferred source of the bioconductor section
 #'
 #' @param p \code{\link[pepr]{Project-class}} object
-#' @param pipelineName name of the pipeline within pipeline interface where 
-#' the 'bioconductor' section should be searched for.
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return a list with the selected config
 #' @importFrom pepr checkSection config
@@ -183,29 +184,13 @@ readSchema = function(path, parent=NULL) {
     }
 }
 
-#' Get the pipeline interface with a pipeline
-#' 
-#' Gets the pipeline interface which defines the pipeline from a list of pipeline interfaces
-#'
-#' @param pipeline string, name of the pipeline
-#' @param pifaces a list of pipeline interfaces \code{\link[pepr]{Config-class}} objects)
-#'
-#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the selected pipeline defined
-.getPifaceByPipeline = function(pipeline, pifaces){
-    for (piface in pifaces) {
-        if (pipeline %in% names(getPipelines(piface))) return(piface)
-    }
-    warning("No pipeline interface defines '", pipeline, "' pipeline")
-    NULL
-}
-
 #' Make readFunPath absolute
 #' 
 #' Uses the absolute pipeline interface path in the config to determine the
 #' absolute path to the readFunPath file that consists of the data processing function
 #'
-#' @param p \code{\link[pepr]{Project-class}} object
 #' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
+#' @param parent a path to parent folder to use
 #'
 #' @return piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
 .makeReadFunPathAbs = function(piface, parent){
@@ -395,7 +380,7 @@ readSchema = function(path, parent=NULL) {
 
 #' Make all paths absolute by parent dir
 #'
-#' @param path path to make absolute 
+#' @param paths path to make absolute 
 #' @param parent parent directory
 #'
 #' @return string, a path amde absolute

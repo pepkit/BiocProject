@@ -3,10 +3,13 @@
 #' Extracts the output file templates defined for a given pipeline
 #'
 #' @param pipeline an object of \code{\link[pepr]{Config-class}} 
+#' @param parent a path to parent folder to use
+#' @param projectContext logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return named list of output path templates, 
 #' like: \code{"aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
-.getOutputs = function(pipeline, projectContext=FALSE, parent) {
+.getOutputs = function(pipeline, parent, projectContext=FALSE) {
     if(!OUTPUT_SCHEMA_SECTION %in% names(pipeline))
         return(invisible(NULL))
     outputSchema = readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]], parent)
@@ -32,18 +35,14 @@
     x
 }
 
-
-setGeneric("getOutputsBySample", function(project, ...)
-    standardGeneric("getOutputsBySample"), signature="project")
-
 #' Populates and returns output files for a given sample
 #'
 #' Returns the pipeline outputs which are defined in the pipeline interface
 #' indicated in the \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param sampleNames names of the samples 
-#'
+#' @param ... other arguemnts
+#' 
 #' @return a list of output file paths. The order of the first level of the
 #' list corresponds to the order of the pipeline interface files, second level 
 #' is a named list of file paths populated by the samples
@@ -58,6 +57,12 @@ setGeneric("getOutputsBySample", function(project, ...)
 #' p = Project(file = projectConfig)
 #' getOutputsBySample(p)
 #' getOutputsBySample(p, "sample1")
+setGeneric("getOutputsBySample", function(project, ...)
+    standardGeneric("getOutputsBySample"), signature="project")
+
+#' @describeIn getOutputsBySample Populates and returns output files for a given sample
+#' @param sampleNames names of the samples 
+#' @importFrom yaml yaml.load_file
 setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNames=NULL) {
     pifacesBySample = pipelineInterfacesBySample(project = project)
     defSampleNames = names(pifacesBySample)
@@ -82,17 +87,12 @@ setMethod("getOutputsBySample", c(project="Project"), function(project, sampleNa
     ret
 })
 
-
-setGeneric("getProjectOutputs", function(project)
-    standardGeneric("getProjectOutputs"), signature="project")
-
 #' Populates and returns output files for a given  \code{\link[pepr]{Project-class}}
 #'
 #' Returns the pipeline outputs which are defined in the pipeline interface
 #' indicated in the \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param sampleNames names of the samples 
 #'
 #' @return a list of output file paths. The order of the first level of the
 #' list corresponds to the order of the pipeline interface files, second level 
@@ -107,6 +107,10 @@ setGeneric("getProjectOutputs", function(project)
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' getProjectOutputs(p)
+setGeneric("getProjectOutputs", function(project)
+    standardGeneric("getProjectOutputs"), signature="project")
+
+#' @describeIn getProjectOutputs Populates and returns output files for a given  \code{\link[pepr]{Project-class}}
 setMethod("getProjectOutputs", c(project="Project"), function(project) {
     pifaceSources = gatherPipelineInterfaces(project, projectLevel=TRUE)
     ret = list()
@@ -120,17 +124,12 @@ setMethod("getProjectOutputs", c(project="Project"), function(project) {
     ret
 })
 
-
-setGeneric("gatherPipelineInterfaces", function(project, ...)
-    standardGeneric("gatherPipelineInterfaces"), signature = "project")
-
 #' Collect all pipeline interfaces
 #' 
 #' Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param projectLevel logical indicating whether a only project-level pifaces 
-#' should be considered. Otherwise, only sample-level ones are.
+#' @param ... other arguments 
 #'
 #' @return a list of pipeline interface file paths.
 #'
@@ -144,6 +143,13 @@ setGeneric("gatherPipelineInterfaces", function(project, ...)
 #' p = Project(file = projectConfig)
 #' gatherPipelineInterfaces(p)
 #' gatherPipelineInterfaces(p, TRUE)
+setGeneric("gatherPipelineInterfaces", function(project, ...)
+    standardGeneric("gatherPipelineInterfaces"), signature = "project")
+
+#' @describeIn gatherPipelineInterfaces Collect all pipeline interfaces
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#' should be considered. Otherwise, only sample-level ones are.
+#' @importFrom stats setNames
 setMethod("gatherPipelineInterfaces", c(project="Project"), function(project, projectLevel=FALSE) {
     if(!projectLevel){
         return(.gatherSamplePipelineInterfaces(project))
@@ -168,6 +174,7 @@ setGeneric(".gatherSamplePipelineInterfaces", function(project)
     standardGeneric(".gatherSamplePipelineInterfaces"), signature = "project")
 
 #' @describeIn gatherPipelineInterfaces extracts pipeline outputs for a given pipeline
+#' @importFrom pryr partial
 setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(project) {
     t = pepr::sampleTable(project)
     .mkAbs = pryr::partial(.mkPathsAbs, parent = dirname(project@file))
@@ -177,10 +184,6 @@ setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(proj
         )
     return(invisible(NULL))
 })
-
-
-setGeneric("pipelineInterfacesBySample", function(project)
-    standardGeneric("pipelineInterfacesBySample"), signature = "project")
 
 #' Get pipeline interfaces by sample
 #' 
@@ -201,6 +204,10 @@ setGeneric("pipelineInterfacesBySample", function(project)
 #' package = "BiocProject")
 #' p = Project(file = projectConfig)
 #' pipelineInterfacesBySample(p)
+setGeneric("pipelineInterfacesBySample", function(project)
+    standardGeneric("pipelineInterfacesBySample"), signature = "project")
+
+#' @describeIn pipelineInterfacesBySample Get pipeline interfaces by sample
 setMethod("pipelineInterfacesBySample", c(project="Project"), function(project) {
     t = pepr::sampleTable(project)
     if (PIP_IFACE_NAME %in% colnames(t)){
@@ -218,7 +225,7 @@ setMethod("pipelineInterfacesBySample", c(project="Project"), function(project) 
 #' @param project an object of \code{\link[pepr]{Config-class}} 
 #' @param templList list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"
 #' @param sampleName string, name of the protocol to select the samples
-#' @param projectLevel logical indicating whether project context should be applied. Default: sample
+#' @param projectContext logical indicating whether project context should be applied. Default: sample
 #'
 #' @return list of strings
 .populateTemplates = function(project, templList, sampleName=NULL, projectContext=FALSE) {

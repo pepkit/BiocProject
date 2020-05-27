@@ -9,7 +9,7 @@
 \arguments{
 \item{piface}{\code{\link[pepr]{Config-class}}/list with a pipeline interface}
 
-\item{p}{\code{\link[pepr]{Project-class}} object}
+\item{parent}{a path to parent folder to use}
 }
 \value{
 piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute

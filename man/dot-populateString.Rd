@@ -11,9 +11,9 @@
 
 \item{project}{\code{\link[pepr]{Project-class}} object with values to draw from}
 
-\item{projectContext}{logical indicating whether project context should be applied for string formatting. Default: sample}
+\item{sampleName}{string, name of the sample to use}
 
-\item{protocolName}{string, name of the protocol to select the samples}
+\item{projectContext}{logical indicating whether project context should be applied for string formatting. Default: sample}
 }
 \value{
 a named list of populated strings

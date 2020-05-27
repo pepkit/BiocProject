@@ -4,10 +4,15 @@
 \alias{.getOutputs}
 \title{Get outputs from pipeline defined in an output schema}
 \usage{
-.getOutputs(pipeline, projectContext = FALSE, parent)
+.getOutputs(pipeline, parent, projectContext = FALSE)
 }
 \arguments{
 \item{pipeline}{an object of \code{\link[pepr]{Config-class}}}
+
+\item{parent}{a path to parent folder to use}
+
+\item{projectContext}{logical indicating whether a only project-level pifaces 
+should be considered. Otherwise, only sample-level ones are.}
 }
 \value{
 named list of output path templates, 

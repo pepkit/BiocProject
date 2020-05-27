@@ -7,9 +7,9 @@
 .mkPathsAbs(paths, parent)
 }
 \arguments{
-\item{parent}{parent directory}
+\item{paths}{path to make absolute}
 
-\item{path}{path to make absolute}
+\item{parent}{parent directory}
 }
 \value{
 string, a path amde absolute

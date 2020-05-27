@@ -8,6 +8,8 @@ readSchema(path, parent = NULL)
 }
 \arguments{
 \item{path}{path to a local schema or URL pointing to a remote one}
+
+\item{parent}{a path to parent folder to use}
 }
 \value{
 list read schema
