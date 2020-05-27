@@ -11,12 +11,10 @@ Encoding: UTF-8
 LazyData: true
 Depends: pepr, S4Vectors
 Imports: methods, glue, RCurl, yaml, stats, pryr
-Suggests:
-    knitr,
-    rmarkdown,
-    testthat
+Suggests: knitr, rmarkdown, testthat, BiocStyle
 Enhances: BiocFileCache, simpleCache, GenomicRanges
-biocViews: DataImport, DataRepresentation
+License: BSD_2_clause + file LICENSE
+biocViews: Infrastructure, DataImport, DataRepresentation
 RoxygenNote: 7.1.0
 URL: http://code.databio.org/BiocProject/
 BugReports: https://github.com/pepkit/BiocProject/issues
