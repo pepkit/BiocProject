@@ -11,8 +11,6 @@ pipelineInterfacesBySample(project)
 }
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
-
-\item{...}{other arguments passed to methods}
 }
 \value{
 a list of pipeline interface file paths keyed by sample names

@@ -191,7 +191,6 @@ setMethod(".gatherSamplePipelineInterfaces", c(project="Project"), function(proj
 #' \code{\link[pepr]{Project-class}} and provides a sample to interfaces mapping
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param ... other arguments passed to methods
 #'
 #' @return a list of pipeline interface file paths keyed by sample names
 #'
