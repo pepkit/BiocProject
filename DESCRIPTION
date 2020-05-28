@@ -11,8 +11,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: pepr, S4Vectors
 Imports: methods, glue, RCurl, yaml, stats, pryr
-Suggests: knitr, rmarkdown, testthat, BiocStyle
-Enhances: BiocFileCache, simpleCache, GenomicRanges
+Suggests: knitr, rmarkdown, testthat, BiocStyle, BiocFileCache, simpleCache, GenomicRanges
 License: BSD_2_clause + file LICENSE
 biocViews: Infrastructure, DataImport, DataRepresentation
 RoxygenNote: 7.1.0
