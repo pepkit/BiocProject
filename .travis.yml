@@ -1,6 +1,7 @@
 os: linux
 language: r
 r: bioc-devel
+bioc_check: true
 cache: packages
 warnings_are_errors: false
 r_packages: 

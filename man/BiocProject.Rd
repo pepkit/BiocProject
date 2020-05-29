@@ -86,12 +86,13 @@ If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded
 and empty \code{\link[pepr]{Project-class}} object will be returned.
 }
 \note{
-The \code{bioconductor} section can be read from the project config file or pipeline interface. The former is given the priority
+The \code{bioconductor} section can be read from the project config 
+file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  
-Browse the 
-\href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
+Browse the \code{BiocProject} package
+\href{http://code.databio.org/BiocProject/articles/index.html}{vignettes}
 for more detailed explanation with examples.
 }
 

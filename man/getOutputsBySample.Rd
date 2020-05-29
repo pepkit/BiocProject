@@ -27,7 +27,8 @@ indicated in the \code{\link[pepr]{Project-class}}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Project}: Populates and returns output files for a given sample
+\item \code{Project}: Populates and returns output files
+for a given sample
 }}
 
 \examples{

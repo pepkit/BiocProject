@@ -3,7 +3,8 @@
 \name{getProjectOutputs}
 \alias{getProjectOutputs}
 \alias{getProjectOutputs,Project-method}
-\title{Populates and returns output files for a given  \code{\link[pepr]{Project-class}}}
+\title{Populates and returns output files for a
+ given \code{\link[pepr]{Project-class}}}
 \usage{
 getProjectOutputs(project)
 
@@ -15,7 +16,8 @@ getProjectOutputs(project)
 \value{
 a list of output file paths. The order of the first level of the
 list corresponds to the order of the pipeline interface files, second level 
-is a named list of file paths populated by the \code{\link[pepr]{Project-class}}
+is a named list of file paths populated 
+by the \code{\link[pepr]{Project-class}}
 }
 \description{
 Returns the pipeline outputs which are defined in the pipeline interface
@@ -23,7 +25,8 @@ indicated in the \code{\link[pepr]{Project-class}}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Project}: Populates and returns output files for a given  \code{\link[pepr]{Project-class}}
+\item \code{Project}: Populates and returns output files for 
+a given \code{\link[pepr]{Project-class}}
 }}
 
 \examples{

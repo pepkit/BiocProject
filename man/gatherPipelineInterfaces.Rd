@@ -24,13 +24,15 @@ should be considered. Otherwise, only sample-level ones are.}
 a list of pipeline interface file paths.
 }
 \description{
-Collects all relevant pipeline interfaces for this \code{\link[pepr]{Project-class}}
+Collects all relevant pipeline interfaces 
+for this \code{\link[pepr]{Project-class}}
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{Project}: Collect all pipeline interfaces
 
-\item \code{Project}: extracts pipeline outputs for a given pipeline
+\item \code{Project}: extracts pipeline outputs 
+for a given pipeline
 }}
 
 \examples{

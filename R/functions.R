@@ -41,11 +41,13 @@
 #' If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 #' and empty \code{\link[pepr]{Project-class}} object will be returned.
 #' 
-#' @note The \code{bioconductor} section can be read from the project config file or pipeline interface. The former is given the priority
+#' @note The \code{bioconductor} section can be read from the project config 
+#' file or pipeline interface. The former is given the priority
 #' 
 #' @section Further reading: 
 #' Browse the 
-#' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
+#' \href{http://code.databio.org/BiocProject/articles/index.html}
+#' {\code{BiocProject} package vignettes}
 #' for more detailed explanation with examples.
 #'
 #'
@@ -93,7 +95,8 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
         funcArgs = list()
     }else{
         if (length(.findProjectInList(funcArgs)) > 0) {
-            warning("Project object was found in the arguments list. It will be removed.")
+            warning("Project object was found in the arguments list. 
+                    It will be removed.")
             funcArgs = funcArgs[-.findProjectInList(funcArgs)]
         }
     }
@@ -120,8 +123,8 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
         }
     }else{
         # use config to find it
-        if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a logical, 
-                                    got '", class(autoLoad),"'")
+        if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a",
+                                        " logical, got '", class(autoLoad),"'")
         if (autoLoad) {
             # check if the config consists of BIOC_SECTION section
             if(!pepr::.checkSection(cfg, BIOC_SECTION)){
@@ -160,11 +163,8 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
                     if (!file.exists(funcPath))
                         funcPath = .makeAbsPath(funcPath, dirname(p@file))
                     if (!file.exists(funcPath))
-                        stop(
-                            "The function does not exist in the environment and file '",
-                            funcPath,
-                            "' does not exist"
-                        )
+                        stop("The function does not exist in the environment", 
+                             " and file '", funcPath, "' does not exist")
                     # Load the sourced objects into a new environment, 
                     # so they are not in the .GlobalEnv after the BiocProject 
                     # function execution
@@ -178,19 +178,21 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
                     # check again for the specified funcion name, maybe it is 
                     # defined in the file which was just sourced
                     if (!is.null(funcName) && exists(funcName, where=e)) {
-                        message("Function '", funcName,"' read from file '", funcPath, "'")
+                        message("Function '", funcName,"' read from file '", 
+                                funcPath, "'")
                         readData = .callBiocFun(
                             getFunction(funcName, where=e,mustFind=TRUE), args)
                         return(.insertPEP(readData, p))
                     }
                     # the function indicated in FUNCTION_NAME was not found, 
                     # use the last one in FUNCTION_PATH
-                    message("Multiple functions found in '", funcPath, "'. Using the last one.")
+                    message("Multiple functions found in '", funcPath, 
+                            "'. Using the last one.")
                     readData = .callBiocFun(lastFun, args)
                     return(.insertPEP(readData, p))
                 }else{
-                    warning("Can't find function in the environment and the value for '"
-                            , FUNCTION_PATH,
+                    warning("Can't find function in the environment and the", 
+                            " value for '" , FUNCTION_PATH, 
                             "' key was not provided in the config YAML.")
                     message("No data was read. Returning a Project object")
                     return(p)

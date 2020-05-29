@@ -11,8 +11,8 @@
 
 \item{parent}{a path to parent folder to use}
 
-\item{projectContext}{logical indicating whether a only project-level pifaces 
-should be considered. Otherwise, only sample-level ones are.}
+\item{projectContext}{logical indicating whether a only project-level 
+pifaces should be considered. Otherwise, only sample-level ones are.}
 }
 \value{
 named list of output path templates, 

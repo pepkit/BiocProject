@@ -12,7 +12,8 @@
 \item{list2}{a list to update with}
 
 \item{combine}{a logical indicating whether the elements of the second list 
-should replace (\code{FALSE}, default) or append to (\code{TRUE}) the first one.}
+should replace (\code{FALSE}, default) or append to (\code{TRUE}) the 
+first one.}
 }
 \value{
 an updated list

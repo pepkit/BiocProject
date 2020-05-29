@@ -12,9 +12,11 @@
 \item{parent}{a path to parent folder to use}
 }
 \value{
-piface \code{\link[pepr]{Config-class}} pipeline interface with the readFunPath made absolute
+piface \code{\link[pepr]{Config-class}} pipeline interface with 
+the readFunPath made absolute
 }
 \description{
 Uses the absolute pipeline interface path in the config to determine the
-absolute path to the readFunPath file that consists of the data processing function
+absolute path to the readFunPath file that consists of the data 
+processing function
 }

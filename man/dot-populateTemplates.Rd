@@ -14,11 +14,13 @@
 \arguments{
 \item{project}{an object of \code{\link[pepr]{Config-class}}}
 
-\item{templList}{list of strings, like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
+\item{templList}{list of strings, 
+like: "aligned_{sample.genome}/{sample.sample_name}_sort.bam"}
 
 \item{sampleName}{string, name of the protocol to select the samples}
 
-\item{projectContext}{logical indicating whether project context should be applied. Default: sample}
+\item{projectContext}{logical indicating whether project context 
+should be applied. Default: sample}
 }
 \value{
 list of strings

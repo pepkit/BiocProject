@@ -9,17 +9,19 @@
 \arguments{
 \item{string}{Variable-encoded string to populate}
 
-\item{project}{\code{\link[pepr]{Project-class}} object with values to draw from}
+\item{project}{\code{\link[pepr]{Project-class}} object with values 
+to draw from}
 
 \item{sampleName}{string, name of the sample to use}
 
-\item{projectContext}{logical indicating whether project context should be applied for string formatting. Default: sample}
+\item{projectContext}{logical indicating whether project context should be 
+applied for string formatting. Default: sample}
 }
 \value{
 a named list of populated strings
 }
 \description{
-Given a string and a project this function will go through samples and populate
-the variables. Used to return real files for each sample from an output variable
-in the pipeline interface
+Given a string and a project this function will go through samples and 
+populate the variables. Used to return real files for each sample from an 
+output variable in the pipeline interface
 }

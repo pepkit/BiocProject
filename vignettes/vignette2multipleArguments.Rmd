@@ -18,7 +18,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Before you start see the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
+Before you start see the 
+[Getting started with `BiocProject` vignette](./vignette1getStarted.html) for 
+the basic information and installation instructions.
 
 Get paths to the files used in this vignette
 ```{r echo=T,message=FALSE}
@@ -44,7 +46,8 @@ readBedFiles_resize =  system.file(
 
 **What if your custom data processing function requires more arguments than just a PEP?**
 
-For reference consider the `readBedFiles_resize.R` function and its interface. This function additionally requires the `resize.width` argument. 
+For reference consider the `readBedFiles_resize.R` function and its interface. 
+This function additionally requires the `resize.width` argument. 
 ```{r include=FALSE, eval=TRUE}
 processFunction =  system.file(
   "extdata",
@@ -58,7 +61,10 @@ source(processFunction)
 ```{r echo=FALSE, comment=""}
 readBedFiles_resize
 ```
-There are a few ways to enable your function to get multiple arguments - not just a PEP ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html)) object, which is the basic scenario.
+There are a few ways to enable your function to get multiple 
+arguments - not just a PEP 
+([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html)) 
+object, which is the basic scenario.
 
 **The options:**
 
@@ -68,7 +74,9 @@ There are a few ways to enable your function to get multiple arguments - not jus
 
 # How to provide addtional section in the config file
 
-The easiest way to provide addtional arguments to your data reading/processing function is to add addtional section in the config file. See the config file below for reference:
+The easiest way to provide addtional arguments to your data reading/processing
+function is to add addtional section in the config file. See the config file 
+below for reference:
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE, collapse=TRUE, comment=" "}
 library(pepr)
@@ -91,10 +99,14 @@ bp
 
 # How to use the `funcArgs` argument
 
-Provide additional `funcArgs` argument to the `BiocProject` function. This argument has to be a named list. The names have to correspond to the argument names of your function. **The PEP (`pepr::Project` object)  will be passed to your function by default**. For example:
+Provide additional `funcArgs` argument to the `BiocProject` function. 
+This argument has to be a named list. The names have to correspond to the 
+argument names of your function. 
+**The PEP will be passed to your function by default**. For example:
 
 
-Read the function into R environment and run the `BiocProject` function with the `funcArgs` argument
+Read the function into R environment and run the `BiocProject` function with 
+the `funcArgs` argument
 ```{r include=F,eval=TRUE}
 library(BiocProject)
 ProjectConfigArgs = system.file(
@@ -118,12 +130,18 @@ source(readBedFiles_resize)
 bpArgs =  BiocProject(file=ProjectConfigArgs, funcArgs=list(resize.width=200))
 bpArgs
 ```
-The `funcArgs` argument gets a one element list and passes the `resize.width` argument to your custom data processing function. If any arguments are present in the config file, they will be overwritten (the width of the ranges has changed from 100 to 200 in the example above).
+The `funcArgs` argument gets a one element list and passes the `resize.width` 
+argument to your custom data processing function. If any arguments are present
+in the config file, they will be overwritten (the width of the ranges has 
+changed from 100 to 200 in the example above).
 
 
 # How to use an anonymous function
 
-You can use an [anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) (that is implemented in the `BiocProject` function call) to provide additional arguments to your function of interest. For example:
+You can use an 
+[anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) 
+(that is implemented in the `BiocProject` function call) to provide additional 
+arguments to your function of interest. For example:
 
 ```{r}
 bpAnonymous = BiocProject(file=ProjectConfigArgs, func=function(x){

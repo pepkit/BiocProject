@@ -13,10 +13,12 @@
 \code{FALSE} if the function was not set
 }
 \description{
-Adds the Project objects display to the default show method of an \code{\link[S4Vectors]{Annotated-class}}
+Adds the Project objects display to the default show method 
+of an \code{\link[S4Vectors]{Annotated-class}}
 }
 \details{
-The method is defined in the environment in which the function was called, see: \code{\link[base]{sys.parent}}
+The method is defined in the environment in which the function was called, 
+see: \code{\link[base]{sys.parent}}
 }
 \examples{
 x = S4Vectors::List(c("so","cool"))
