@@ -25,8 +25,7 @@ sections:
 * `pipeline_name` - A string identifying the pipeline,
 * `pipeline_type` - A string indicating a pipeline type: "sample" (for run) 
 or "project" (for runp),
-* `command_template`- A Jinja2 template used to construct a pipeline command 
-command to run.
+* `command_template`- A Jinja2 template used to construct a pipeline command to run.
 
 Follow the pipeline interface [specification](http://looper.databio.org/en/latest/pipeline-interface-specification/) 
 to learn more about all the features of that `looper` provides via that file.
@@ -38,7 +37,7 @@ functionality of `BiocProject` package.
 
 ## `bioconductor` section in the pipeline interface
 
-The first advantage of pipeline interfce concept is the possibility to declare 
+The first advantage of pipeline interafce concept is the possibility to declare 
 the data processing function in the pipeline interface itself. Since the data 
 processing function is pipeline specific rather than project specific, it is 
 much more convenient to place the `bioconductor` section in the pipeline 
@@ -77,14 +76,14 @@ Pipeline interface system divides pipelines (and their outputs) into project-
 and sample-level. 
 
 In order to list the outputs for a sample, or all the samples use 
-`getOutputsBySample` method:
+`getOutputsBySample` method. If you indicate a specific sample name, only outputs for this sample will be returned.
 ```{r}
 getOutputsBySample(p, sampleNames=c("sample1"))
 ```
 
 ### Project-level
 
-In order to list the outputs for the project use `getProjectOutputs` method:
+In order to list project-level outputs, use `getProjectOutputs` method:
 
 ```{r}
 getProjectOutputs(p)
