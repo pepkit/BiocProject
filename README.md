@@ -12,12 +12,12 @@ The BiocProject package is a [Bioconductor](https://www.bioconductor.org/)-orien
 
 Install from GitHub:
 
-```
+```r
 devtools::install_github("pepkit/BiocProject")
 ```
 
 Read in both the metadata and data by passing your [PEP configuration file](http://pep.databio.org):
-```
+```r
 bp = BiocProject(file=ProjectConfig)
 ```
 
