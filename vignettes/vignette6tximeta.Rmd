@@ -119,5 +119,23 @@ get(config(p)$bioconductor$readFunName)
 Once we have the PEP and a function that will be used to create the final `SummarizedExperiment` object we can call `BiocProject` function:
 
 ```{r}
-#bp = BiocProject(configFile) #not possible due to prompts that the function generates
+require(tximeta)
+tximeta::setTximetaBFC(tempdir(check = FALSE))
+bp = BiocProject(configFile, funcArgs = list(useHub=FALSE))
+```
+After succesful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
+```{r}
+suppressPackageStartupMessages(library(SummarizedExperiment))
+colData(bp)
+assayNames(bp)
+rowRanges(bp)
+```
+Naturally, we can use tximeta methods:
+```{r}
+retrieveDb(bp)
+```
+And finally, note that the `PEP` metadata information has been attached to the metadata as well. Let's extract the `Project` object from the result:
+
+```{r}
+getProject(bp)
 ```

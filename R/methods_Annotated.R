@@ -4,7 +4,7 @@ setMethod(".is.project", "Annotated",
     function(.Object) {
         mData = S4Vectors::metadata(.Object)
         result = tryCatch(expr = {
-            mData[[1]]
+            mData$PEP
         }, error = function(e) {
             FALSE
         })
@@ -36,7 +36,7 @@ setGeneric("getProject", function(.Object) standardGeneric("getProject"))
 setMethod("getProject", "Annotated", 
     function(.Object) {
         if (.is.project(.Object)) {
-            S4Vectors::metadata(.Object)[[1]]
+            S4Vectors::metadata(.Object)$PEP
         } else {
             stop("This object does not have PEP in the metadata slot.")
         }

@@ -1,4 +1,4 @@
-readTximeta <- function(pep) {
+readTximeta <- function(pep, useHub) {
     require(tximeta)
-    return(tximeta::tximeta(coldata=pep@samples, skipSeqinfo=TRUE, skipMeta=TRUE))
+    tximeta::tximeta(coldata=pep@samples, useHub=useHub)
 }
