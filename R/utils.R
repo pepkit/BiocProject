@@ -155,7 +155,8 @@ readSchema = function(path, parent = NULL) {
     if (methods::is(object, "list")) 
         object = S4Vectors::List(object)
     if (methods::is(object, "Annotated")) {
-        S4Vectors::metadata(object) = list(PEP = pep)
+        S4Vectors::metadata(object) = .unionList(S4Vectors::metadata(object), 
+                                                 list(PEP = pep))
     } else {
         warning("BiocProject expects data loading functions to return an 
                 'Annotated' object, but your function returned a '", 
