@@ -33,6 +33,7 @@ articles:
       - vignette3simpleCache
       - vignette4remoteData
       - vignette5piface
+      - vignette6tximeta
       
 reference:
   - title: BiocProject API

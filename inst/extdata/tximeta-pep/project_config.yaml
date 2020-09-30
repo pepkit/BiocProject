@@ -1,0 +1,14 @@
+pep_version: 2.0.0
+
+sample_table: sample_table.csv
+sample_modifiers:
+  append:
+    files: "FILE_PATH_PLACEHOLDER"
+  derive:
+    attributes: ['files']
+    sources:
+      FILE_PATH_PLACEHOLDER: "$TXIMPORTDATA/salmon_dm/{names}/quant.sf"
+
+bioconductor:
+    readFunName: readTximeta
+    readFunPath: readTximeta.R
