@@ -100,6 +100,6 @@ bpRemote
 And the metadata
 ```{r}
 metadata(bpRemote)
-samples(bpRemote)
+sampleTable(bpRemote)
 config(bpRemote)
 ```
