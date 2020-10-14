@@ -59,62 +59,6 @@
     if (methods::is(object, "list")) 
         object = S4Vectors::List(object)
     if (methods::is(object, "Annotated")) {
-        S4Vectors::metadata(object) = .unionList(S4Vectors::metadata(object), 
-                                                 list(PEP = pep))
-    } else {
-        warning("BiocProject expects data loading functions to return an 
-                'Annotated' object, but your function returned a '", 
-                class(object), "' object. Therefore, this returned object has", 
-                "been placed in the first slot of a S4Vectors::List")
-        result = S4Vectors::List(result = object)
-        S4Vectors::metadata(result) = list(PEP = pep)
-        object = result
-    }
-    .setShowMethod(object)
-    object
-}
-
-#' Insert a PEP metadata in a metadata slot of Annotated
-#' 
-#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
-#' into the metadata slot of objects that 
-#' extend the \code{\link[S4Vectors]{Annotated-class}}
-#' 
-#' Additionally, if the object extends the 
-#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
-#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
-#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
-#' as the metadata.
-#' 
-#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
-#' @param pep an object of class \code{\link[pepr]{Project-class}}
-#' 
-#' @return an object of the same class as the object argument but enriched
-#'  with the metadata from the pep argument
-#' 
-#' @examples 
-#' # If the object is of class Annotated
-#' object = S4Vectors::List(result='test')
-#' result = .insertPEP(object, pepr::Project())
-#' metadata(result)
-#' 
-#' # If the object is not of class Annotated
-#' object1 = 'test'
-#' result1 = .insertPEP(object1, pepr::Project())
-#' metadata(result1)
-#' @import S4Vectors methods
-#' @export
-.insertPEP = function(object, pep) {
-    if (!methods::is(pep, "Project")) 
-        stop("the pep argument has to be of class 'Project', 
-             got '", 
-             class(pep), "'")
-    # do we throw a warning/message
-    # saying what happens in the
-    # next line?
-    if (methods::is(object, "list")) 
-        object = S4Vectors::List(object)
-    if (methods::is(object, "Annotated")) {
         S4Vectors::metadata(object) = 
             .unionList(S4Vectors::metadata(object), list(PEP = pep))
     } else {
