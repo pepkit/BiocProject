@@ -15,7 +15,12 @@ Suggests:
     rmarkdown,
     testthat,
     BiocStyle,
-    yaml
+    yaml, 
+    BiocFileCache, 
+    simpleCache, 
+    GenomicRanges, 
+    tximeta, 
+    SummarizedExperiment
 Enhances: BiocFileCache, simpleCache, GenomicRanges, tximeta, SummarizedExperiment
 biocViews: DataImport, DataRepresentation
 RoxygenNote: 7.1.0
