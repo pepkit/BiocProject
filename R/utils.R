@@ -126,7 +126,6 @@
         S4Vectors::metadata(result) = list(PEP = pep)
         object = result
     }
-    .setShowMethod(object)
     object
 }
 

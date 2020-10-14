@@ -1,6 +1,6 @@
 ---
 title: "More arguments than just a PEP in your function?"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >

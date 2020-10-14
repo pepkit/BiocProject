@@ -1,6 +1,6 @@
 ---
 title: "Working with large datasets - simpleCache"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
