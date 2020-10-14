@@ -14,14 +14,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    BiocStyle,
-    yaml, 
-    BiocFileCache, 
-    simpleCache, 
-    GenomicRanges, 
-    tximeta, 
-    SummarizedExperiment
-Enhances: BiocFileCache, simpleCache, GenomicRanges, tximeta, SummarizedExperiment
+    yaml
+Enhances: BiocFileCache, simpleCache, GenomicRanges, tximeta, SummarizedExperiment, BiocStyle
 biocViews: DataImport, DataRepresentation
 RoxygenNote: 7.1.0
 URL: https://github.com/pepkit/BiocProject

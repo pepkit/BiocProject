@@ -60,9 +60,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          remotes::install_cran("covr")
-          remotes::install_deps(dependencies = TRUE)
+          remotes::install_deps(dependencies = TRUE) # installs "Depends", "Imports", "LinkingTo" and "Suggests" 
+          remotes::install_deps(dependencies = "Enhances")
           remotes::install_cran("rcmdcheck")
+          remotes::install_cran("covr")
         shell: Rscript {0}
 
       - name: Check
