@@ -124,7 +124,7 @@ require(tximeta)
 tximeta::setTximetaBFC(tempdir(check = FALSE))
 bp = BiocProject(configFile, funcArgs = list(useHub=FALSE))
 ```
-After succesful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
+After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
 ```{r collapse=TRUE}
 suppressPackageStartupMessages(library(SummarizedExperiment))
 colData(bp)

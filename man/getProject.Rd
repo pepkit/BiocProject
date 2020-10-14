@@ -22,12 +22,13 @@ This method can be used to extract the project metadata from objects of
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Annotated}: extracts \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}}
+\item \code{Annotated}: extracts \code{\link[pepr]{Project-class}} 
+from the \code{\link[S4Vectors]{Annotated-class}}
 }}
 
 \examples{
-projectConfig = system.file("extdata", "example_peps-master",
-"example_BiocProject", "project_config.yaml", package="BiocProject")
+projectConfig = system.file('extdata', 'example_peps-master',
+'example_BiocProject', 'project_config.yaml', package='BiocProject')
 p=BiocProject(projectConfig)
 getProject(p)
 
