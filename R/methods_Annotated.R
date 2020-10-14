@@ -54,14 +54,14 @@ setMethod("getProject","Annotated",function(.Object){
 #' projectConfig = system.file("extdata", "example_peps-master",
 #' "example_BiocProject", "project_config.yaml", package="BiocProject")
 #' p=BiocProject(projectConfig)
-#' samples(p)
+#' sampleTable(p)
 #' @import pepr
 #' @export
 setMethod(
-    f = "samples",
+    f = "sampleTable",
     signature = "Annotated",
     definition = function(object) {
-        pepr::samples(getProject(object))
+        pepr::sampleTable(getProject(object))
     })
 
 

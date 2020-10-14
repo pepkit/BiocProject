@@ -4,8 +4,13 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) for biological applications}
 \usage{
-BiocProject(file, subproject = NULL, autoLoad = TRUE, func = NULL,
-  funcArgs = NULL)
+BiocProject(
+  file,
+  subproject = NULL,
+  autoLoad = TRUE,
+  func = NULL,
+  funcArgs = NULL
+)
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
@@ -71,6 +76,7 @@ addtional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
 Besides, the \code{func} argument with the anonymous 
 function may serve similar possibility.
+
 
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
