@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Using BiocProject with tximeta"}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -97,11 +97,11 @@ coldataDF = read.table(coldata, sep=",", header=TRUE)
 knitr::kable(coldataDF, format = "html")
 ```
 
-Even though the required `files` column is still missing this file is sufficient, since BiocProject, or more specifially pepr, will take care of construvting the portable `files` sample attribute automatically via `sample_modifiers.derive`:
+Even though the required `files` column is still missing this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
 
 ```{r}
 p=Project(configFile)
-p@samples
+sampleTable(p)
 ```
 
 *Note that the use of `Project` function in the chunk above is not required to complete this tutorial. It is used solely to present the effect of PEP metadata processing*

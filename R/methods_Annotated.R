@@ -1,16 +1,15 @@
-
 setGeneric(".is.project", function(.Object) standardGeneric(".is.project"))
 
 setMethod(".is.project", "Annotated", 
-  function(.Object) {
-      mData = S4Vectors::metadata(.Object)
-      result = tryCatch(expr = {
-          mData$PEP
-      }, error = function(e) {
-          FALSE
-      })
-      is(result, "Project")
-  })
+          function(.Object) {
+              mData = S4Vectors::metadata(.Object)
+              result = tryCatch(expr = {
+                  mData$PEP
+              }, error = function(e) {
+                  FALSE
+              })
+              is(result, "Project")
+          })
 
 #' Extract the object of \code{\link[pepr]{Project-class}} from 
 #' the \code{\link[S4Vectors]{Annotated-class}} 
@@ -35,13 +34,15 @@ setGeneric("getProject", function(.Object) standardGeneric("getProject"))
 #' @describeIn getProject extracts \code{\link[pepr]{Project-class}} 
 #' from the \code{\link[S4Vectors]{Annotated-class}}
 setMethod("getProject", "Annotated", 
-  function(.Object) {
-      if (.is.project(.Object)) {
-          S4Vectors::metadata(.Object)$PEP
-      } else {
-          stop("This object does not have PEP in the metadata slot.")
-      }
-  })
+          function(.Object) {
+              if (.is.project(.Object)) {
+                  S4Vectors::metadata(.Object)$PEP
+              } else {
+                  stop(.Object)
+                  stop("This object does not have PEP in the metadata slot.")
+              }
+          })
+
 #' View samples in the objects of \code{\link[pepr]{Project-class}} 
 #'
 #' This method can be used to view the samples slot
@@ -52,18 +53,16 @@ setMethod("getProject", "Annotated",
 #'
 #' @return a data.table with the with metadata about samples
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
-#' "example_BiocProject", "project_config.yaml", package="BiocProject")
+#' projectConfig = system.file('extdata', 'example_peps-master',
+#' 'example_BiocProject', 'project_config.yaml', package='BiocProject')
 #' p=BiocProject(projectConfig)
 #' sampleTable(p)
 #' @import pepr
 #' @export
-setMethod(
-    f = "sampleTable",
-    signature = "Annotated",
-    definition = function(object) {
-        pepr::sampleTable(getProject(object))
-    })
+setMethod(f = "sampleTable", signature = "Annotated", 
+          definition = function(object) {
+              pepr::sampleTable(getProject(object))
+          })
 
 
 #' View PEP config of the object of \code{\link[pepr]{Project-class}}
@@ -77,19 +76,17 @@ setMethod(
 #' @return a list with the config file
 #'
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
-#' "example_BiocProject", "project_config.yaml", package="BiocProject")
+#' projectConfig = system.file('extdata', 'example_peps-master',
+#' 'example_BiocProject', 'project_config.yaml', package='BiocProject')
 #' p=BiocProject(projectConfig)
 #' config(p)
 #'
 #' @import pepr
 #' @export
-setMethod(
-    f = "config",
-    signature = "Annotated",
-    definition = function(object) {
-        pepr::config(getProject(object))
-    })
+setMethod(f = "config", signature = "Annotated", 
+          definition = function(object) {
+              pepr::config(getProject(object))
+          })
 
 setGeneric("is", package = "methods")
 
@@ -97,7 +94,7 @@ setGeneric("is", package = "methods")
 #' 
 #' Functions to test inheritance relationships between an object and a class 
 #' or between two classes. It uses the generic is function but overrides its 
-#' behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when 
+#' behavior for objects of class \code{\link[S4Vectors]{Annotated-class}} when 
 #' testing for inheritance from \code{\link[pepr]{Project-class}} class.
 #' 
 #' see the \code{\link[methods]{is}} for more details
@@ -107,16 +104,17 @@ setGeneric("is", package = "methods")
 #' 
 #' @return a logical 
 #' @examples
-#' object = S4Vectors::List(test="test")
-#' is(object,"Annotated")
+#' object = S4Vectors::List(test='test')
+#' is(object,'Annotated')
 #' 
 #' @import methods
 #' @export
-setMethod("is", "Annotated", definition = function(object, class2){
-    if(class2=="Project" & .is.project(object)){
+setMethod("is", "Annotated", definition = function(object, 
+                                                   class2) {
+    if (class2 == "Project" & .is.project(object)) {
         TRUE
     } else {
-        methods::extends(class(object), class2)
+        methods::extends(class(object), 
+                         class2)
     }
 })
-
