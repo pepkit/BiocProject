@@ -14,6 +14,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
+    BiocStyle,
     yaml
 Enhances: BiocFileCache, simpleCache, GenomicRanges
 biocViews: DataImport, DataRepresentation
