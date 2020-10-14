@@ -1,15 +1,16 @@
-setGeneric(".is.project", function(.Object)
-    standardGeneric(".is.project"))
 
-setMethod(".is.project","Annotated",function(.Object){
-    mData = S4Vectors::metadata(.Object)
-    result = tryCatch(expr = {
-        mData[[1]]
-    }, error = function(e){
-        FALSE
-    })
-    is(result,"Project")
-})
+setGeneric(".is.project", function(.Object) standardGeneric(".is.project"))
+
+setMethod(".is.project", "Annotated", 
+  function(.Object) {
+      mData = S4Vectors::metadata(.Object)
+      result = tryCatch(expr = {
+          mData$PEP
+      }, error = function(e) {
+          FALSE
+      })
+      is(result, "Project")
+  })
 
 #' Extract the object of \code{\link[pepr]{Project-class}} from 
 #' the \code{\link[S4Vectors]{Annotated-class}} 
@@ -22,25 +23,25 @@ setMethod(".is.project","Annotated",function(.Object){
 #' @return an object of \code{\link[pepr]{Project-class}}
 #' 
 #' @examples
-#' projectConfig = system.file("extdata", "example_peps-master",
-#' "example_BiocProject", "project_config.yaml", package="BiocProject")
+#' projectConfig = system.file('extdata', 'example_peps-master',
+#' 'example_BiocProject', 'project_config.yaml', package='BiocProject')
 #' p=BiocProject(projectConfig)
 #' getProject(p)
 #'
 #' @import S4Vectors
 #' @exportMethod getProject
-setGeneric("getProject", function(.Object)
-    standardGeneric("getProject"))
+setGeneric("getProject", function(.Object) standardGeneric("getProject"))
 
-#' @describeIn getProject extracts \code{\link[pepr]{Project-class}} from the \code{\link[S4Vectors]{Annotated-class}}
-setMethod("getProject","Annotated",function(.Object){
-    if(.is.project(.Object)) {
-        S4Vectors::metadata(.Object)[[1]]
-    } else {
-        stop("This object does not have PEP in the metadata slot.")
-    }
-})
-
+#' @describeIn getProject extracts \code{\link[pepr]{Project-class}} 
+#' from the \code{\link[S4Vectors]{Annotated-class}}
+setMethod("getProject", "Annotated", 
+  function(.Object) {
+      if (.is.project(.Object)) {
+          S4Vectors::metadata(.Object)$PEP
+      } else {
+          stop("This object does not have PEP in the metadata slot.")
+      }
+  })
 #' View samples in the objects of \code{\link[pepr]{Project-class}} 
 #'
 #' This method can be used to view the samples slot

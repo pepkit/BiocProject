@@ -6,7 +6,7 @@
 \usage{
 BiocProject(
   file,
-  subproject = NULL,
+  amendments = NULL,
   autoLoad = TRUE,
   func = NULL,
   funcArgs = NULL
@@ -15,7 +15,7 @@ BiocProject(
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
 
-\item{subproject}{a character vector with a name of the subproject
+\item{amendments}{a character vector with a name of the subproject
 to be activated}
 
 \item{autoLoad}{a logical indicating whether the data should be loaded
@@ -81,10 +81,15 @@ function may serve similar possibility.
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
 }
+\note{
+The \code{bioconductor} section can be read from the project config 
+file or pipeline interface. The former is given the priority
+}
 \section{Further reading}{
  
 Browse the 
-\href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
+\href{http://code.databio.org/BiocProject/articles/index.html}
+{\code{BiocProject} package vignettes}
 for more detailed explanation with examples.
 }
 
