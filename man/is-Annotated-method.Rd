@@ -17,14 +17,14 @@ a logical
 \description{
 Functions to test inheritance relationships between an object and a class 
 or between two classes. It uses the generic is function but overrides its 
-behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when 
+behavior for objects of class \code{\link[S4Vectors]{Annotated-class}} when 
 testing for inheritance from \code{\link[pepr]{Project-class}} class.
 }
 \details{
 see the \code{\link[methods]{is}} for more details
 }
 \examples{
-object = S4Vectors::List(test="test")
-is(object,"Annotated")
+object = S4Vectors::List(test='test')
+is(object,'Annotated')
 
 }

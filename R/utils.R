@@ -18,6 +18,7 @@
     message(rep("-", n), "\n")
 }
 
+
 #' Insert a PEP metadata in a metadata slot of Annotated
 #' 
 #' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
@@ -101,7 +102,7 @@
     eHandler <- function(e){
         # error handler 
         .wrapFunMessages(e$message,"error")
-        stop("No data was read. The error message was returned instead: ", e$message)
+        message("No data was read. The error message was returned instead.")
         S4Vectors::List(e$message)
     } 
     res = withCallingHandlers(
