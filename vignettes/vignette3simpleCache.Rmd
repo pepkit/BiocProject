@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Working with large datasets - simpleCache}
-  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
