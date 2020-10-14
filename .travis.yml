@@ -4,10 +4,11 @@ cache: packages
 warnings_are_errors: false
 r_packages: devtools
 r_github_packages: 
-  - pepkit/pepr
   - databio/simpleCache
 bioc_packages: 
   - GenomicRanges
   - BiocStyle
   - BiocFileCache
+  - SummarizedExperiment
+  - tximeta
 
