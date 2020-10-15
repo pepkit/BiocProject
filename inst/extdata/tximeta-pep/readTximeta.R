@@ -15,5 +15,5 @@ readTximeta <- function(pep, useHub) {
                     fasta=fastaFTP,
                     gtf=gtfPath,
                     write=FALSE)
-    tximeta::tximeta(coldata=pep@samples, useHub=useHub)
+    tximeta::tximeta(coldata=sampleTable(pep), useHub=useHub)
 }
