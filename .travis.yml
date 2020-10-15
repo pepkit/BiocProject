@@ -1,4 +1,8 @@
 language: R
+os:
+  - linux
+  - osx
+  - windows
 sudo: false
 cache: packages
 warnings_are_errors: false

@@ -102,7 +102,7 @@
     eHandler <- function(e){
         # error handler 
         .wrapFunMessages(e$message,"error")
-        stop("No data was read. The error message was returned instead: ", 
+        message("No data was read. The error message was returned instead: ", 
              e$message)
         S4Vectors::List(e$message)
     } 
