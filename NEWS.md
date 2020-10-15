@@ -5,7 +5,7 @@
 
 ## Changed 
 * `subproject` argument to `amendments` in `BiocProject` function 
-* `Project` is not added as a first elenment in `Annotated@metadata`, it is not appended to any existing ones
+* `Project` is not added as a first element in `Annotated@metadata`, it is appended to any existing ones
 
 # BiocProject 0.2 - 2019-04-19
 
