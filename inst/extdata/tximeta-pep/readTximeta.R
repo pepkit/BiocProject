@@ -1,5 +1,6 @@
 readTximeta <- function(pep, useHub) {
     require(tximeta)
+<<<<<<< HEAD
     require(tximportData)
     dir <- system.file("extdata/salmon_dm", package="tximportData")
     indexDir <- file.path(dir, "Dm.BDGP6.22.98_salmon-0.14.1")
@@ -16,4 +17,7 @@ readTximeta <- function(pep, useHub) {
                     gtf=gtfPath,
                     write=FALSE)
     tximeta::tximeta(coldata=sampleTable(pep), useHub=useHub)
+=======
+    tximeta::tximeta(coldata=pep@samples, useHub=useHub)
+>>>>>>> piface
 }

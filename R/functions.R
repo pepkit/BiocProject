@@ -45,7 +45,8 @@
 #' 
 #' @section Further reading: 
 #' Browse the 
-#' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
+#' \href{http://code.databio.org/BiocProject/articles/index.html}
+#' {\code{BiocProject} package vignettes}
 #' for more detailed explanation with examples.
 #'
 #' @param file a character vector with a path to the PEP config file
@@ -63,6 +64,8 @@
 #'  the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return an object of \code{\link[S4Vectors]{Annotated-class}} that is 
 #' returned by the user provided function with 

@@ -83,4 +83,8 @@ simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 And that's it! In the simplest case this is all you need to **organize, 
 read, process your data and prevent from copious results recalculations**
 every time you come back to your project.
+<<<<<<< HEAD
+=======
+
+>>>>>>> piface
 
