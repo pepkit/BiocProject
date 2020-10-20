@@ -35,13 +35,12 @@ articles:
       - vignette6tximeta
       
 reference:
-  - title: BiocProject API
-    desc: Exported functions of BiocProject
+  - title: "BiocProject API"
+    desc: "Exported functions of `BiocProject`."
     contents:
       - -matches("\\.")
-  - title: utilities
-    desc: Extra non-exported utility functions
+  - title: "utilities"
+    desc: "Extra non-exported utility functions."
     contents:
-      - ".unionList"
-      - ".insertPEP"
-      - ".pyToR"
+      - .updateList
+      - .insertPEP

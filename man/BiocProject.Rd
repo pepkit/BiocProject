@@ -9,22 +9,13 @@ BiocProject(
   amendments = NULL,
   autoLoad = TRUE,
   func = NULL,
-<<<<<<< HEAD
   funcArgs = NULL
-=======
-  funcArgs = NULL,
-  projectLevel = FALSE
->>>>>>> piface
 )
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
 
-<<<<<<< HEAD
 \item{amendments}{a character vector with a name of the amendments
-=======
-\item{amendments}{a character vector with a name of the subproject
->>>>>>> piface
 to be activated}
 
 \item{autoLoad}{a logical indicating whether the data should be loaded
@@ -41,9 +32,6 @@ to pass to the \code{func}.
  but if provided regardless, the constructor will disregard it. 
  You can also pass the arguments in a \code{funcArgs} section within 
  the \code{bioconductor} section in the config file.}
-
-\item{projectLevel}{logical indicating whether a only project-level pifaces 
-should be considered. Otherwise, only sample-level ones are.}
 }
 \value{
 an object of \code{\link[S4Vectors]{Annotated-class}} that is 
@@ -99,8 +87,8 @@ file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  
-Browse the \code{BiocProject} package
-\href{http://code.databio.org/BiocProject/articles/index.html}{vignettes}
+Browse the 
+\href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
 for more detailed explanation with examples.
 }
 

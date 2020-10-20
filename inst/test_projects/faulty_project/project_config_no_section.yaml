@@ -1,8 +1,4 @@
 # This is a faulty PEP.
 # The bioconductor section does not exist
 pep_version: 2.0.0
-<<<<<<< HEAD
 sample_table: sample_table.csv
-=======
-sample_table: sample_table.csv
->>>>>>> piface

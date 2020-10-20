@@ -97,19 +97,11 @@ coldataDF = read.table(coldata, sep=",", header=TRUE)
 knitr::kable(coldataDF, format = "html")
 ```
 
-<<<<<<< HEAD
 Even though the required `files` column is still missing this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
 
 ```{r}
 p=Project(configFile)
 sampleTable(p)
-=======
-Even though the required `files` column is still missing this file is sufficient, since BiocProject, or more specifially pepr, will take care of construvting the portable `files` sample attribute automatically via `sample_modifiers.derive`:
-
-```{r}
-p=Project(configFile)
-p@samples
->>>>>>> piface
 ```
 
 *Note that the use of `Project` function in the chunk above is not required to complete this tutorial. It is used solely to present the effect of PEP metadata processing*
@@ -118,7 +110,6 @@ p@samples
 
 Another required component is the data processing function, which is simply a `tximeta` call that uses the PEP-managed processed sample table its input:
 
-<<<<<<< HEAD
 ```{r eval=FALSE}
 function (pep) 
 {
@@ -128,10 +119,6 @@ function (pep)
 ```
 However, following tximeta instructions, to avoid downloading remote GTF files during this vignette, we will point to a GTF file saved locally (in the tximportData package). We link the transcriptome of the Salmon index to its locally saved GTF. The standard recommended usage of `tximeta` would be the code chunk above, or to specify a remote GTF source, not a local one. This following code is therefore not recommended for a typically workflow, but is particular to the vignette code.
 ```{r echo=FALSE, eval=TRUE, comment=""}
-=======
-```{r echo=FALSE, eval=TRUE, comment=""}
-
->>>>>>> piface
 get(config(p)$bioconductor$readFunName)
 ```
 
@@ -144,11 +131,7 @@ require(tximeta)
 tximeta::setTximetaBFC(tempdir(check = FALSE))
 bp = BiocProject(configFile, funcArgs = list(useHub=FALSE))
 ```
-<<<<<<< HEAD
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
-=======
-After succesful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
->>>>>>> piface
 ```{r collapse=TRUE}
 suppressPackageStartupMessages(library(SummarizedExperiment))
 colData(bp)
