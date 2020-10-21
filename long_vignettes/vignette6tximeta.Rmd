@@ -53,15 +53,14 @@ configFile = "/Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml"
 
 ```{r eval=TRUE, include=FALSE}
 # Run some stuff we need for the vignette
+configFile = "$HOME/Desktop/tximeta-pep/project_config.yaml"
 p=Project(configFile)
-readTximeta = "/Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R"
-source(readTximeta)
 ```
 
 As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. A reduced version of tximportData package contents is shipped with BiocProject, so let's use this sample dataset:
 
 ```{r}
-tximportDataPath = "/Users/mstolarczyk/Desktop/tximeta-pep/tximportData"
+tximportDataPath = "$HOME/Desktop/tximeta-pep/tximportData"
 Sys.setenv("TXIMPORTDATA"=tximportDataPath)
 ```
 
@@ -70,8 +69,7 @@ sample table CSV file (``r { basename(config(p)$sample_table) }``). Check out th
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, collapse=TRUE, comment=" "}
 library(knitr)
-coldata = "/Users/mstolarczyk/Desktop/tximeta-pep/sample_table.csv"
-coldataDF = read.table(coldata, sep=",", header=TRUE)
+coldataDF = read.table(p@config$sample_table, sep=",", header=TRUE)
 knitr::kable(coldataDF, format = "html")
 ```
 
@@ -97,6 +95,7 @@ function (pep)
 ```
 However, following tximeta instructions, to avoid downloading remote GTF files during this vignette, we will point to a GTF file saved locally (in the tximportData package). We link the transcriptome of the Salmon index to its locally saved GTF. The standard recommended usage of `tximeta` would be the code chunk above, or to specify a remote GTF source, not a local one. This following code is therefore not recommended for a typically workflow, but is particular to the vignette code.
 ```{r echo=FALSE, eval=TRUE, comment=""}
+source("/Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R")
 get(config(p)$bioconductor$readFunName)
 ```
 
@@ -124,3 +123,14 @@ And finally, note that the `PEP` metadata information has been attached to the m
 ```{r collapse=TRUE}
 getProject(bp)
 ```
+
+The output of `BiocProject` function supports `Project` class methods, that provide an API for any R-based PEP processing tools:
+
+```{r collapse=TRUE}
+sampleTable(bp)
+config(bp)
+```
+
+# Conclusion
+
+If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata.

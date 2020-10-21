@@ -732,6 +732,7 @@ function toggle_visibility(id1) {
 <li><a href="#data-processing-function"><span class="toc-section-number">2.2</span> Data processing function</a></li>
 </ul></li>
 <li><a href="#usage"><span class="toc-section-number">3</span> Usage</a></li>
+<li><a href="#conclusion"><span class="toc-section-number">4</span> Conclusion</a></li>
 </ul>
 </div>
 
@@ -754,7 +755,7 @@ is(SummarizedExperiment(), &quot;Annotated&quot;)</code></pre>
 <p>Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like <a href="https://snakemake.github.io/">Snakemake</a>, <a href="https://www.commonwl.org/">CWL</a> or <a href="https://looper.databio.org/">looper</a> the same PEP would be ready to use with tximeta as long as the samples have <code>files</code> attribute defined (via <code>files</code> column in the sample table or via one of the sample modifiers in the PEP framework). The advantage of calling <code>tximport</code> within <code>BiocProject</code> include:</p>
 <ul>
 <li>project portability, inherent to projects following PEP specification</li>
-<li>single source of metadata from start of the analysis to finish – all the PEP-defined metadata will be propagated to the output object of <code>tximeta</code> (accessible via <code>@PEP</code> in the <code>metadata</code> slot of <code>SummarizedExperiment</code>)</li>
+<li>single source of metadata from start of the analysis to finish – all the PEP-defined metadata will be propagated to the output object of <code>tximeta</code> function. I will be accessible with <code>@PEP</code> in the <code>metadata</code> slot of <code>SummarizedExperiment</code>, just as any other metadata attached to the result by <code>tximeta</code> function.</li>
 </ul>
 </div>
 </div>
@@ -776,7 +777,7 @@ is(SummarizedExperiment(), &quot;Annotated&quot;)</code></pre>
       readFunName: readTximeta
       readFunPath: readTximeta.R</code></pre>
 <p>As you can see in the PEP configuration file above <code>$TXIMPORTDATA</code> environment variable has been used to make the path portable. Therefore, we need to set it. A reduced version of tximportData package contents is shipped with BiocProject, so let’s use this sample dataset:</p>
-<pre class="r"><code>tximportDataPath = &quot;/Users/mstolarczyk/Desktop/tximeta-pep/tximportData&quot;
+<pre class="r"><code>tximportDataPath = &quot;$HOME/Desktop/tximeta-pep/tximportData&quot;
 Sys.setenv(&quot;TXIMPORTDATA&quot;=tximportDataPath)</code></pre>
 <p>This configuration file points to the second major part of a PEP: the
 sample table CSV file (<code>sample_table.csv</code>). Check out the contents of that file:</p>
@@ -908,6 +909,32 @@ colData(bp)</code></pre>
 ## PEP project object. Class:  Project
 ##   file:  /Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml
 ##   samples:  1</code></pre>
+<p>The output of <code>BiocProject</code> function supports <code>Project</code> class methods, that provide an API for any R-based PEP processing tools:</p>
+<pre class="r"><code>sampleTable(bp)
+##         names condition
+## 1: SRR1197474         A
+##                                                                                files
+## 1: /Users/mstolarczyk/Desktop/tximeta-pep/tximportData/salmon_dm/SRR1197474/quant.sf
+config(bp)
+## Config object. Class: Config
+##  pep_version: 2.0.0
+##  sample_table: /Users/mstolarczyk/Desktop/tximeta-pep/sample_table.csv
+##  sample_modifiers:
+##     append:
+##         files: FILE_PATH_PLACEHOLDER
+##     derive:
+##         attributes: files
+##         sources:
+##             FILE_PATH_PLACEHOLDER: 
+## /$HOME/Desktop/tximeta-pep/tximportData/salmon_dm/{names}/quant.sf
+##  bioconductor:
+##     readFunName: readTximeta
+##     readFunPath: /Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R
+##  name: tximeta-pep</code></pre>
+</div>
+<div id="conclusion" class="section level1">
+<h1><span class="header-section-number">4</span> Conclusion</h1>
+<p>If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata.</p>
 </div>
 
 

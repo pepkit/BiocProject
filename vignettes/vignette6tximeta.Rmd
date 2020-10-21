@@ -71,7 +71,7 @@ As you can see in the PEP configuration file above `$TXIMPORTDATA` environment v
 
 
 ```r
-tximportDataPath = "/Users/mstolarczyk/Desktop/tximeta-pep/tximportData"
+tximportDataPath = "$HOME/Desktop/tximeta-pep/tximportData"
 Sys.setenv("TXIMPORTDATA"=tximportDataPath)
 ```
 
@@ -180,45 +180,32 @@ rowRanges(bp)
 ##   FBtr0091635       3L   1488906-1489045      + | FBtr0091635
 ##   FBtr0113599       3L     261803-261953      - | FBtr0113599
 ##   FBtr0113600       3L     831870-832008      - | FBtr0113600
-##                   tx_biotype tx_cds_seq_start tx_cds_seq_end
-##                  <character>        <integer>      <integer>
-##   FBtr0070129 protein_coding           657110         657595
-##   FBtr0070126 protein_coding           657110         657595
-##   FBtr0070128 protein_coding           657110         657595
-##   FBtr0070124 protein_coding           657110         657595
-##   FBtr0070127 protein_coding           657110         657595
-##           ...            ...              ...            ...
-##   FBtr0114299         snoRNA             <NA>           <NA>
-##   FBtr0113582         snoRNA             <NA>           <NA>
-##   FBtr0091635         snoRNA             <NA>           <NA>
-##   FBtr0113599         snoRNA             <NA>           <NA>
-##   FBtr0113600         snoRNA             <NA>           <NA>
-##                   gene_id tx_support_level tx_id_version
-##               <character>        <integer>   <character>
-##   FBtr0070129 FBgn0025637             <NA>   FBtr0070129
-##   FBtr0070126 FBgn0025637             <NA>   FBtr0070126
-##   FBtr0070128 FBgn0025637             <NA>   FBtr0070128
-##   FBtr0070124 FBgn0025637             <NA>   FBtr0070124
-##   FBtr0070127 FBgn0025637             <NA>   FBtr0070127
-##           ...         ...              ...           ...
-##   FBtr0114299 FBgn0086023             <NA>   FBtr0114299
-##   FBtr0113582 FBgn0082989             <NA>   FBtr0113582
-##   FBtr0091635 FBgn0086670             <NA>   FBtr0091635
-##   FBtr0113599 FBgn0083014             <NA>   FBtr0113599
-##   FBtr0113600 FBgn0083057             <NA>   FBtr0113600
-##               gc_content     tx_name
-##                <numeric> <character>
-##   FBtr0070129    44.7641 FBtr0070129
-##   FBtr0070126    44.8128 FBtr0070126
-##   FBtr0070128    44.7974 FBtr0070128
-##   FBtr0070124    43.8859 FBtr0070124
-##   FBtr0070127    44.8571 FBtr0070127
-##           ...        ...         ...
-##   FBtr0114299    35.8491 FBtr0114299
-##   FBtr0113582    32.8571 FBtr0113582
-##   FBtr0091635    45.0000 FBtr0091635
-##   FBtr0113599    48.3444 FBtr0113599
-##   FBtr0113600    44.6043 FBtr0113600
+##                   tx_biotype tx_cds_seq_start tx_cds_seq_end     gene_id
+##                  <character>        <integer>      <integer> <character>
+##   FBtr0070129 protein_coding           657110         657595 FBgn0025637
+##   FBtr0070126 protein_coding           657110         657595 FBgn0025637
+##   FBtr0070128 protein_coding           657110         657595 FBgn0025637
+##   FBtr0070124 protein_coding           657110         657595 FBgn0025637
+##   FBtr0070127 protein_coding           657110         657595 FBgn0025637
+##           ...            ...              ...            ...         ...
+##   FBtr0114299         snoRNA             <NA>           <NA> FBgn0086023
+##   FBtr0113582         snoRNA             <NA>           <NA> FBgn0082989
+##   FBtr0091635         snoRNA             <NA>           <NA> FBgn0086670
+##   FBtr0113599         snoRNA             <NA>           <NA> FBgn0083014
+##   FBtr0113600         snoRNA             <NA>           <NA> FBgn0083057
+##               tx_support_level tx_id_version gc_content     tx_name
+##                      <integer>   <character>  <numeric> <character>
+##   FBtr0070129             <NA>   FBtr0070129    44.7641 FBtr0070129
+##   FBtr0070126             <NA>   FBtr0070126    44.8128 FBtr0070126
+##   FBtr0070128             <NA>   FBtr0070128    44.7974 FBtr0070128
+##   FBtr0070124             <NA>   FBtr0070124    43.8859 FBtr0070124
+##   FBtr0070127             <NA>   FBtr0070127    44.8571 FBtr0070127
+##           ...              ...           ...        ...         ...
+##   FBtr0114299             <NA>   FBtr0114299    35.8491 FBtr0114299
+##   FBtr0113582             <NA>   FBtr0113582    32.8571 FBtr0113582
+##   FBtr0091635             <NA>   FBtr0091635    45.0000 FBtr0091635
+##   FBtr0113599             <NA>   FBtr0113599    48.3444 FBtr0113599
+##   FBtr0113600             <NA>   FBtr0113600    44.6043 FBtr0113600
 ##   -------
 ##   seqinfo: 25 sequences (1 circular) from BDGP6.22 genome
 ```
@@ -250,7 +237,37 @@ And finally, note that the `PEP` metadata information has been attached to the m
 ```r
 getProject(bp)
 ## PEP project object. Class:  Project
-##   file:  
-## /Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml
+##   file:  /Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml
 ##   samples:  1
 ```
+
+The output of `BiocProject` function supports `Project` class methods, that provide an API for any R-based PEP processing tools:
+
+
+```r
+sampleTable(bp)
+##         names condition
+## 1: SRR1197474         A
+##                                                                                files
+## 1: /Users/mstolarczyk/Desktop/tximeta-pep/tximportData/salmon_dm/SRR1197474/quant.sf
+config(bp)
+## Config object. Class: Config
+##  pep_version: 2.0.0
+##  sample_table: /Users/mstolarczyk/Desktop/tximeta-pep/sample_table.csv
+##  sample_modifiers:
+##     append:
+##         files: FILE_PATH_PLACEHOLDER
+##     derive:
+##         attributes: files
+##         sources:
+##             FILE_PATH_PLACEHOLDER: 
+## /$HOME/Desktop/tximeta-pep/tximportData/salmon_dm/{names}/quant.sf
+##  bioconductor:
+##     readFunName: readTximeta
+##     readFunPath: /Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R
+##  name: tximeta-pep
+```
+
+# Conclusion
+
+If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata.
