@@ -724,7 +724,9 @@ function toggle_visibility(id1) {
 <h1>Contents</h1>
 <div id="TOC">
 <ul>
-<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
+<li><a href="#advantages-of-the-integration"><span class="toc-section-number">1.1</span> Advantages of the integration</a></li>
+</ul></li>
 <li><a href="#setup"><span class="toc-section-number">2</span> Setup</a><ul>
 <li><a href="#pep"><span class="toc-section-number">2.1</span> PEP</a></li>
 <li><a href="#data-processing-function"><span class="toc-section-number">2.2</span> Data processing function</a></li>
@@ -747,6 +749,14 @@ function toggle_visibility(id1) {
 suppressPackageStartupMessages(library(SummarizedExperiment))
 is(SummarizedExperiment(), &quot;Annotated&quot;)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
+<div id="advantages-of-the-integration" class="section level2">
+<h2><span class="header-section-number">1.1</span> Advantages of the integration</h2>
+<p>Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like <a href="https://snakemake.github.io/">Snakemake</a>, <a href="https://www.commonwl.org/">CWL</a> or <a href="https://looper.databio.org/">looper</a> the same PEP would be ready to use with tximeta as long as the samples have <code>files</code> attribute defined (via <code>files</code> column in the sample table or via one of the sample modifiers in the PEP framework). The advantage of calling <code>tximport</code> within <code>BiocProject</code> include:</p>
+<ul>
+<li>project portability, inherent to projects following PEP specification</li>
+<li>single source of metadata from start of the analysis to finish – all the PEP-defined metadata will be propagated to the output object of <code>tximeta</code> (accessible via <code>@PEP</code> in the <code>metadata</code> slot of <code>SummarizedExperiment</code>)</li>
+</ul>
+</div>
 </div>
 <div id="setup" class="section level1">
 <h1><span class="header-section-number">2</span> Setup</h1>
@@ -824,15 +834,15 @@ sampleTable(p)</code></pre>
 bp = BiocProject(configFile)</code></pre>
 <p>After successful import we can browse the resulting object. Since it is a <code>RangedSummarizedExperiment</code>, the methods defined in SummarizedExperiment package work:</p>
 <pre class="r"><code>suppressPackageStartupMessages(library(SummarizedExperiment))
-colData(bp)
-assayNames(bp)
-rowRanges(bp)</code></pre>
+colData(bp)</code></pre>
 <pre><code>## DataFrame with 1 row and 2 columns
 ##                  names   condition
 ##            &lt;character&gt; &lt;character&gt;
-## SRR1197474  SRR1197474           A
-## [1] &quot;counts&quot;    &quot;abundance&quot; &quot;length&quot;   
-## GRanges object with 33706 ranges and 9 metadata columns:
+## SRR1197474  SRR1197474           A</code></pre>
+<pre class="r"><code>assayNames(bp)</code></pre>
+<pre><code>## [1] &quot;counts&quot;    &quot;abundance&quot; &quot;length&quot;</code></pre>
+<pre class="r"><code>rowRanges(bp)</code></pre>
+<pre><code>## GRanges object with 33706 ranges and 9 metadata columns:
 ##               seqnames            ranges strand |       tx_id     tx_biotype
 ##                  &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt;    &lt;character&gt;
 ##   FBtr0070129        X     656673-657899      + | FBtr0070129 protein_coding

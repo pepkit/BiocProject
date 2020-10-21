@@ -21,7 +21,8 @@ In brief, tximeta is a tool that performs numerous annotation and metadata gathe
 
 Importantly, the required input to the `tximeta::tximeta` function is a `data.frame` (`coldata`) object that, in case of Salmon results processing, points to quantification results directory for each sample. `*.sa` files are read and saved as a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
 
-Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. Therefore, sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example 
+Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
+
 
 
 ```r
@@ -33,6 +34,13 @@ is(SummarizedExperiment(), "Annotated")
 ```
 ## [1] TRUE
 ```
+
+## Advantages of the integration
+
+Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/) the same PEP would be ready to use with tximeta as long as the samples have `files` attribute defined (via `files` column in the sample table or via one of the sample modifiers in the PEP framework). The advantage of calling `tximport` within `BiocProject` include: 
+
+ - project portability, inherent to projects following PEP specification
+ - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of `tximeta` function. I will be accessible with `@PEP` in the `metadata` slot of `SummarizedExperiment`, just as any other metadata attached to the result by `tximeta` function.
 
 # Setup
 
@@ -50,7 +58,8 @@ In order to use `tximeta` and `Biocproject` functions, we need a PEP. Let's use 
       derive:
           attributes: files
           sources:
-              FILE_PATH_PLACEHOLDER: $TXIMPORTDATA/salmon_dm/{names}/quant.sf
+              FILE_PATH_PLACEHOLDER: 
+  $TXIMPORTDATA/salmon_dm/{names}/quant.sf
    bioconductor:
       readFunName: readTximeta
       readFunPath: readTximeta.R
@@ -128,7 +137,6 @@ Once we have the PEP and a function that will be used to create the final `Summa
 
 ```r
 require(tximeta)
-## Warning: package 'tximeta' was built under R version 4.0.2
 bp = BiocProject(configFile)
 ```
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
@@ -159,32 +167,58 @@ rowRanges(bp)
 
 ```
 ## GRanges object with 33706 ranges and 9 metadata columns:
-##               seqnames            ranges strand |       tx_id     tx_biotype tx_cds_seq_start
-##                  <Rle>         <IRanges>  <Rle> | <character>    <character>        <integer>
-##   FBtr0070129        X     656673-657899      + | FBtr0070129 protein_coding           657110
-##   FBtr0070126        X     656356-657899      + | FBtr0070126 protein_coding           657110
-##   FBtr0070128        X     656673-657899      + | FBtr0070128 protein_coding           657110
-##   FBtr0070124        X     656114-657899      + | FBtr0070124 protein_coding           657110
-##   FBtr0070127        X     656356-657899      + | FBtr0070127 protein_coding           657110
-##           ...      ...               ...    ... .         ...            ...              ...
-##   FBtr0114299       2R 21325218-21325323      + | FBtr0114299         snoRNA             <NA>
-##   FBtr0113582       3R   5598638-5598777      - | FBtr0113582         snoRNA             <NA>
-##   FBtr0091635       3L   1488906-1489045      + | FBtr0091635         snoRNA             <NA>
-##   FBtr0113599       3L     261803-261953      - | FBtr0113599         snoRNA             <NA>
-##   FBtr0113600       3L     831870-832008      - | FBtr0113600         snoRNA             <NA>
-##               tx_cds_seq_end     gene_id tx_support_level tx_id_version gc_content     tx_name
-##                    <integer> <character>        <integer>   <character>  <numeric> <character>
-##   FBtr0070129         657595 FBgn0025637             <NA>   FBtr0070129    44.7641 FBtr0070129
-##   FBtr0070126         657595 FBgn0025637             <NA>   FBtr0070126    44.8128 FBtr0070126
-##   FBtr0070128         657595 FBgn0025637             <NA>   FBtr0070128    44.7974 FBtr0070128
-##   FBtr0070124         657595 FBgn0025637             <NA>   FBtr0070124    43.8859 FBtr0070124
-##   FBtr0070127         657595 FBgn0025637             <NA>   FBtr0070127    44.8571 FBtr0070127
-##           ...            ...         ...              ...           ...        ...         ...
-##   FBtr0114299           <NA> FBgn0086023             <NA>   FBtr0114299    35.8491 FBtr0114299
-##   FBtr0113582           <NA> FBgn0082989             <NA>   FBtr0113582    32.8571 FBtr0113582
-##   FBtr0091635           <NA> FBgn0086670             <NA>   FBtr0091635    45.0000 FBtr0091635
-##   FBtr0113599           <NA> FBgn0083014             <NA>   FBtr0113599    48.3444 FBtr0113599
-##   FBtr0113600           <NA> FBgn0083057             <NA>   FBtr0113600    44.6043 FBtr0113600
+##               seqnames            ranges strand |       tx_id
+##                  <Rle>         <IRanges>  <Rle> | <character>
+##   FBtr0070129        X     656673-657899      + | FBtr0070129
+##   FBtr0070126        X     656356-657899      + | FBtr0070126
+##   FBtr0070128        X     656673-657899      + | FBtr0070128
+##   FBtr0070124        X     656114-657899      + | FBtr0070124
+##   FBtr0070127        X     656356-657899      + | FBtr0070127
+##           ...      ...               ...    ... .         ...
+##   FBtr0114299       2R 21325218-21325323      + | FBtr0114299
+##   FBtr0113582       3R   5598638-5598777      - | FBtr0113582
+##   FBtr0091635       3L   1488906-1489045      + | FBtr0091635
+##   FBtr0113599       3L     261803-261953      - | FBtr0113599
+##   FBtr0113600       3L     831870-832008      - | FBtr0113600
+##                   tx_biotype tx_cds_seq_start tx_cds_seq_end
+##                  <character>        <integer>      <integer>
+##   FBtr0070129 protein_coding           657110         657595
+##   FBtr0070126 protein_coding           657110         657595
+##   FBtr0070128 protein_coding           657110         657595
+##   FBtr0070124 protein_coding           657110         657595
+##   FBtr0070127 protein_coding           657110         657595
+##           ...            ...              ...            ...
+##   FBtr0114299         snoRNA             <NA>           <NA>
+##   FBtr0113582         snoRNA             <NA>           <NA>
+##   FBtr0091635         snoRNA             <NA>           <NA>
+##   FBtr0113599         snoRNA             <NA>           <NA>
+##   FBtr0113600         snoRNA             <NA>           <NA>
+##                   gene_id tx_support_level tx_id_version
+##               <character>        <integer>   <character>
+##   FBtr0070129 FBgn0025637             <NA>   FBtr0070129
+##   FBtr0070126 FBgn0025637             <NA>   FBtr0070126
+##   FBtr0070128 FBgn0025637             <NA>   FBtr0070128
+##   FBtr0070124 FBgn0025637             <NA>   FBtr0070124
+##   FBtr0070127 FBgn0025637             <NA>   FBtr0070127
+##           ...         ...              ...           ...
+##   FBtr0114299 FBgn0086023             <NA>   FBtr0114299
+##   FBtr0113582 FBgn0082989             <NA>   FBtr0113582
+##   FBtr0091635 FBgn0086670             <NA>   FBtr0091635
+##   FBtr0113599 FBgn0083014             <NA>   FBtr0113599
+##   FBtr0113600 FBgn0083057             <NA>   FBtr0113600
+##               gc_content     tx_name
+##                <numeric> <character>
+##   FBtr0070129    44.7641 FBtr0070129
+##   FBtr0070126    44.8128 FBtr0070126
+##   FBtr0070128    44.7974 FBtr0070128
+##   FBtr0070124    43.8859 FBtr0070124
+##   FBtr0070127    44.8571 FBtr0070127
+##           ...        ...         ...
+##   FBtr0114299    35.8491 FBtr0114299
+##   FBtr0113582    32.8571 FBtr0113582
+##   FBtr0091635    45.0000 FBtr0091635
+##   FBtr0113599    48.3444 FBtr0113599
+##   FBtr0113600    44.6043 FBtr0113600
 ##   -------
 ##   seqinfo: 25 sequences (1 circular) from BDGP6.22 genome
 ```
@@ -216,6 +250,7 @@ And finally, note that the `PEP` metadata information has been attached to the m
 ```r
 getProject(bp)
 ## PEP project object. Class:  Project
-##   file:  /Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml
+##   file:  
+## /Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml
 ##   samples:  1
 ```
