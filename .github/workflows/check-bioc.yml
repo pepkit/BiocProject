@@ -21,8 +21,10 @@
 ## * OS: operating system
 
 on:
-  push: [master, dev]
-  pull_request: [master, dev]
+  push: 
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
 
 name: R-CMD-check-bioc
 
