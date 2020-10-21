@@ -21,7 +21,7 @@ In brief, tximeta is a tool that performs numerous annotation and metadata gathe
 
 Importantly, the required input to the `tximeta::tximeta` function is a `data.frame` (`coldata`) object that, in case of Salmon results processing, points to quantification results directory for each sample. `*.sa` files are read and saved as a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
 
-Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements.
+Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. Therefore, sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example 
 
 
 ```r
