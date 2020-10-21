@@ -105,10 +105,12 @@ setGeneric("is", package = "methods")
 #' 
 #' @import methods
 #' @export
-setMethod("is", "Annotated", definition = function(object, class2) {
+setMethod("is", "Annotated", definition = function(object, 
+                                                   class2) {
     if (class2 == "Project" & .is.project(object)) {
         TRUE
     } else {
-        methods::extends(class(object), class2)
+        methods::extends(class(object), 
+                         class2)
     }
 })
