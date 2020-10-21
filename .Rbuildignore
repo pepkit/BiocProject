@@ -6,3 +6,4 @@
 ^update_examples.sh
 ^doc$
 ^Meta$
+^\.github$
