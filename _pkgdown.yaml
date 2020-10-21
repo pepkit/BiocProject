@@ -42,5 +42,5 @@ reference:
   - title: "utilities"
     desc: "Extra non-exported utility functions."
     contents:
-      - .updateList
+      - .unionList
       - .insertPEP
