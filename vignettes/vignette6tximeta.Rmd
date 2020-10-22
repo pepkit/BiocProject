@@ -1,7 +1,7 @@
 ---
 title: "Using BiocProject with tximeta"
 author: "Michał Stolarczyk"
-date: "2020-10-22"
+date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Using BiocProject with tximeta"}
