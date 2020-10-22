@@ -287,3 +287,116 @@ readSchema = function(path, parent = NULL) {
                                    "Project")(pep)
                   }, where = parent.frame())
 }
+
+#' Switch from python to R list accession syntax
+#' 
+#' Python uses a dot to access attributes, while R uses \code{$}; this function
+#' converts the python style into R so that we can use R code to populate
+#' variables with R lists. From this: '\code{{sample.name}}' 
+#' to this: '\code{{sample$name}}'
+#' @param str String to recode
+#' @return string with the recoded accession syntax
+#' @export
+#' @examples 
+#' .pyToR('{sample.genome}/{sample.read_type}/test')
+.pyToR = function(str) {
+    # This is the regex where the
+    # magic happens
+    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", 
+                               "\\1$", str)
+    # This loop allows multi-layer
+    # accession
+    res = str
+    prev = ""
+    while (prev != res) {
+        prev = res
+        res = pytor(res)
+    }
+    return(res)
+}
+
+#' Populate a variable-encoded string with sample/project variables
+#' 
+#' Given a string and a project this function will go through samples and 
+#' populate the variables. Used to return real files for each sample from an 
+#' output variable in the pipeline interface
+#' 
+#' @param string Variable-encoded string to populate
+#' @param project \code{\link[pepr]{Project-class}} object with values 
+#'  to draw from
+#' @param sampleName string, name of the sample to use
+#' @param projectContext logical indicating whether project context should be 
+#' applied for string formatting. Default: sample
+#' 
+#' @return a named list of populated strings
+#' @importFrom glue glue
+.populateString = function(string, project, sampleName = NULL, projectContext = FALSE) {
+    # Apply this glue function on
+    # each row in the samples
+    # table, coerced to a list
+    # object to allow attribute
+    # accession.
+    samplesSubset = subset(sampleTable(project), 
+                           sample_name == sampleName)
+    if (!projectContext && NROW(samplesSubset) < 
+        1) 
+        return(invisible(NULL))
+    if (projectContext) {
+        populatedStrings = with(config(project), 
+                                glue(.pyToR(string)))
+    } else {
+        populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
+                                             return(with(s, glue(.pyToR(string))))
+                                         }))
+    }
+    if (!projectContext && length(populatedStrings) != 
+        NROW(samplesSubset)) {
+        warning("Paths templates populating problem: number of paths (", 
+                length(populatedStrings), 
+                ") does not correspond to the number of samples (", 
+                NROW(samplesSubset), 
+                "). Path template '", 
+                string, "' will not be populated")
+        return(invisible(NULL))
+    }
+    names(populatedStrings) = unlist(samplesSubset$sample_name)
+    return(populatedStrings)
+}
+
+
+#' Populate list of path templates
+#'
+#' @param project an object of \code{\link[pepr]{Config-class}} 
+#' @param templList list of strings, 
+#' like: 'aligned_{sample.genome}/{sample.sample_name}_sort.bam'
+#' @param sampleName string, name of the protocol to select the samples
+#' @param projectContext logical indicating whether project context 
+#' should be applied. Default: sample
+#'
+#' @return list of strings
+.populateTemplates = function(project, 
+                              templList, sampleName = NULL, 
+                              projectContext = FALSE) {
+    if (!projectContext && is.null(sampleName)) 
+        stop("Must specify the sample to populate templates for")
+    expandedTemplList = lapply(templList, pepr::.expandPath)
+    lapply(expandedTemplList, .populateString, project, sampleName, projectContext)
+}
+
+
+#' Validate type of the pipeline interface
+#'
+#' @param piface pipeline interface to inspect
+#' @param type string, type of the pipeline interface, either "sample" or "project"
+#'
+#' @return a logical indicating whether the pipeline interface matches the specified type 
+.checkPifaceType <- function(piface, type) {
+    if (!pepr::.checkSection(piface, PIP_TYPE_KEY) || 
+        piface[[PIP_TYPE_KEY]] != type) {
+        warning(sprintf(
+            "%s pipeline interface has to specify '%s' pipeline type in '%s'", 
+            type, type, PIP_TYPE_KEY))
+        return(FALSE)
+    }
+    return(TRUE)
+}
