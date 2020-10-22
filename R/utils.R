@@ -1,4 +1,42 @@
-# internal function used for wrapping the user-supplied function meessages 
+#' Determine whether the string is a valid URL
+#'
+#' @param str string to inspect
+#'
+#' @return logical indicating whether a string is a valid URL
+.isValidUrl = function(str) {
+    ans = FALSE
+    if (grepl("www.|http:|https:", 
+              str)) {
+        ans = RCurl::url.exists(str)
+    }
+    ans
+}
+
+#' Read a YAML-formatted schema
+#' 
+#' Remote or local schemas are supported
+#'
+#' @param path path to a local schema or URL pointing to a remote one 
+#' @param parent a path to parent folder to use
+#' @return list read schema
+#' @export
+#' @importFrom RCurl getURLContent
+#' @examples
+#' readSchema('https://schema.databio.org/pep/2.0.0.yaml')
+readSchema = function(path, parent = NULL) {
+    if (.isValidUrl(path)) 
+        return(yaml::yaml.load(getURLContent(path)))
+    file = pepr::.makeAbsPath(path, 
+                              parent)
+    if (file.exists(file)) {
+        return(yaml::read_yaml(file))
+    }
+    stop(paste0("Schema has to be either a valid URL or an existing path. ", 
+                "Got: ", path))
+}
+
+
+# internal function used for wrapping the user-supplied function messages 
 # in a box
 .wrapFunMessages = function(messages, type) {
     n = options("width")[[1]]
