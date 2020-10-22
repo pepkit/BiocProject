@@ -12,6 +12,10 @@ vignette: >
 knitr::opts_chunk$set(collapse=FALSE, message=FALSE)
 ```
 
+Before you start see the 
+[Getting started with `BiocProject` vignette](./vignette1getStarted.html) for 
+the basic information and installation instructions.
+
 # Introduction
 
 Another example of BiocProject usage is its seamless integration with [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html).
@@ -34,10 +38,10 @@ is(SummarizedExperiment(), "Annotated")
 
 ## Advantages of the integration
 
-Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/) the same PEP would be ready to use with tximeta as long as the samples have `files` attribute defined (via `files` column in the sample table or via one of the sample modifiers in the PEP framework). The advantage of calling `tximport` within `BiocProject` include: 
+Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done simply via `files` column in the sample table or one of the sample modifiers in the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
 
  - project portability, inherent to projects following PEP specification
- - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of `tximeta` function. I will be accessible with `@PEP` in the `metadata` slot of `SummarizedExperiment`, just as any other metadata attached to the result by `tximeta` function.
+ - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of `tximeta` function. It will be accessible with [pepr](http://code.databio.org/pepr/) API or `@PEP` in the `metadata` slot of `SummarizedExperiment`, just as any other metadata attached to the result by `tximeta` function.
 
 # Setup
 
@@ -57,7 +61,7 @@ configFile = "$HOME/Desktop/tximeta-pep/project_config.yaml"
 p=Project(configFile)
 ```
 
-As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. A reduced version of tximportData package contents is shipped with BiocProject, so let's use this sample dataset:
+As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. Let's point to the output directory of Salmon:
 
 ```{r}
 tximportDataPath = "$HOME/Desktop/tximeta-pep/tximportData"
@@ -73,7 +77,7 @@ coldataDF = read.table(p@config$sample_table, sep=",", header=TRUE)
 knitr::kable(coldataDF, format = "html")
 ```
 
-Even though the required `files` column is still missing this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
+Even though the required `files` column is still missing, this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
 
 ```{r}
 p=Project(configFile)
@@ -86,18 +90,12 @@ sampleTable(p)
 
 Another required component is the data processing function, which is simply a `tximeta` call that uses the PEP-managed processed sample table its input:
 
-```{r eval=FALSE}
-function (pep) 
-{
-    require(tximeta)
-    tximeta::tximeta(coldata = sampleTable(pep))
-}
-```
-However, following tximeta instructions, to avoid downloading remote GTF files during this vignette, we will point to a GTF file saved locally (in the tximportData package). We link the transcriptome of the Salmon index to its locally saved GTF. The standard recommended usage of `tximeta` would be the code chunk above, or to specify a remote GTF source, not a local one. This following code is therefore not recommended for a typically workflow, but is particular to the vignette code.
 ```{r echo=FALSE, eval=TRUE, comment=""}
 source("/Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R")
 get(config(p)$bioconductor$readFunName)
 ```
+
+And that's it, easy!
 
 # Usage
 
@@ -133,4 +131,4 @@ config(bp)
 
 # Conclusion
 
-If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata.
+If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata and expose [pepr](http://code.databio.org/pepr/) API for any PEP-compatible R packages for downstream analysis.
