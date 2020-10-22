@@ -9,20 +9,19 @@ BiocProject(
   amendments = NULL,
   autoLoad = TRUE,
   func = NULL,
-  funcArgs = NULL,
-  projectLevel = FALSE
+  funcArgs = NULL
 )
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
 
-\item{amendments}{a character vector with a name of the subproject
+\item{amendments}{a character vector with a name of the amendments
 to be activated}
 
 \item{autoLoad}{a logical indicating whether the data should be loaded
 automatically. See \code{Details} for more information.}
 
-\item{func}{a anonymous function that reads and/or processess the data, 
+\item{func}{a anonymous function that reads and/or processes the data, 
 it must take 
 the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
@@ -33,9 +32,6 @@ to pass to the \code{func}.
  but if provided regardless, the constructor will disregard it. 
  You can also pass the arguments in a \code{funcArgs} section within 
  the \code{bioconductor} section in the config file.}
-
-\item{projectLevel}{logical indicating whether a only project-level pifaces 
-should be considered. Otherwise, only sample-level ones are.}
 }
 \value{
 an object of \code{\link[S4Vectors]{Annotated-class}} that is 
@@ -76,7 +72,7 @@ implementation. Consider the possibilities listed below:
 The custom data processing function must take 
 the \code{\link[pepr]{Project-class}} as an argument since this object will 
 be passed to the function by default. However, if the function requires
-addtional arguments, ones can be provided with the \code{funcArgs} argument
+additional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
 Besides, the \code{func} argument with the anonymous 
 function may serve similar possibility.
@@ -91,8 +87,8 @@ file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  
-Browse the \code{BiocProject} package
-\href{http://code.databio.org/BiocProject/articles/index.html}{vignettes}
+Browse the 
+\href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
 for more detailed explanation with examples.
 }
 

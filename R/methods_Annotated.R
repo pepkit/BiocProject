@@ -1,16 +1,15 @@
 setGeneric(".is.project", function(.Object) standardGeneric(".is.project"))
 
 setMethod(".is.project", "Annotated", 
-    function(.Object) {
-        mData = S4Vectors::metadata(.Object)
-        result = tryCatch(expr = {
-            mData$PEP
-        }, error = function(e) {
-            FALSE
-        })
-        is(result, "Project")
-    })
-
+          function(.Object) {
+              mData = S4Vectors::metadata(.Object)
+              result = tryCatch(expr = {
+                  mData$PEP
+              }, error = function(e) {
+                  FALSE
+              })
+              is(result, "Project")
+          })
 #' Extract the object of \code{\link[pepr]{Project-class}} from 
 #' the \code{\link[S4Vectors]{Annotated-class}} 
 #'
@@ -34,14 +33,14 @@ setGeneric("getProject", function(.Object) standardGeneric("getProject"))
 #' @describeIn getProject extracts \code{\link[pepr]{Project-class}} 
 #' from the \code{\link[S4Vectors]{Annotated-class}}
 setMethod("getProject", "Annotated", 
-    function(.Object) {
-        if (.is.project(.Object)) {
-            S4Vectors::metadata(.Object)$PEP
-        } else {
-            stop("This object does not have PEP in the metadata slot.")
-        }
-    })
-
+          function(.Object) {
+              if (.is.project(.Object)) {
+                  S4Vectors::metadata(.Object)$PEP
+              } else {
+                  stop(.Object)
+                  stop("This object does not have PEP in the metadata slot.")
+              }
+          })
 #' View samples in the objects of \code{\link[pepr]{Project-class}} 
 #'
 #' This method can be used to view the samples slot
@@ -59,10 +58,9 @@ setMethod("getProject", "Annotated",
 #' @import pepr
 #' @export
 setMethod(f = "sampleTable", signature = "Annotated", 
-    definition = function(object) {
-        pepr::sampleTable(getProject(object))
-    })
-
+          definition = function(object) {
+              pepr::sampleTable(getProject(object))
+          })
 
 #' View PEP config of the object of \code{\link[pepr]{Project-class}}
 #'
@@ -83,17 +81,16 @@ setMethod(f = "sampleTable", signature = "Annotated",
 #' @import pepr
 #' @export
 setMethod(f = "config", signature = "Annotated", 
-    definition = function(object) {
-        pepr::config(getProject(object))
-    })
-
+          definition = function(object) {
+              pepr::config(getProject(object))
+          })
 setGeneric("is", package = "methods")
 
 #' Is an Object from a Class?
 #' 
 #' Functions to test inheritance relationships between an object and a class 
 #' or between two classes. It uses the generic is function but overrides its 
-#' behavior for obejcts of class \code{\link[S4Vectors]{Annotated-class}} when 
+#' behavior for objects of class \code{\link[S4Vectors]{Annotated-class}} when 
 #' testing for inheritance from \code{\link[pepr]{Project-class}} class.
 #' 
 #' see the \code{\link[methods]{is}} for more details
@@ -109,12 +106,11 @@ setGeneric("is", package = "methods")
 #' @import methods
 #' @export
 setMethod("is", "Annotated", definition = function(object, 
-    class2) {
+                                                   class2) {
     if (class2 == "Project" & .is.project(object)) {
         TRUE
     } else {
         methods::extends(class(object), 
-            class2)
+                         class2)
     }
 })
-

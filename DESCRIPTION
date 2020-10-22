@@ -6,14 +6,13 @@ Authors@R: c(person("Michal", "Stolarczyk", email = "mjs5kd@virginia.edu",role =
 Description: A Bioconductor-oriented project management class. It wraps the
 	generic pepr R package for project metadata. BiocProject allows you to read 
 	in project metadata and data for an entire project with a single line of R code.
+License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: pepr, S4Vectors
-Imports: methods, glue, RCurl, yaml, stats, pryr
-Suggests: knitr, rmarkdown, testthat, BiocStyle, BiocFileCache, simpleCache, GenomicRanges
-License: BSD_2_clause + file LICENSE
-biocViews: Infrastructure, DataImport, DataRepresentation
+Depends: S4Vectors, pepr, methods
+Suggests: testthat, yaml, BiocFileCache, simpleCache, GenomicRanges, knitr, BiocStyle, rmarkdown
+biocViews: DataImport, DataRepresentation
 RoxygenNote: 7.1.0
-URL: http://code.databio.org/BiocProject/
-BugReports: https://github.com/pepkit/BiocProject/issues
+URL: https://github.com/pepkit/BiocProject
+BugReports: https://github.com/pepkit/BiocProject
 VignetteBuilder: knitr

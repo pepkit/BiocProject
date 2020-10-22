@@ -1,4 +1,3 @@
-
 #' Portable Encapsulated Project (PEP) for biological applications
 #'
 #' This function creates a \code{\link[pepr]{Project-class}} object, 
@@ -32,7 +31,7 @@
 #' The custom data processing function must take 
 #' the \code{\link[pepr]{Project-class}} as an argument since this object will 
 #' be passed to the function by default. However, if the function requires
-#' addtional arguments, ones can be provided with the \code{funcArgs} argument
+#' additional arguments, ones can be provided with the \code{funcArgs} argument
 #' in the \code{\link{BiocProject}} function call. 
 #' Besides, the \code{func} argument with the anonymous 
 #' function may serve similar possibility.
@@ -46,15 +45,13 @@
 #' 
 #' @section Further reading: 
 #' Browse the 
-#' \href{http://code.databio.org/BiocProject/articles/index.html}
-#' {\code{BiocProject} package vignettes}
+#' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
 #' for more detailed explanation with examples.
 #'
-#'
 #' @param file a character vector with a path to the PEP config file
-#' @param amendments a character vector with a name of the subproject
+#' @param amendments a character vector with a name of the amendments
 #' to be activated
-#' @param func a anonymous function that reads and/or processess the data, 
+#' @param func a anonymous function that reads and/or processes the data, 
 #' it must take 
 #' the \code{\link[pepr]{Project-class}} as an argument.
 #' See \code{Details} for more information
@@ -66,8 +63,6 @@
 #'  the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
-#' @param projectLevel logical indicating whether a only project-level pifaces 
-#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return an object of \code{\link[S4Vectors]{Annotated-class}} that is 
 #' returned by the user provided function with 
@@ -87,7 +82,7 @@
 #' @import pepr
 #' @export BiocProject
 BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL, 
-                        funcArgs = NULL, projectLevel = FALSE) {
+                       funcArgs = NULL) {
     p = pepr::Project(file=file, amendments = amendments)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
@@ -101,9 +96,7 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
         }
     }
     args = append(list(p), funcArgs)
-    cfg = .getBiocConfig(p, projectLevel)
-    if(is.null(cfg))
-        cfg = pepr::config(p)
+    cfg = pepr::config(p)
     if(pepr::.checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
         args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
@@ -124,7 +117,7 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
     }else{
         # use config to find it
         if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a",
-                                        " logical, got '", class(autoLoad),"'")
+                                       " logical, got '", class(autoLoad),"'")
         if (autoLoad) {
             # check if the config consists of BIOC_SECTION section
             if(!pepr::.checkSection(cfg, BIOC_SECTION)){

@@ -18,8 +18,8 @@ the \code{\link[pepr]{Project-class}}
  or \code{\link[S4Vectors]{Annotated-class}}
 }
 \examples{
-projectConfig = system.file("extdata", "example_peps-master",
-"example_BiocProject", "project_config.yaml", package="BiocProject")
+projectConfig = system.file('extdata', 'example_peps-master',
+'example_BiocProject', 'project_config.yaml', package='BiocProject')
 p=BiocProject(projectConfig)
 config(p)
 

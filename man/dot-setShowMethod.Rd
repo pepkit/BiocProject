@@ -21,7 +21,7 @@ The method is defined in the environment in which the function was called,
 see: \code{\link[base]{sys.parent}}
 }
 \examples{
-x = S4Vectors::List(c("so","cool"))
+x = S4Vectors::List(c('so','cool'))
 metadata(x) = list(PEP=pepr::Project())
 .setShowMethod(x)
 x

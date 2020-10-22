@@ -1,118 +1,23 @@
-#' Determine whether the string is a valid URL
-#'
-#' @param str string to inspect
-#'
-#' @return logical indicating whether a string is a valid URL
-.isValidUrl = function(str) {
-    ans = FALSE
-    if (grepl("www.|http:|https:", 
-        str)) {
-        ans = RCurl::url.exists(str)
+# internal function used for wrapping the user-supplied function meessages 
+# in a box
+.wrapFunMessages = function(messages, type) {
+    n = options("width")[[1]]
+    header = ifelse(
+        length(messages) > 1,
+        paste0(" Your function ", type,"s (", length(messages), ") "),
+        paste0(" Your function ", type, " ")
+    )
+    nH = floor(nchar(header) / 2)
+    nFill = floor(n / 2)
+    message("\n",rep("-", nFill - nH), header, rep("-", nFill - nH))
+    i = 1
+    for (i in seq_along(messages)) {
+        m = trimws(messages[i], which="both")
+        message("\n", type, " ", i , ": ", m, "\n")
     }
-    ans
+    message(rep("-", n), "\n")
 }
 
-#' Read a YAML-formatted schema
-#' 
-#' Remote or local schemas are supported
-#'
-#' @param path path to a local schema or URL pointing to a remote one 
-#' @param parent a path to parent folder to use
-#' @return list read schema
-#' @export
-#' @importFrom RCurl getURLContent
-#' @examples
-#' readSchema('https://schema.databio.org/pep/2.0.0.yaml')
-readSchema = function(path, parent = NULL) {
-    if (.isValidUrl(path)) 
-        return(yaml::yaml.load(getURLContent(path)))
-    file = pepr::.makeAbsPath(path, 
-        parent)
-    if (file.exists(file)) {
-        return(yaml::read_yaml(file))
-    }
-    stop(paste0("Schema has to be either a valid URL or an existing path. ", 
-        "Got: ", path))
-}
-
-#' Switch from python to R list accession syntax
-#' 
-#' Python uses a dot to access attributes, while R uses \code{$}; this function
-#' converts the python style into R so that we can use R code to populate
-#' variables with R lists. From this: '\code{{sample.name}}' 
-#' to this: '\code{{sample$name}}'
-#' @param str String to recode
-#' @return string with the recoded accession syntax
-#' @export
-#' @examples 
-#' .pyToR('{sample.genome}/{sample.read_type}/test')
-.pyToR = function(str) {
-    # This is the regex where the
-    # magic happens
-    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", 
-        "\\1$", str)
-    # This loop allows multi-layer
-    # accession
-    res = str
-    prev = ""
-    while (prev != res) {
-        prev = res
-        res = pytor(res)
-    }
-    return(res)
-}
-
-#' Populate a variable-encoded string with sample/project variables
-#' 
-#' Given a string and a project this function will go through samples and 
-#' populate the variables. Used to return real files for each sample from an 
-#' output variable in the pipeline interface
-#' 
-#' @param string Variable-encoded string to populate
-#' @param project \code{\link[pepr]{Project-class}} object with values 
-#'  to draw from
-#' @param sampleName string, name of the sample to use
-#' @param projectContext logical indicating whether project context should be 
-#' applied for string formatting. Default: sample
-#' 
-#' @return a named list of populated strings
-#' @importFrom glue glue
-.populateString = function(string, 
-    project, sampleName = NULL, 
-    projectContext = FALSE) {
-    # Apply this glue function on
-    # each row in the samples
-    # table, coerced to a list
-    # object to allow attribute
-    # accession.
-    samplesSubset = subset(sampleTable(project), 
-        sample_name == sampleName)
-    if (!projectContext && NROW(samplesSubset) < 
-        1) 
-        return(invisible(NULL))
-    if (projectContext) {
-        populatedStrings = with(config(project), 
-            glue(.pyToR(string)))
-    } else {
-        populatedStrings = as.list(apply(samplesSubset, 
-            1, function(s) {
-                return(with(s, 
-                  glue(.pyToR(string))))
-            }))
-    }
-    if (!projectContext && length(populatedStrings) != 
-        NROW(samplesSubset)) {
-        warning("Paths templates populating problem: number of paths (", 
-            length(populatedStrings), 
-            ") does not correspond to the number of samples (", 
-            NROW(samplesSubset), 
-            "). Path template '", 
-            string, "' will not be populated")
-        return(invisible(NULL))
-    }
-    names(populatedStrings) = unlist(samplesSubset$sample_name)
-    return(populatedStrings)
-}
 
 #' Insert a PEP metadata in a metadata slot of Annotated
 #' 
@@ -148,219 +53,103 @@ readSchema = function(path, parent = NULL) {
     if (!methods::is(pep, "Project")) 
         stop("the pep argument has to be of class 'Project', 
              got '", 
-            class(pep), "'")
+             class(pep), "'")
     # do we throw a warning/message
     # saying what happens in the
     # next line?
     if (methods::is(object, "list")) 
         object = S4Vectors::List(object)
     if (methods::is(object, "Annotated")) {
-        S4Vectors::metadata(object) = .unionList(S4Vectors::metadata(object), 
-                                                 list(PEP = pep))
+        S4Vectors::metadata(object) = 
+            .unionList(S4Vectors::metadata(object), list(PEP = pep))
     } else {
         warning("BiocProject expects data loading functions to return an 
                 'Annotated' object, but your function returned a '", 
-            class(object), "' object. Therefore, this returned object has", 
-            "been placed in the first slot of a S4Vectors::List")
+                class(object), "' object. Therefore, this returned object has", 
+                "been placed in the first slot of a S4Vectors::List")
         result = S4Vectors::List(result = object)
         S4Vectors::metadata(result) = list(PEP = pep)
         object = result
     }
-    .setShowMethod(object)
     object
 }
 
-
-#' Get the preferred source of the bioconductor section
-#'
-#' @param p \code{\link[pepr]{Project-class}} object
-#' @param projectLevel logical indicating whether a only project-level pifaces 
-#'  should be considered. Otherwise, only sample-level ones are. 
-#'
-#' @return a list with the selected config
-#' @importFrom pepr checkSection config
-#' @importFrom methods new
-.getBiocConfig = function(p, projectLevel = FALSE) {
-    if (checkSection(config(p), 
-        BIOC_SECTION)) {
-        # if the BIOC_SECTION section
-        # is found in the project
-        # config, override any other
-        # locations
-        message("The '", BIOC_SECTION, 
-            "' key found in the Project config")
-        return(config(p))
-    }
-    # check for BIOC_SECTION in
-    # pipeline interfaces
-    pifaceSource = gatherPipelineInterfaces(p, 
-        projectLevel = projectLevel)
-    if (length(pifaceSource) > 
-        0) {
-        pifaceSource = pifaceSource[1]
-        message("Muliple pipeline interface sources matched.", 
-            " Using the first one: ", 
-            pifaceSource)
-    }
-    
-    
-    if (!is.null(pifaceSource)) {
-        piface = yaml::read_yaml(pifaceSource)
-        if (pepr::.checkSection(piface, 
-            BIOC_SECTION)) {
-            message("The '", BIOC_SECTION, 
-                "' key found in the pipeline interface")
-            return(.makeReadFunPathAbs(piface, 
-                parent = dirname(pifaceSource)))
-        } else {
-            warning("The '", BIOC_SECTION, 
-                "' key is missing in Project config and pipeline interface")
-            return(invisible(NULL))
-        }
-    } else {
-        warning("The '", BIOC_SECTION, 
-            "' key is missing in Project config and pipeline interface")
-        return(invisible(NULL))
-    }
+# Finds the pepr::Project
+# object in a list and returns
+# its index If it is not
+# present, returns integer(0)
+.findProjectInList = function(l) {
+    which(as.logical(lapply(l, 
+                            function(x) {
+                                is(x, "Project")
+                            })))
 }
 
-#' Make readFunPath absolute
-#' 
-#' Uses the absolute pipeline interface path in the config to determine the
-#' absolute path to the readFunPath file that consists of the data 
-#' processing function
-#'
-#' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
-#' @param parent a path to parent folder to use
-#'
-#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with 
-#' the readFunPath made absolute
-.makeReadFunPathAbs = function(piface, 
-    parent) {
-    pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
-    absReadFunPath = .makeAbsPath(pth, 
-        parent)
-    if (!.isAbsolute(absReadFunPath)) 
-        stop("Failed to make the readFunPath absolute: ", 
-            absReadFunPath)
-    piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
-    piface
-}
-
-
-# internal function used for
-# wrapping the user-supplied
-# function meessages in a box
-.wrapFunMessages = function(messages, 
-    type) {
-    n = options("width")[[1]]
-    header = ifelse(length(messages) > 
-        1, paste0(" Your function ", 
-        type, "s (", length(messages), 
-        ") "), paste0(" Your function ", 
-        type, " "))
-    nH = floor(nchar(header)/2)
-    nFill = floor(n/2)
-    message("\n", rep("-", nFill - 
-        nH), header, rep("-", nFill - 
-        nH))
-    i = 1
-    for (i in seq_along(messages)) {
-        m = trimws(messages[i], 
-            which = "both")
-        message("\n", type, " ", 
-            i, ": ", m, "\n")
-    }
-    message(rep("-", n), "\n")
-}
-
-# internal function that wraps
-# the external function
-# execution in tryCatch to
-# indicate problems with the
-# external function execution
-.callBiocFun <- function(func, 
-    arguments) {
-    if (!is(arguments, "list")) 
-        stop("The 'arguments' argument has to be a list, got '", 
-            class(arguments), "'")
+# internal function that wraps the external function execution
+# in tryCatch to indicate problems with the external function execution
+.callBiocFun <- function(func, arguments) { 
+    if(!is(arguments, "list")) 
+        stop("The 'arguments' argument has to be a list, got '",
+             class(arguments),"'")
     .warnings = c()
     frameNumber <- sys.nframe()
-    wHandler <- function(w) {
-        # warning handler
-        assign(".warnings", append(.warnings, 
-            w$message), envir = sys.frame(frameNumber))
-        invokeRestart("muffleWarning")
+    wHandler <- function(w){ 
+        # warning handler 
+        assign(".warnings", append(.warnings, w$message), 
+               envir = sys.frame(frameNumber))
+        invokeRestart("muffleWarning") 
     }
-    eHandler <- function(e) {
-        # error handler
-        .wrapFunMessages(e$message, 
-            "error")
-        message("No data was read. The error message was returned instead.")
-        S4Vectors::List(errorMessage = e$message, 
-            errorSource = e$call)
-    }
-    res = withCallingHandlers(tryCatch(do.call(func, 
-        arguments), error = eHandler), 
-        warning = wHandler)
-    if (length(.warnings) > 0) {
+    eHandler <- function(e){
+        # error handler 
+        .wrapFunMessages(e$message,"error")
+        message("No data was read. The error message was returned instead: ", 
+                e$message)
+        S4Vectors::List(e$message)
+    } 
+    res = withCallingHandlers(
+        tryCatch(do.call(func, arguments), error = eHandler),warning = wHandler)
+    if(length(.warnings) > 0){
         warning("There were warnings associated with your function execution.")
-        .wrapFunMessages(.warnings, 
-            "warning")
+        .wrapFunMessages(.warnings,"warning")
     }
     return(res)
 }
 
-#' Create an absolute path from a primary target and a parent candidate.
-#'
-#' @param perhapsRelative Path to primary target directory.
-#' @param parent a path to parent folder to use if target isn't absolute.
-#'
-#' @return Target itself if already absolute, else target nested within parent.
-.makeAbsPath = function(perhapsRelative, 
-    parent) {
-    if (!.isDefined(perhapsRelative)) 
-        return(perhapsRelative)
+# Create an absolute path from a primary target and a parent candidate.
+#
+# @param perhapsRelative: Path to primary target directory.
+# @param parent a path to parent folder to use if target isn't absolute.
+#
+# @return Target itself if already absolute, else target nested within parent.
+.makeAbsPath = function(perhapsRelative, parent) {
+    if (!.isDefined(perhapsRelative)) return(perhapsRelative)
     perhapsRelative = pepr::.expandPath(perhapsRelative)
     if (.isAbsolute(perhapsRelative)) {
         abspath = perhapsRelative
-    } else {
-        abspath = file.path(normalizePath(parent), 
-            perhapsRelative)
+    }else {
+        abspath = file.path(normalizePath(parent), perhapsRelative)
     }
     if (!.isAbsolute(abspath)) {
         errmsg = sprintf("Relative path '%s' and parent '%s' failed to create
-        absolute path: '%s'", 
-            perhapsRelative, parent, 
-            abspath)
+        absolute path: '%s'", perhapsRelative, parent, abspath)
         stop(errmsg)
     }
     return(abspath)
 }
 
-# Must test for is.null first,
-# since is.na(NULL) returns a
-# logical(0) which is not a
-# boolean
-.isDefined = function(var) {
-    !(is.null(var) || is.na(var))
-}
+# Must test for is.null first, since is.na(NULL) returns a logical(0) which is
+# not a boolean
+.isDefined = function(var) { ! (is.null(var) || is.na(var)) }
 
 
-# Determine whether a path is
-# absolute.  @param path The
-# path to check for seeming
-# absolute-ness.  @return Flag
-# indicating whether the
-# \code{path} appears to be
-# absolute.
+# Determine whether a path is absolute.
+#
+# @param path The path to check for seeming absolute-ness.
+# @return Flag indicating whether the \code{path} appears to be absolute.
 .isAbsolute = function(path) {
-    if (!is.character(path)) 
-        stop("The path must be character.")
-    firstChar = substr(path, 1, 
-        1)
-    return(identical("/", firstChar) | 
-        identical("~", firstChar))
+    if(!is.character(path)) stop("The path must be character.")
+    firstChar = substr(path, 1, 1)
+    return(identical("/", firstChar) | identical("~", firstChar))
 }
 
 #' Update list with another list
@@ -386,7 +175,7 @@ readSchema = function(path, parent = NULL) {
 #' 
 #' @export
 .unionList = function(list1, list2, 
-    combine = FALSE) {
+                      combine = FALSE) {
     if ((!is.list(list1)) || (!is.list(list2))) 
         stop("One of the arguments is not a list")
     nms1 = names(list1)
@@ -399,7 +188,7 @@ readSchema = function(path, parent = NULL) {
         if (length(idx) > 0) {
             if (combine) {
                 list1[[idx]] = append(list1[[idx]], 
-                  list2[[n]])
+                                      list2[[n]])
             } else {
                 list1[[idx]] = list2[[n]]
             }
@@ -407,22 +196,11 @@ readSchema = function(path, parent = NULL) {
             add = list(list2[[counter]])
             names(add) = n
             list1 = append(list1, 
-                add)
+                           add)
         }
         counter = counter + 1
     }
     return(list1)
-}
-
-# Finds the pepr::Project
-# object in a list and returns
-# its index If it is not
-# present, returns integer(0)
-.findProjectInList = function(l) {
-    which(as.logical(lapply(l, 
-        function(x) {
-            is(x, "Project")
-        })))
 }
 
 #' Redefine the show method of the object
@@ -448,11 +226,11 @@ readSchema = function(path, parent = NULL) {
     oriClass = class(returnedObject)
     if (!is(returnedObject, "Annotated")) {
         warning("The show method was not redefined for '", 
-            oriClass, "'")
+                oriClass, "'")
         return(FALSE)
     }
     oriShow = selectMethod("show", 
-        oriClass)
+                           oriClass)
     # the new method is created
     # only if the environment of
     # the original one is locked.
@@ -462,39 +240,12 @@ readSchema = function(path, parent = NULL) {
     # functon is called.
     if (environmentIsLocked(environment(oriShow))) 
         setMethod("show", signature = oriClass, 
-            definition = function(object) {
-                do.call(oriShow, 
-                  list(object))
-                pep = getProject(object)
-                cat("\nmetadata: ")
-                selectMethod("show", 
-                  "Project")(pep)
-            }, where = parent.frame())
-}
-
-#' Make all paths absolute by parent dir
-#'
-#' @param paths path to make absolute 
-#' @param parent parent directory
-#'
-#' @return string, a path amde absolute
-.mkPathsAbs <- function(paths, 
-    parent) {
-    return(as.vector(vapply(paths, 
-        function(x) {
-            pepr::.makeAbsPath(x, 
-                parent)
-        }, character(1))))
-}
-
-.checkPifaceType <- function(piface, 
-    type) {
-    if (!pepr::.checkSection(piface, 
-        PIP_TYPE_KEY) || piface[[PIP_TYPE_KEY]] != 
-        type) {
-        warning(sprintf("%s pipeline interface has to specify '%s' pipeline type in '%s'", 
-            type, type, PIP_TYPE_KEY))
-        return(FALSE)
-    }
-    return(TRUE)
+                  definition = function(object) {
+                      do.call(oriShow, 
+                              list(object))
+                      pep = getProject(object)
+                      cat("\nmetadata: ")
+                      selectMethod("show", 
+                                   "Project")(pep)
+                  }, where = parent.frame())
 }

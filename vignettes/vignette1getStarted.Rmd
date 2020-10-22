@@ -1,6 +1,6 @@
 ---
 title: "Getting started with BiocProject"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >

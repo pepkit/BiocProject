@@ -1,3 +1,4 @@
+  
 inst/doc
 .Rproj.user
 .Rhistory
@@ -5,3 +6,5 @@ inst/doc
 .DS_Store
 docs
 *.RProj
+doc
+Meta

@@ -1,19 +1,14 @@
-os: linux
 language: r
-r: bioc-devel
-bioc_check: true
+branches:
+  only:
+  - master
+  - dev
+r: bioc-release
+os:
+  - linux
 cache: packages
 warnings_are_errors: false
-r_packages: 
-  - devtools
-  - simpleCache
-r_github_packages: 
-  - pepkit/pepr # move to r_packages when on CRAN
-  - r-lib/covr
-bioc_packages: 
-  - GenomicRanges
-  - BiocStyle
-  - BiocFileCache
-after_success:
-  - Rscript -e 'covr::coveralls()'
-
+r_packages: devtools
+r_github_packages:
+  - databio/simpleCache
+  - pepkit/pepr

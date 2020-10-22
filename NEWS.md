@@ -1,12 +1,12 @@
-# BiocProject 0.2.1 - 2020-05-26
+
+# BiocProject 0.2.1 - 2019-10-15
 
 ## Added
+* added vignette: "Using BiocProject with tximeta"
 
-* pipeline interface support, including functions: `getPipelineInterfaces`, `outputsByPipeline`, `outputsByProtocol`, `getPipelines`,`getProtocolMappings` and `samplesByProtocol`
-
-## Changed
-
-* the `bioconductor` section can be provided in either in the pipeline interface or in the project config. The project config location is given the priority 
+## Changed 
+* `subproject` argument to `amendments` in `BiocProject` function 
+* `Project` is not added as a first element in `Annotated@metadata`, it is appended to any existing ones
 
 # BiocProject 0.2 - 2019-04-19
 

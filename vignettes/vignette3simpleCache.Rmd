@@ -1,6 +1,6 @@
 ---
 title: "Working with large datasets - simpleCache"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -83,5 +83,3 @@ simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 And that's it! In the simplest case this is all you need to **organize, 
 read, process your data and prevent from copious results recalculations**
 every time you come back to your project.
-
-

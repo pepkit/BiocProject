@@ -1,8 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
-^_pkgdown\.yaml$
+^_pkgdown.yaml
+^docs
+^update_examples.sh
 ^doc$
-^docs$
 ^Meta$
-^update_examples.sh$
+^\.github$
+long_vignettes

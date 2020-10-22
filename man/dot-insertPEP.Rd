@@ -29,12 +29,12 @@ as the metadata.
 }
 \examples{
 # If the object is of class Annotated
-object = S4Vectors::List(result="test")
+object = S4Vectors::List(result='test')
 result = .insertPEP(object, pepr::Project())
 metadata(result)
 
 # If the object is not of class Annotated
-object1 = "test"
+object1 = 'test'
 result1 = .insertPEP(object1, pepr::Project())
 metadata(result1)
 }
