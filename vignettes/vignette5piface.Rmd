@@ -30,18 +30,24 @@ or "project" (for runp),
 Follow the pipeline interface [specification](http://looper.databio.org/en/latest/pipeline-interface-specification/) 
 to learn more about all the features that `looper` provides via that file.
 
-# Main features
+# Relevant features
+
+The only two sections of the pipeline interface relevant from the BiocProject perspective are:
+
+1. `bioconductor` -- used to specify the data processing function name and/or path
+2. `output_schema` -- used to specify a path to a pipeline output schema that describes the outputs of the pipeline
+
 
 Let's consider the examples below that illustrate the pipeline interface-related
 functionality of `BiocProject` package. 
 
-## `bioconductor` section in the pipeline interface
+## Specify `bioconductor` section in the pipeline interface
 
 The first advantage of pipeline interface concept is the possibility to declare 
 the data processing function in the pipeline interface itself. Since the data 
 processing function is pipeline specific rather than project specific, it is 
-much more convenient to place the `bioconductor` section in the pipeline 
-interface file.
+much more sensible to place the `bioconductor` section in the pipeline 
+interface file -- the code that will be used to preprocess the output of the pipeline depends of the pipeline (defined by pipeline interface), not the data (defined by the PEP).
 
 ```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 library(BiocProject)
@@ -63,12 +69,14 @@ Pipeline outputs can be defined in a schema. As shown in the example above,
 pipeline interface specifies a path to a schema in a top-level `output_schema` 
 section. 
 Example of a schema defining pipeline outputs:
-```{r, echo=F, message=F}
+```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
 pifaceSource = pipelineInterfacesBySample(p)[[1]][1]
 piface = yaml::read_yaml(pifaceSource)
 schemaPath = file.path(dirname(pifaceSource), piface$output_schema)
 .printNestedList(yaml::read_yaml(schemaPath))
 ```
+
+Check out the [looper documentation on output schema](http://looper.databio.org/en/latest/pipeline-interface-specification/#output_schema) to learn more.
 
 ### Sample-level
 
@@ -113,6 +121,6 @@ Such a link between the project and the outputs
 (declared in the pipeline interface) makes it possible to read and process 
 the pipeline results with just a line of code:
 
-```
+```r
 bp = BiocProject(configFile)
 ```
