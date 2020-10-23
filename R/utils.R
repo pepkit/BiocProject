@@ -153,6 +153,70 @@ readSchema = function(path, parent = NULL) {
     return(res)
 }
 
+
+#' Get the preferred source of the bioconductor section
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
+#'
+#' @return a list with the selected config
+#' @importFrom pepr checkSection config
+#' @importFrom methods new
+.getBiocConfig = function(p, projectLevel = FALSE) {
+    if (checkSection(config(p), BIOC_SECTION)) {
+        # if the BIOC_SECTION section is found in the project
+        # config, override any other locations
+        message("The '", BIOC_SECTION, 
+                "' key found in the Project config")
+        return(config(p))
+    }
+    # check for BIOC_SECTION in pipeline interfaces
+    pifaceSource = gatherPipelineInterfaces(p, projectLevel=projectLevel)
+    if (length(pifaceSource) > 0) {
+        if (length(pifaceSource) > 1)
+            message(length(pifaceSource), " pipeline interface sources matched. ", 
+                    "Using the first one: ", pifaceSource)
+        pifaceSource = pifaceSource[1]
+    }
+    
+    if (!is.null(pifaceSource)) {
+        piface = yaml::read_yaml(pifaceSource)
+        if (pepr::.checkSection(piface, BIOC_SECTION)) {
+            message("The '", BIOC_SECTION, "' key found in the pipeline interface")
+            return(.makeReadFunPathAbs(piface, parent=dirname(pifaceSource)))
+        } else {
+            warning("The '", BIOC_SECTION, 
+                    "' key is missing in Project config and pipeline interface")
+            return(invisible(NULL))
+        }
+    } else {
+        warning("The '", BIOC_SECTION, 
+                "' key is missing in Project config and pipeline interface")
+        return(invisible(NULL))
+    }
+}
+
+#' Make readFunPath absolute
+#' 
+#' Uses the absolute pipeline interface path in the config to determine the
+#' absolute path to the readFunPath file that consists of the data 
+#' processing function
+#'
+#' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
+#' @param parent a path to parent folder to use
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with 
+#' the readFunPath made absolute
+.makeReadFunPathAbs = function(piface, parent) {
+    pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
+    absReadFunPath = .makeAbsPath(pth, parent)
+    if (!.isAbsolute(absReadFunPath)) 
+        stop("Failed to make the readFunPath absolute: ", absReadFunPath)
+    piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
+    piface
+}
+
 # Create an absolute path from a primary target and a parent candidate.
 #
 # @param perhapsRelative: Path to primary target directory.
@@ -336,18 +400,14 @@ readSchema = function(path, parent = NULL) {
     # table, coerced to a list
     # object to allow attribute
     # accession.
-    samplesSubset = subset(sampleTable(project), 
-                           sample_name == sampleName)
-    if (!projectContext && NROW(samplesSubset) < 
-        1) 
+    samplesSubset = subset(sampleTable(project), sample_name == sampleName)
+    if (!projectContext && NROW(samplesSubset) < 1) 
         return(invisible(NULL))
     if (projectContext) {
-        populatedStrings = with(config(project), 
-                                glue(.pyToR(string)))
+        populatedStrings = with(config(project), glue(.pyToR(string)))
     } else {
-        populatedStrings = as.list(apply(samplesSubset, 1, function(s) {
-                                             return(with(s, glue(.pyToR(string))))
-                                         }))
+        populatedStrings = as.character(apply(
+            samplesSubset, 1, function(s) { with(s, glue(.pyToR(string)))}))
     }
     if (!projectContext && length(populatedStrings) != 
         NROW(samplesSubset)) {
@@ -359,7 +419,6 @@ readSchema = function(path, parent = NULL) {
                 string, "' will not be populated")
         return(invisible(NULL))
     }
-    names(populatedStrings) = unlist(samplesSubset$sample_name)
     return(populatedStrings)
 }
 
@@ -374,13 +433,13 @@ readSchema = function(path, parent = NULL) {
 #' should be applied. Default: sample
 #'
 #' @return list of strings
-.populateTemplates = function(project, 
-                              templList, sampleName = NULL, 
+.populateTemplates = function(project, templList, sampleName = NULL, 
                               projectContext = FALSE) {
     if (!projectContext && is.null(sampleName)) 
         stop("Must specify the sample to populate templates for")
     expandedTemplList = lapply(templList, pepr::.expandPath)
-    lapply(expandedTemplList, .populateString, project, sampleName, projectContext)
+    x=lapply(expandedTemplList, .populateString, project, sampleName, projectContext)
+    return(x)
 }
 
 

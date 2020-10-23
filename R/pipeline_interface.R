@@ -181,26 +181,24 @@ setMethod("getOutputsBySample",
               pifacesBySample = pipelineInterfacesBySample(project = project)
               defSampleNames = names(pifacesBySample)
               if (!is.null(sampleNames)) 
-                  defSampleNames = intersect(sampleNames, 
-                                             defSampleNames)
-              if (length(defSampleNames) < 
-                  1) 
+                  defSampleNames = intersect(sampleNames, defSampleNames)
+              if (length(defSampleNames) < 1) 
                   stop("No samples matched by: ", 
-                       paste0(sampleNames, 
-                              collapse = ","))
+                       paste0(sampleNames, collapse = ","))
               ret = list()
               for (sampleName in defSampleNames) {
                   sampleRet = list()
                   pifaceSources = pifacesBySample[[sampleName]]
                   for (pifaceSource in pifaceSources) {
                       piface = yaml::yaml.load_file(pifaceSource)
-                      if (!.checkPifaceType(piface, 
-                                            "sample")) 
+                      if(!.checkSection(piface, "pipeline_name"))
+                          stop("'pipeline_name' section missing in pipeline interface: ",
+                               pifaceSource)
+                      if (!.checkPifaceType(piface, "sample")) 
                           return(invisible(NULL))
-                      outputs = .getOutputs(piface, 
-                                            parent = dirname(pifaceSource))
-                      sampleRet[[pifaceSource]] = .populateTemplates(
-                          project, outputs, sampleName)
+                      outputs = .getOutputs(piface, parent = dirname(pifaceSource))
+                      sampleRet[[piface[["pipeline_name"]]]] = 
+                          .populateTemplates(project, outputs, sampleName)
                   }
                   ret[[sampleName]] = sampleRet
               }
