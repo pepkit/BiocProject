@@ -450,6 +450,8 @@ readSchema = function(path, parent = NULL) {
 #'
 #' @return a logical indicating whether the pipeline interface matches the specified type 
 .checkPifaceType <- function(piface, type) {
+    if(!.checkSection(piface, PIP_NAME_KEY))
+        stop(PIP_NAME_KEY, " section missing in pipeline interface")
     if (!pepr::.checkSection(piface, PIP_TYPE_KEY) || 
         piface[[PIP_TYPE_KEY]] != type) {
         warning(sprintf(

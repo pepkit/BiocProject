@@ -191,13 +191,10 @@ setMethod("getOutputsBySample",
                   pifaceSources = pifacesBySample[[sampleName]]
                   for (pifaceSource in pifaceSources) {
                       piface = yaml::yaml.load_file(pifaceSource)
-                      if(!.checkSection(piface, "pipeline_name"))
-                          stop("'pipeline_name' section missing in pipeline interface: ",
-                               pifaceSource)
                       if (!.checkPifaceType(piface, "sample")) 
                           return(invisible(NULL))
                       outputs = .getOutputs(piface, parent = dirname(pifaceSource))
-                      sampleRet[[piface[["pipeline_name"]]]] = 
+                      sampleRet[[piface[[PIP_NAME_KEY]]]] = 
                           .populateTemplates(project, outputs, sampleName)
                   }
                   ret[[sampleName]] = sampleRet
@@ -235,19 +232,18 @@ setGeneric("getProjectOutputs",
 #' a given \code{\link[pepr]{Project-class}}
 setMethod("getProjectOutputs", 
           c(project = "Project"), function(project) {
-              pifaceSources = gatherPipelineInterfaces(project, 
-                                                       projectLevel = TRUE)
+              pifaceSources = gatherPipelineInterfaces(
+                  project, projectLevel=TRUE)
               ret = list()
               for (pifaceSource in pifaceSources) {
                   piface = yaml::yaml.load_file(pifaceSource)
-                  if (!.checkPifaceType(piface, 
-                                        "project")) 
+                  if (!.checkPifaceType(piface, "project")) 
                       return(invisible(NULL))
                   outputs = .getOutputs(piface, 
                                         parent = dirname(pifaceSource), 
-                                        projectContext = TRUE)
-                  ret[[pifaceSource]] = .populateTemplates(project, outputs, 
-                                                           projectContext = TRUE)
+                                        projectContext=TRUE)
+                  ret[[piface[[PIP_NAME_KEY]]]] = 
+                      .populateTemplates(project, outputs, projectContext=TRUE)
               }
               ret
           })
