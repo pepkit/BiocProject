@@ -12,7 +12,7 @@ LazyData: true
 Depends: S4Vectors, pepr, methods
 Suggests: testthat, yaml, BiocFileCache, simpleCache, GenomicRanges, knitr, BiocStyle, rmarkdown
 biocViews: DataImport, DataRepresentation
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 URL: https://github.com/pepkit/BiocProject
 BugReports: https://github.com/pepkit/BiocProject
 VignetteBuilder: knitr

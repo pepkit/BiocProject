@@ -13,19 +13,15 @@ knitr::opts_chunk$set(collapse=FALSE, message=FALSE)
 ```
 
 Before you start see the 
-[Getting started with `BiocProject` vignette](./vignette1getStarted.html) for 
-the basic information and installation instructions.
+[Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
 
 # Introduction
 
-Another example of BiocProject usage is its seamless integration with [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html).
+This vignette demonstrates how to integrate BiocProject with [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html) for a really slick start-to-finish analysis of RNA-seq data.
 
-In brief, tximeta is a tool that performs numerous annotation and metadata gathering tasks automatically during the import of transcript quantification files, e.g., result of [Salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. Tximeta provides reference provenance information by storing a local database of known transcriptome checksums. For more details regarding the tool please refer to:
+Tximeta is a tool that automatically annotates RNA-seq samples during the import of transcript quantification files from the [salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. How it works, is that `salmon` records a unique identifier of the transcriptome it uses during quantification; when importing the transcript values into R, tximeta reads this identifier and looks up metadata about those sequences using a local database of known transcriptome identifiers. For more details, refer to the [tximeta GitHub repository](https://github.com/mikelove/tximeta) or [publication in PLoS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664).
 
-- [GitHub repository](https://github.com/mikelove/tximeta)
-- [publication](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664)
-
-Importantly, the required input to the `tximeta::tximeta` function is a `data.frame` (`coldata`) object that, in case of Salmon results processing, points to quantification results directory for each sample. `*.sa` files are read and saved as a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
+The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to quantification results directory for each sample. The `tximeta` function reads the `*.sa` files and returns a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
 
 Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
 
@@ -36,9 +32,9 @@ suppressPackageStartupMessages(library(SummarizedExperiment))
 is(SummarizedExperiment(), "Annotated")
 ```
 
-## Advantages of the integration
+## Advantages of using BiocProject with tximeta
 
-Sample metadata being part of a project formatted according to the PEP specification can be easily plugged in to the tximport workflow. For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done simply via `files` column in the sample table or one of the sample modifiers in the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
+If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in to the tximport workflow. For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
 
  - project portability, inherent to projects following PEP specification
  - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of `tximeta` function. It will be accessible with [pepr](http://code.databio.org/pepr/) API or `@PEP` in the `metadata` slot of `SummarizedExperiment`, just as any other metadata attached to the result by `tximeta` function.
