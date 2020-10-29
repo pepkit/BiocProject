@@ -141,6 +141,6 @@ If you format your project metadata according to the PEP specification, it will 
 
 ```{r, eval=TRUE, include=FALSE}
 if (file.exists("tximeta_pep")) unlink("tximeta_pep", recursive = TRUE)
-if (file.exists(pep_path)) file.remove(pep_path)
+if (file.exists(pth)) file.remove(pth)
 if (file.exists("BiocFileCache.sqlite")) file.remove("BiocFileCache.sqlite")
 ```

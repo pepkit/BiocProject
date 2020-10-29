@@ -141,6 +141,7 @@ Once we have the PEP and a function that will be used to create the final `Summa
 
 ```r
 require(tximeta)
+## Warning: package 'tximeta' was built under R version 4.0.2
 bp = BiocProject(configFile)
 ```
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
