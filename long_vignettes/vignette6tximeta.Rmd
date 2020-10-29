@@ -41,26 +41,35 @@ If we add BiocProject in to the tximeta workflow, then sample metadata from the 
 
 # Setup
 
+First, let's download some data that we'll import with `tximeta` function:
+```{r, download-data, collapse=TRUE, comment=" "}
+if (basename(getwd()) != "long_vignettes") setwd("long_vignettes")
+pth = BiocFileCache::bfcrpath(
+  BiocFileCache::BiocFileCache(getwd()), 
+  "http://big.databio.org/example_data/tximeta_pep.tar.gz"
+  )
+utils::untar(tarfile=pth)
+```
 ## PEP
 
 In order to use `tximeta` and `Biocproject` functions, we need a PEP. Let's use one that looks like this:
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE, collapse=TRUE, comment=" "}
 library(pepr)
-configFile = "/Users/mstolarczyk/Desktop/tximeta-pep/project_config.yaml"
+configFile = "tximeta_pep/project_config.yaml"
 .printNestedList(yaml::read_yaml(configFile))
 ```
 
 ```{r eval=TRUE, include=FALSE}
 # Run some stuff we need for the vignette
-configFile = "$HOME/Desktop/tximeta-pep/project_config.yaml"
+configFile = "tximeta_pep/project_config.yaml"
 p=Project(configFile)
 ```
 
 As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. Let's point to the output directory of Salmon:
 
 ```{r}
-tximportDataPath = "$HOME/Desktop/tximeta-pep/tximportData"
+tximportDataPath = "tximeta_pep/tximportData"
 Sys.setenv("TXIMPORTDATA"=tximportDataPath)
 ```
 
@@ -87,7 +96,7 @@ sampleTable(p)
 Another required component is the data processing function, which is simply a `tximeta` call that uses the PEP-managed processed sample table its input:
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
-source("/Users/mstolarczyk/Desktop/tximeta-pep/readTximeta.R")
+source("tximeta_pep/readTximeta.R")
 get(config(p)$bioconductor$readFunName)
 ```
 
@@ -128,3 +137,10 @@ config(bp)
 # Conclusion
 
 If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata and expose [pepr](http://code.databio.org/pepr/) API for any PEP-compatible R packages for downstream analysis.
+
+
+```{r, eval=TRUE, include=FALSE}
+if (file.exists("tximeta_pep")) unlink("tximeta_pep", recursive = TRUE)
+if (file.exists(pep_path)) file.remove(pep_path)
+if (file.exists("BiocFileCache.sqlite")) file.remove("BiocFileCache.sqlite")
+```
