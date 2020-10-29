@@ -53,6 +53,8 @@ pth = BiocFileCache::bfcrpath(
   "http://big.databio.org/example_data/tximeta_pep.tar.gz"
   )
 utils::untar(tarfile=pth)
+abs_pep_path = file.path(getwd(), "tximeta_pep")
+abs_cfg_path = file.path(abs_pep_path, "project_config.yaml")
 ```
 ## PEP
 
@@ -68,8 +70,7 @@ In order to use `tximeta` and `Biocproject` functions, we need a PEP. Let's use 
       derive:
           attributes: files
           sources:
-              FILE_PATH_PLACEHOLDER: 
-  $HOME/Desktop/testing/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
+              FILE_PATH_PLACEHOLDER: $TXIMPORTDATA/salmon_dm/{names}/quant.sf
    bioconductor:
       readFunName: readTximeta
       readFunPath: readTximeta.R
@@ -81,8 +82,7 @@ As you can see in the PEP configuration file above `$TXIMPORTDATA` environment v
 
 
 ```r
-tximportDataPath = "tximeta_pep/tximportData"
-Sys.setenv("TXIMPORTDATA"=tximportDataPath)
+Sys.setenv("TXIMPORTDATA"=file.path(abs_pep_path, "/tximportData"))
 ```
 
 This configuration file points to the second major part of a PEP: the 
@@ -114,8 +114,8 @@ sampleTable(p)
 ```
 ##         names condition
 ## 1: SRR1197474         A
-##                                                                                        files
-## 1: /Users/mstolarczyk/Desktop/testing/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+##                                                                                                                     files
+## 1: /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
 ```
 
 *Note that the use of `Project` function in the chunk above is not required to complete this tutorial. It is used solely to present the effect of PEP metadata processing*
@@ -141,7 +141,6 @@ Once we have the PEP and a function that will be used to create the final `Summa
 
 ```r
 require(tximeta)
-## Warning: package 'tximeta' was built under R version 4.0.2
 bp = BiocProject(configFile)
 ```
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
@@ -241,8 +240,8 @@ The output of `BiocProject` function supports `Project` class methods, that prov
 sampleTable(bp)
 ##         names condition
 ## 1: SRR1197474         A
-##                                                                                        files
-## 1: /Users/mstolarczyk/Desktop/testing/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+##                                                                                                                     files
+## 1: /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
 config(bp)
 ## Config object. Class: Config
 ##  pep_version: 2.0.0
@@ -255,7 +254,7 @@ config(bp)
 ##         attributes: files
 ##         sources:
 ##             FILE_PATH_PLACEHOLDER: 
-## /Users/mstolarczyk/Desktop/testing/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
+## /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
 ##  bioconductor:
 ##     readFunName: readTximeta
 ##     readFunPath: 

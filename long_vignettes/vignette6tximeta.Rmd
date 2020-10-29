@@ -49,6 +49,8 @@ pth = BiocFileCache::bfcrpath(
   "http://big.databio.org/example_data/tximeta_pep.tar.gz"
   )
 utils::untar(tarfile=pth)
+abs_pep_path = file.path(getwd(), "tximeta_pep")
+abs_cfg_path = file.path(abs_pep_path, "project_config.yaml")
 ```
 ## PEP
 
@@ -56,21 +58,18 @@ In order to use `tximeta` and `Biocproject` functions, we need a PEP. Let's use 
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE, collapse=TRUE, comment=" "}
 library(pepr)
-configFile = "tximeta_pep/project_config.yaml"
-.printNestedList(yaml::read_yaml(configFile))
+.printNestedList(yaml::read_yaml(abs_cfg_path))
 ```
 
 ```{r eval=TRUE, include=FALSE}
 # Run some stuff we need for the vignette
-configFile = "tximeta_pep/project_config.yaml"
-p=Project(configFile)
+p=Project(abs_cfg_path)
 ```
 
 As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. Let's point to the output directory of Salmon:
 
 ```{r}
-tximportDataPath = "tximeta_pep/tximportData"
-Sys.setenv("TXIMPORTDATA"=tximportDataPath)
+Sys.setenv("TXIMPORTDATA"=file.path(abs_pep_path, "/tximportData"))
 ```
 
 This configuration file points to the second major part of a PEP: the 
@@ -96,7 +95,7 @@ sampleTable(p)
 Another required component is the data processing function, which is simply a `tximeta` call that uses the PEP-managed processed sample table its input:
 
 ```{r echo=FALSE, eval=TRUE, comment=""}
-source("tximeta_pep/readTximeta.R")
+source(file.path(abs_pep_path, "readTximeta.R"))
 get(config(p)$bioconductor$readFunName)
 ```
 
@@ -140,7 +139,7 @@ If you format your project metadata according to the PEP specification, it will 
 
 
 ```{r, eval=TRUE, include=FALSE}
-if (file.exists("tximeta_pep")) unlink("tximeta_pep", recursive = TRUE)
+if (file.exists(abs_pep_path)) unlink(abs_pep_path, recursive = TRUE)
 if (file.exists(pth)) file.remove(pth)
 if (file.exists("BiocFileCache.sqlite")) file.remove("BiocFileCache.sqlite")
 ```
