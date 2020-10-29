@@ -84,7 +84,7 @@ knitr::kable(coldataDF, format = "html")
 Even though the required `files` column is still missing, this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
 
 ```{r}
-p=Project(configFile)
+p=Project(abs_cfg_path)
 sampleTable(p)
 ```
 
@@ -107,7 +107,7 @@ Once we have the PEP and a function that will be used to create the final `Summa
 
 ```{r collapse=TRUE}
 require(tximeta)
-bp = BiocProject(configFile)
+bp = BiocProject(abs_cfg_path)
 ```
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
 ```{r}
@@ -136,10 +136,3 @@ config(bp)
 # Conclusion
 
 If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata and expose [pepr](http://code.databio.org/pepr/) API for any PEP-compatible R packages for downstream analysis.
-
-
-```{r, eval=TRUE, include=FALSE}
-if (file.exists(abs_pep_path)) unlink(abs_pep_path, recursive = TRUE)
-if (file.exists(pth)) file.remove(pth)
-if (file.exists("BiocFileCache.sqlite")) file.remove("BiocFileCache.sqlite")
-```

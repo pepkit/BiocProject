@@ -107,15 +107,15 @@ Even though the required `files` column is still missing, this file is sufficien
 
 
 ```r
-p=Project(configFile)
+p=Project(abs_cfg_path)
 sampleTable(p)
 ```
 
 ```
 ##         names condition
 ## 1: SRR1197474         A
-##                                                                                                                     files
-## 1: /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+##                                                                                                   files
+## 1: /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
 ```
 
 *Note that the use of `Project` function in the chunk above is not required to complete this tutorial. It is used solely to present the effect of PEP metadata processing*
@@ -141,7 +141,7 @@ Once we have the PEP and a function that will be used to create the final `Summa
 
 ```r
 require(tximeta)
-bp = BiocProject(configFile)
+bp = BiocProject(abs_cfg_path)
 ```
 After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
 
@@ -228,8 +228,7 @@ And finally, note that the `PEP` metadata information has been attached to the m
 ```r
 getProject(bp)
 ## PEP project object. Class:  Project
-##   file:  
-## /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/project_config.yaml
+##   file:  /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/project_config.yaml
 ##   samples:  1
 ```
 
@@ -240,13 +239,12 @@ The output of `BiocProject` function supports `Project` class methods, that prov
 sampleTable(bp)
 ##         names condition
 ## 1: SRR1197474         A
-##                                                                                                                     files
-## 1: /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+##                                                                                                   files
+## 1: /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
 config(bp)
 ## Config object. Class: Config
 ##  pep_version: 2.0.0
-##  sample_table: 
-## /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/sample_table.csv
+##  sample_table: /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/sample_table.csv
 ##  sample_modifiers:
 ##     append:
 ##         files: FILE_PATH_PLACEHOLDER
@@ -254,17 +252,13 @@ config(bp)
 ##         attributes: files
 ##         sources:
 ##             FILE_PATH_PLACEHOLDER: 
-## /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
+## /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
 ##  bioconductor:
 ##     readFunName: readTximeta
-##     readFunPath: 
-## /Users/mstolarczyk/Uczelnia/UVA/code/BiocProject/long_vignettes/tximeta_pep/readTximeta.R
+##     readFunPath: /Users/mstolarczyk/BiocProject/long_vignettes/tximeta_pep/readTximeta.R
 ##  name: tximeta_pep
 ```
 
 # Conclusion
 
 If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata and expose [pepr](http://code.databio.org/pepr/) API for any PEP-compatible R packages for downstream analysis.
-
-
-
