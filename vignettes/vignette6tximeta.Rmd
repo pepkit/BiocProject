@@ -1,0 +1,309 @@
+---
+title: "Using BiocProject with tximeta"
+author: "Michał Stolarczyk"
+date: "2020-10-30"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Using BiocProject with tximeta"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# Introduction
+
+## Prerequisites
+
+This vignette demonstrates how to integrate BiocProject with the [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html) for a really slick start-to-finish analysis of RNA-seq data. We assume you're familiar with BiocProject; if not, please start with [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for basic instructions.
+
+## Introduction to Tximeta
+
+Tximeta is a package that imports transcript quantification files from the [salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. When importing, tximeta automatically annotates the data with the transcriptome used. How it works is that `salmon` records a unique identifier of the transcriptome it uses during quantification; then, tximeta reads this identifier and looks up metadata about those sequences using a local database of known transcriptome identifiers. For more details, refer to the [tximeta GitHub repository](https://github.com/mikelove/tximeta) or [publication in PLoS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664).
+
+The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to a quantification results directory for each sample. The `tximeta` function reads the `*.sa` files and returns a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
+
+Since `SummarizedExperiment` inherits from the Bioconductor `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
+
+
+
+```r
+suppressPackageStartupMessages(library(BiocProject))
+suppressPackageStartupMessages(library(SummarizedExperiment))
+is(SummarizedExperiment(), "Annotated")
+```
+
+```
+## [1] TRUE
+```
+
+## Advantages of using BiocProject with tximeta
+
+If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in! For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/), or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
+
+ - project portability, inherent to projects following PEP specification
+ - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of the `tximeta` function automatically. It will be accessible from within your R session using the [pepr](http://code.databio.org/pepr/) API, or with `@PEP` in the `metadata` slot of the `SummarizedExperiment` object, just as any other metadata attached to the result by `tximeta` function.
+
+Let's show you how this work with a simple demo.
+
+# Demo of the BiocProject + tximeta workflow
+
+## Download example data
+
+First, let's download some RNA-seq counts from salmon, described in PEP format:
+
+
+```r
+if (basename(getwd()) != "long_vignettes") setwd("long_vignettes")
+pth = BiocFileCache::bfcrpath(
+  BiocFileCache::BiocFileCache(getwd()), 
+  "http://big.databio.org/example_data/tximeta_pep.tar.gz"
+  )
+utils::untar(tarfile=pth)
+abs_pep_path = file.path(getwd(), "tximeta_pep")
+abs_cfg_path = file.path(abs_pep_path, "project_config.yaml")
+```
+
+Let's take a look at what we have here...
+
+## Examine and load the PEP into R
+
+The `Biocproject` + `tximeta` workflow requires a PEP. The example we just downloaded looks like this:
+
+
+```
+   pep_version: 2.0.0
+   sample_table: sample_table.csv
+   sample_modifiers:
+      append:
+          files: FILE_PATH_PLACEHOLDER
+      derive:
+          attributes: files
+          sources:
+              FILE_PATH_PLACEHOLDER: $TXIMPORTDATA/salmon_dm/{names}/quant.sf
+   bioconductor:
+      readFunName: readTximeta
+      readFunPath: readTximeta.R
+```
+
+As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable to specify a file path. This is just an optional way to make this PEP work in any computing environment without being changed, so you can share your sample metadata more easily. For this vignette, we need to set the variable to the output directory where our downloaded results are stored:
+
+
+```r
+Sys.setenv("TXIMPORTDATA"=file.path(abs_pep_path, "/tximportData"))
+```
+
+
+
+Now, look at the `sample_table` key in the configuration file. It points to the second major part of a PEP: the 
+sample table CSV file (`sample_table.csv`). Check out the contents of that file:
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> names </th>
+   <th style="text-align:left;"> condition </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> SRR1197474 </td>
+   <td style="text-align:left;"> A </td>
+  </tr>
+</tbody>
+</table>
+
+This sample table lacks the `files` column required by tximeta -- but this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`, where the config file above specifies the `files` attribute and its path. 
+
+Now we can load the file with BiocProject... but first, a short detour
+
+## Detour: the magic of PEP sample modifiers 
+
+Before we jump into using `BiocProject`, let's take a minute to demonstrate how using the PEP helps us out here. Let's read in our PEP using the the generic `Project` function from `pepr`:
+
+
+
+```r
+p=Project(abs_cfg_path)
+```
+
+We now have our PEP project read in, and we can see what is found in the sample table:
+
+
+```r
+sampleTable(p)
+```
+
+```
+##         names condition
+## 1: SRR1197474         A
+##                                                                                                  files
+## 1: /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+```
+
+See how our sample table has now been automatically updated with the `files` attribute? *That* is the magic of the PEP sample modifiers. It's that simple. Now, let's move on to demonstrate what `BiocProject` adds.
+
+## The BiocProject data processing function
+
+If you look again at our configuration file above, you'll notice the `biconductor` section in the configuration file, which defines a function name and R script. These specify the BiocProject data processing function, which in this case, is simply a `tximeta` call that uses the PEP-managed processed sample table its input. Here's what that function looks like:
+
+
+```
+function(pep) {
+    require(tximeta)
+    return(tximeta::tximeta(pep@samples))
+}
+```
+
+## Loading in the data with BiocProject
+
+We have everything we need: a salmon output file, a PEP that specifies a sample table and provides the `files` column, and a function that uses `tximeta` to create the final `SummarizedExperiment` object. Now, we can call `BiocProject` function:
+
+
+```r
+require(tximeta)
+bp = BiocProject(abs_cfg_path)
+```
+
+The output of `BiocProject` function, the `bp` object in our case, is magical. In one object, it supports the functionality of `SummarizedExperiment`, `tximeta`, and `pepr`. Observe:
+
+### The BiocProject output supports SummarizedExperiment functions 
+
+It is a `RangedSummarizedExperiment`, so it supports all methods defined in SummarizedExperiment package:
+
+
+```r
+suppressPackageStartupMessages(library(SummarizedExperiment))
+colData(bp)
+```
+
+```
+## DataFrame with 1 row and 2 columns
+##                  names   condition
+##            <character> <character>
+## SRR1197474  SRR1197474           A
+```
+
+```r
+assayNames(bp)
+```
+
+```
+## [1] "counts"    "abundance" "length"
+```
+
+```r
+rowRanges(bp)
+```
+
+```
+## GRanges object with 33706 ranges and 9 metadata columns:
+##               seqnames            ranges strand |       tx_id     tx_biotype
+##                  <Rle>         <IRanges>  <Rle> | <character>    <character>
+##   FBtr0070129        X     656673-657899      + | FBtr0070129 protein_coding
+##   FBtr0070126        X     656356-657899      + | FBtr0070126 protein_coding
+##   FBtr0070128        X     656673-657899      + | FBtr0070128 protein_coding
+##   FBtr0070124        X     656114-657899      + | FBtr0070124 protein_coding
+##   FBtr0070127        X     656356-657899      + | FBtr0070127 protein_coding
+##           ...      ...               ...    ... .         ...            ...
+##   FBtr0114299       2R 21325218-21325323      + | FBtr0114299         snoRNA
+##   FBtr0113582       3R   5598638-5598777      - | FBtr0113582         snoRNA
+##   FBtr0091635       3L   1488906-1489045      + | FBtr0091635         snoRNA
+##   FBtr0113599       3L     261803-261953      - | FBtr0113599         snoRNA
+##   FBtr0113600       3L     831870-832008      - | FBtr0113600         snoRNA
+##               tx_cds_seq_start tx_cds_seq_end     gene_id tx_support_level
+##                      <integer>      <integer> <character>        <integer>
+##   FBtr0070129           657110         657595 FBgn0025637             <NA>
+##   FBtr0070126           657110         657595 FBgn0025637             <NA>
+##   FBtr0070128           657110         657595 FBgn0025637             <NA>
+##   FBtr0070124           657110         657595 FBgn0025637             <NA>
+##   FBtr0070127           657110         657595 FBgn0025637             <NA>
+##           ...              ...            ...         ...              ...
+##   FBtr0114299             <NA>           <NA> FBgn0086023             <NA>
+##   FBtr0113582             <NA>           <NA> FBgn0082989             <NA>
+##   FBtr0091635             <NA>           <NA> FBgn0086670             <NA>
+##   FBtr0113599             <NA>           <NA> FBgn0083014             <NA>
+##   FBtr0113600             <NA>           <NA> FBgn0083057             <NA>
+##               tx_id_version gc_content     tx_name
+##                 <character>  <numeric> <character>
+##   FBtr0070129   FBtr0070129    44.7641 FBtr0070129
+##   FBtr0070126   FBtr0070126    44.8128 FBtr0070126
+##   FBtr0070128   FBtr0070128    44.7974 FBtr0070128
+##   FBtr0070124   FBtr0070124    43.8859 FBtr0070124
+##   FBtr0070127   FBtr0070127    44.8571 FBtr0070127
+##           ...           ...        ...         ...
+##   FBtr0114299   FBtr0114299    35.8491 FBtr0114299
+##   FBtr0113582   FBtr0113582    32.8571 FBtr0113582
+##   FBtr0091635   FBtr0091635    45.0000 FBtr0091635
+##   FBtr0113599   FBtr0113599    48.3444 FBtr0113599
+##   FBtr0113600   FBtr0113600    44.6043 FBtr0113600
+##   -------
+##   seqinfo: 25 sequences (1 circular) from BDGP6.22 genome
+```
+
+Naturally, we can use tximeta methods:
+
+
+```r
+retrieveDb(bp)
+## EnsDb for Ensembl:
+## |Backend: SQLite
+## |Db type: EnsDb
+## |Type of Gene ID: Ensembl Gene ID
+## |Supporting package: ensembldb
+## |Db created by: ensembldb package from Bioconductor
+## |script_version: 0.3.5
+## |Creation time: Tue Nov 19 08:33:44 2019
+## |ensembl_version: 98
+## |ensembl_host: localhost
+## |Organism: Drosophila melanogaster
+## |taxonomy_id: 7227
+## |genome_build: BDGP6.22
+## |DBSCHEMAVERSION: 2.1
+## | No. of genes: 17753.
+## | No. of transcripts: 34802.
+## |Protein data available.
+```
+
+But wait, there's more! The `PEP` metadata information has been attached to the metadata as well. Let's extract the `Project` object from the result with `getProject` method:
+
+
+```r
+getProject(bp)
+## PEP project object. Class:  Project
+##   file:  
+## /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/project_config.yaml
+##   samples:  1
+```
+
+You can use the `pepr` API for any R-based PEP processing tools:
+
+
+```r
+sampleTable(bp)
+##         names condition
+## 1: SRR1197474         A
+##                                                                                                  files
+## 1: /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
+config(bp)
+## Config object. Class: Config
+##  pep_version: 2.0.0
+##  sample_table: 
+## /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/sample_table.csv
+##  sample_modifiers:
+##     append:
+##         files: FILE_PATH_PLACEHOLDER
+##     derive:
+##         attributes: files
+##         sources:
+##             FILE_PATH_PLACEHOLDER: 
+## /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/{names}/quant.sf
+##  bioconductor:
+##     readFunName: readTximeta
+##     readFunPath: 
+## /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/readTximeta.R
+##  name: tximeta_pep
+```
+
+# Conclusion
+
+If you format your project metadata according to the PEP specification, it will be ready to use with tximeta and the resulting object will include project-wide metadata and expose [pepr](http://code.databio.org/pepr/) API for any PEP-compatible R packages for downstream analysis.

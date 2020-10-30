@@ -1,6 +1,6 @@
 ---
 title: "Working with large datasets - simpleCache"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -18,17 +18,27 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette assumes you're familiar with the [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic `BiocProject` information and [An introduction to `simpleCache`](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
+This vignette assumes you're familiar with the 
+["Getting started with `BiocProject` vignette"](./vignette1getStarted.html) for 
+the basic `BiocProject` information 
+and ["An introduction to `simpleCache`"](http://code.databio.org/simpleCache/articles/simpleCacheIntroduction.html) for the basic `simpleCache` information.
 
 # Why to use `simpleCache` with `BiocProject`
 
-For a large project, it can take substantial computational effort to run the initial data loading function that will load your data into R. We'd like to cache that result so that it doesn't have to be reprocessed every time we want to load our project metadata and data. Pairing `simpleCache` with `BiocProject` allows us to do just that. This means that if your custom data processing function loads or processes large data sets that take a long time, the `R` object will not be recalculated, but simply reloaded.
+For a large project, it can take substantial computational effort to run the 
+initial data loading function that will load your data into R. We'd like to 
+cache that result so that it doesn't have to be reprocessed every time we want 
+to load our project metadata and data. Pairing `simpleCache` with `BiocProject`
+allows us to do just that. This means that if your custom data processing 
+function loads or processes large data sets that take a long time, the `R` 
+object will not be recalculated, but simply reloaded.
 
 **Briefly, this is the `simpleCache` logic: **
 
 * if the object exists in memory already: do nothing,
 * if it does not exist in memory, but exists on disk: load it into memory,
-* if it exists neither in memory or on disk: create it and store it to disk and memory.
+* if it exists neither in memory or on disk: create it and store it
+to disk and memory.
 
 # How to use `simpleCache` with `BiocProject`
 
@@ -52,18 +62,24 @@ setCacheDir(tempdir())
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```
 
-This loads your PEP and its data with `BiocProject`, and then caches the result with `simpleCache`. Say you rerun this line of code. `simpleCache` prevents the calculations from rerunning since the `dataSet1` object is already present in the memory:
+This loads your PEP and its data with `BiocProject`, and then caches the 
+result with `simpleCache`. Say you rerun this line of code. `simpleCache` 
+prevents the calculations from rerunning since the `dataSet1` object is 
+already present in the memory:
 
 ```{r}
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```
 
 
-Say you come back to your analysis after a while and the `dataSet1` object is not in the memory (simulated by removing it with `rm()` function here). `simpleCache` loads the object from the directory you have specified in `setCacheDir()`.
+Say you come back to your analysis after a while and the `dataSet1` object is 
+not in the memory (simulated by removing it with `rm()` function here). 
+`simpleCache` loads the object from the directory you have specified 
+in `setCacheDir()`.
 ```{r}
 rm(dataSet1)
 simpleCache("dataSet1", { BiocProject(file = projectConfig) })
 ```
-And that's it! In the simplest case this is all you need to **organize, read, process your data and prevent from copious results recalculations** every time you come back to your project.
-
-
+And that's it! In the simplest case this is all you need to **organize, 
+read, process your data and prevent from copious results recalculations**
+every time you come back to your project.

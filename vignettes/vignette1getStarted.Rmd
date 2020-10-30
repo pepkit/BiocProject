@@ -1,6 +1,6 @@
 ---
 title: "Getting started with BiocProject"
-author: "Michal Stolarczyk"
+author: "Michał Stolarczyk"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -18,13 +18,24 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) package that provides a way to use Portable Encapsulated Projects (PEPs) within Bioconductor framework.
+`BiocProject` is a (pending) [Bioconductor](https://www.bioconductor.org/) 
+package that provides a way to use Portable Encapsulated Projects (PEPs) within
+Bioconductor framework.
 
-This vignette assumes you are already familiar with PEPs. If not, see [pepkit.github.io](https://pepkit.github.io/) to learn more about PEP, and the [pepr documentation](http://code.databio.org/pepr/) to learn more about reading PEPs in `R`.
+This vignette assumes you are already familiar with PEPs.
+If not, see [pep.databio.org](https://pep.databio.org/) to learn more about 
+PEP, and the [pepr documentation](http://code.databio.org/pepr/) to learn more 
+about reading PEPs in `R`.
 
-`BiocProject` uses objects of [`Project` class](http://code.databio.org/pepr/reference/Project-class.html) (from `pepr`) to handle your project metadata, and allows you to provide a data loading/processing function so that you can load both project metadata and data for an entire project with a **single line of `R` code**.
+`BiocProject` uses objects of [`Project` class](http://code.databio.org/pepr/reference/Project-class.html) (from `pepr`) 
+to handle your project metadata, and allows you to provide a data 
+loading/processing function so that you can load both project metadata and data 
+for an entire project with a **single line of `R` code**.
 
-The output of the `BiocProject` function is the object that your function returns, but enriched with the PEP in its `metadata` slot. **This way of metadata storage is uniform across all objects within Bioconductor project (see: `?Annotated-class` for details).**
+The output of the `BiocProject` function is the object that your function 
+returns, but enriched with the PEP in its `metadata` slot. **This way of
+metadata storage is uniform across all objects within Bioconductor project 
+(see: `?Annotated-class` for details).**
 
 # Installation
 
@@ -44,9 +55,13 @@ devtools::install_github(repo='pepkit/BiocProject')
 
 ## Introduction to PEP components
 
-In order to use the `BiocProject` package, you first need a PEP. For this vignette, we have included a basic example PEP within the package, but if you like, you can [create your own](https://pepkit.github.io/), or download [an example PEP](https://pepkit.github.io/docs/simple_example/).
+In order to use the `BiocProject` package, you first need a PEP. For this 
+vignette, we have included a basic example PEP within the package, but if you 
+like, you can [create your own](https://pepkit.github.io/), or download 
+[an example PEP](https://pepkit.github.io/docs/simple_example/).
 
-The central component of a PEP is the project configuration file. Let's load up `BiocProject` and grab the path to our example configuration file:
+The central component of a PEP is the project configuration file. Let's load 
+up `BiocProject` and grab the path to our example configuration file:
 
 ```{r echo=TRUE, message=FALSE}
 library(BiocProject)
@@ -81,7 +96,9 @@ library(pepr)
 .printNestedList(yaml::read_yaml(configFile))
 ```
 
-This configuration file points to the second major part of a PEP: the sample annotation CSV file (``r { basename(config(bp)$metadata$sample_table) }``). Here are the contents of that file:
+This configuration file points to the second major part of a PEP: the 
+sample annotation CSV file (``r { basename(config(bp)$sample_table) }``). 
+Here are the contents of that file:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, collapse=TRUE, comment=" "}
 library(knitr)
@@ -96,9 +113,14 @@ sampleAnnotationDF = read.table(sampleAnnotation, sep=",", header=TRUE)
 knitr::kable(sampleAnnotationDF, format = "html")
 ```
 
-In this example, our PEP has two samples, which have two attributes: `sample_name`, and `file_path`, which points the location for the data.
+In this example, our PEP has two samples, which have two attributes: 
+`sample_name`, and `file_path`, which points the location for the data.
 
-The configuration file also points to a third file (``r { basename(config(bp)$bioconductor$readFunPath) }``). This file holds a single `R` function called ``r { basename(config(bp)$bioconductor$readFunName) }``, which has these contents:
+The configuration file also points to a third 
+file (``r { basename(config(bp)$bioconductor$readFunPath) }``). This file holds
+a single `R` function called 
+``r { basename(config(bp)$bioconductor$readFunName) }``, which has these 
+contents:
   
 ```{r echo=FALSE, eval=TRUE, comment=""}
 get(config(bp)$bioconductor$readFunName)
@@ -106,7 +128,8 @@ get(config(bp)$bioconductor$readFunName)
 
 And that's all there is to it! **This PEP consists really of 3 components:**
 
-1. the project configuration file (which points to an annotation sheet and specifies your function name)
+1. the project configuration file (which points to an annotation sheet and 
+specifies your function name)
 1. the annotation sheet
 1. an R file that holds a function that knows how to process this data. 
 
@@ -114,26 +137,34 @@ With that, we're ready to see how `BiocProject` works.
 
 ## How to use the `BiocProject` function
 
-With a PEP in hand, it takes only a single line of code to do all the magic with `BiocProject`:
+With a PEP in hand, it takes only a single line of code to do all the magic
+with `BiocProject`:
 
 ```{r}
 bp = BiocProject(file=configFile)
 ```
 
-This loads the project metadata from the PEP, then loads and calls the actual data processing function, and returns the R object that the data processing function produces, but enriched with the PEP metadata. Consequently, the object contains all your project metadata and data! Let's inspect the it:
+This loads the project metadata from the PEP, then loads and calls the actual 
+data processing function, and returns the R object that the data processing 
+function produces, but enriched with the PEP metadata. Consequently, the object
+contains all your project metadata and data! Let's inspect the it:
 
 ```{r}
 bp
 ```
 
-Since the data processing function returned `GenomicRanges::GRangesList` object, the final result of the `BiocProject` function is an object of the same class.
+Since the data processing function returned `GenomicRanges::GRangesList` 
+object, the final result of the `BiocProject` function is an object of the
+same class.
 
 ## How to interact with the returned object
 
-The created object provides all the `pepr::Project` methods (which you can find in the [reference documentation for pepr](http://code.databio.org/pepr/reference/index.html)).
+The created object provides all the `pepr::Project` methods (which you can 
+find in the reference 
+[documentation](http://code.databio.org/pepr/reference/index.html)) for pepr.
 
 ```{r}
-samples(bp)
+sampleTable(bp)
 config(bp)
 ```
 
@@ -146,7 +177,8 @@ getProject(bp)
 # How to provide a data load function
 
 
-In the basic case the function name (and path to source file, if necessary) is specified in the YAML config file itself, like:
+In the basic case the function name (and path to source file, if necessary) 
+is specified in the YAML config file itself, like:
 
 ```
 bioconductor:
@@ -161,12 +193,14 @@ bioconductor:
   readFunPath: /path/to/the/file.R
 ```
 
-The function specified can be a data processing function of any complexity, but has to follow 3 rules listed below.
+The function specified can be a data processing function of any complexity, 
+but has to follow 3 rules listed below.
 
 ### Rules:
 
 1. must take at least a single argument,
-1. the argument must be a [`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object (should use that input to load all the relevant data into `R`),
+1. the argument must be a `pepr::Project` object (should use that input to 
+load all the relevant data into `R`),
 1. must return an object of class that extends the class `Annotated`.
 
 Listed below are some of the classes that extend the class `Annotated`:
@@ -176,7 +210,8 @@ showClass("Annotated")
 ```
 
 
-Consider the [readBedFiles function](https://github.com/pepkit/example_peps/blob/master/example_BiocProject/readBedFiles.R) as an example of a function that can be used with `BiocProject` package:
+Consider the `readBedFiles`function as an example of a function that can be used
+with `BiocProject` package:
   
 ```{r echo=FALSE, eval=TRUE, comment=""}
 processFunction =  system.file(
@@ -191,7 +226,9 @@ readBedFiles
 ```
 # Data reading function error/warning handling 
 
-The `BiocProject` function provides a way to rigorously monitor exceptions related to your data reading function. All the produced warnings and errors are caught, processed and displayed in an organized way:
+The `BiocProject` function provides a way to rigorously monitor exceptions 
+related to your data reading function. All the produced warnings and errors 
+are caught, processed and displayed in an organized way:
 
 ```{r}
 configFile = system.file(
@@ -204,7 +241,8 @@ configFile = system.file(
 
 bpExceptions = BiocProject(configFile)
 ```
-As indicated in the warning messages above -- no data is being returned. Instead a `S4Vectors::List` with a PEP is its `metadata` slot is produced.
+As indicated in the warning messages above -- no data is being returned. 
+Instead a `S4Vectors::List` with a PEP is its `metadata` slot is produced.
 
 ```{r}
 bpExceptions
@@ -212,11 +250,16 @@ bpExceptions
 
 # Further reading
 
-See this [More arguments than just a PEP in your function?](./vignette2multipleArguments.html) vignette if you want to:
+See ["More arguments than just a PEP in your function?"](./vignette2multipleArguments.html) vignette if you want to:
 
 * use an anonymous function instead of one defined *a priori*
 * use a function that requires more arguments than just a PEP
 
-See the [Working with remote data](./vignette4remoteData.html) vignette to learn how to download the data from the Internet, process it and store it conveniently with related metadata in any object from the Bioconductor project. 
+See the ["Working with remote data"](./vignette4remoteData.html) vignette to 
+learn how to download the data from the Internet, process it and store it 
+conveniently with related metadata in any object from the Bioconductor project. 
 
-See the [Working with large datasets - simpleCache](./vignette3simpleCache.html) vignette to learn how the `simpleCache` R package can be used to prevent copious and lengthy results recalculations when working with large datasets.
+See the 
+["Working with large datasets - simpleCache"](./vignette3simpleCache.html) 
+vignette to learn how the `simpleCache` R package can be used to prevent 
+copious and lengthy results recalculations when working with large datasets.

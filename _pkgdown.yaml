@@ -32,6 +32,7 @@ articles:
       - vignette2multipleArguments
       - vignette3simpleCache
       - vignette4remoteData
+      - vignette6tximeta
       
 reference:
   - title: "BiocProject API"
@@ -41,5 +42,5 @@ reference:
   - title: "utilities"
     desc: "Extra non-exported utility functions."
     contents:
-      - .updateList
+      - .unionList
       - .insertPEP

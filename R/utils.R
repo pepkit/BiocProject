@@ -18,24 +18,92 @@
     message(rep("-", n), "\n")
 }
 
+
+#' Insert a PEP metadata in a metadata slot of Annotated
+#' 
+#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
+#' into the metadata slot of objects that 
+#' extend the \code{\link[S4Vectors]{Annotated-class}}
+#' 
+#' Additionally, if the object extends the 
+#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
+#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
+#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
+#' as the metadata.
+#' 
+#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
+#' @param pep an object of class \code{\link[pepr]{Project-class}}
+#' 
+#' @return an object of the same class as the object argument but enriched
+#'  with the metadata from the pep argument
+#' 
+#' @examples 
+#' # If the object is of class Annotated
+#' object = S4Vectors::List(result='test')
+#' result = .insertPEP(object, pepr::Project())
+#' metadata(result)
+#' 
+#' # If the object is not of class Annotated
+#' object1 = 'test'
+#' result1 = .insertPEP(object1, pepr::Project())
+#' metadata(result1)
+#' @import S4Vectors methods
+#' @export
+.insertPEP = function(object, pep) {
+    if (!methods::is(pep, "Project")) 
+        stop("the pep argument has to be of class 'Project', 
+             got '", 
+             class(pep), "'")
+    # do we throw a warning/message
+    # saying what happens in the
+    # next line?
+    if (methods::is(object, "list")) 
+        object = S4Vectors::List(object)
+    if (methods::is(object, "Annotated")) {
+        S4Vectors::metadata(object) = 
+            .unionList(S4Vectors::metadata(object), list(PEP = pep))
+    } else {
+        warning("BiocProject expects data loading functions to return an 
+                'Annotated' object, but your function returned a '", 
+                class(object), "' object. Therefore, this returned object has", 
+                "been placed in the first slot of a S4Vectors::List")
+        result = S4Vectors::List(result = object)
+        S4Vectors::metadata(result) = list(PEP = pep)
+        object = result
+    }
+    object
+}
+
+# Finds the pepr::Project
+# object in a list and returns
+# its index If it is not
+# present, returns integer(0)
+.findProjectInList = function(l) {
+    which(as.logical(lapply(l, 
+                            function(x) {
+                                is(x, "Project")
+                            })))
+}
+
 # internal function that wraps the external function execution
 # in tryCatch to indicate problems with the external function execution
 .callBiocFun <- function(func, arguments) { 
     if(!is(arguments, "list")) 
         stop("The 'arguments' argument has to be a list, got '",
-            class(arguments),"'")
+             class(arguments),"'")
     .warnings = c()
     frameNumber <- sys.nframe()
     wHandler <- function(w){ 
         # warning handler 
-        assign(".warnings", append(.warnings,w$message), 
-        envir = sys.frame(frameNumber))
+        assign(".warnings", append(.warnings, w$message), 
+               envir = sys.frame(frameNumber))
         invokeRestart("muffleWarning") 
     }
     eHandler <- function(e){
         # error handler 
         .wrapFunMessages(e$message,"error")
-        message("No data was read. The error message was returned instead.")
+        message("No data was read. The error message was returned instead: ", 
+                e$message)
         S4Vectors::List(e$message)
     } 
     res = withCallingHandlers(
@@ -94,49 +162,54 @@
 #' 
 #' @param list1 a list to be updated
 #' @param list2 a list to update with
+#' @param combine a logical indicating whether the elements of the second list 
+#' should replace (\code{FALSE}, default) or append to (\code{TRUE}) the 
+#' first one.
 #' 
 #' @return an updated list
 #' 
 #' @examples 
 #' list1=list(a=1,b=2)
 #' list2=list(a=1,b=1,c=3)
-#' .updateList(list1,list2)
+#' .unionList(list1,list2)
 #' 
 #' @export
-.updateList = function(list1,list2) {
-    if((!is.list(list1)) || (!is.list(list2)))
-        stop("One of the arguments was not a list")
+.unionList = function(list1, list2, 
+                      combine = FALSE) {
+    if ((!is.list(list1)) || (!is.list(list2))) 
+        stop("One of the arguments is not a list")
     nms1 = names(list1)
     nms2 = names(list2)
-    if(is.null(nms2)) nms2 = ""
-    counter=1
-    for(n in nms2){
+    if (is.null(nms2)) 
+        nms2 = ""
+    counter = 1
+    for (n in nms2) {
         idx = which(nms1 == n)
-        if(length(idx) > 0){
-            list1[[idx]] = list2[[n]]
-        }else{
+        if (length(idx) > 0) {
+            if (combine) {
+                list1[[idx]] = append(list1[[idx]], 
+                                      list2[[n]])
+            } else {
+                list1[[idx]] = list2[[n]]
+            }
+        } else {
             add = list(list2[[counter]])
             names(add) = n
-            list1 = append(list1,add)
+            list1 = append(list1, 
+                           add)
         }
         counter = counter + 1
     }
     return(list1)
 }
 
-# Finds the pepr::Project object in a list and returns its index
-# If it is not present, returns integer(0)
-.findProjectInList = function(l) {
-    which(as.logical(lapply(l, function(x) {
-        is(x, "Project")
-    })))
-}
-
 #' Redefine the show method of the object
 #' 
-#' Adds the Project objects display to the default show method of an \code{\link[S4Vectors]{Annotated-class}}
+#' Adds the Project objects display to the default show method 
+#' of an \code{\link[S4Vectors]{Annotated-class}}
 #' 
-#' The method is defined in the environment in which the function was called, see: \code{\link[base]{sys.parent}}
+#' The method is defined in the environment in which the function was called, 
+#' see: \code{\link[base]{sys.parent}}
 #' 
 #' @param returnedObject object of \code{\link[S4Vectors]{Annotated-class}}
 #' 
@@ -145,24 +218,34 @@
 #' @export
 #'
 #' @examples
-#' x = S4Vectors::List(c("so","cool"))
+#' x = S4Vectors::List(c('so','cool'))
 #' metadata(x) = list(PEP=pepr::Project())
 #' .setShowMethod(x)
 #' x
 .setShowMethod = function(returnedObject) {
     oriClass = class(returnedObject)
-    if(!is(returnedObject,"Annotated")){
-        warning("The show method was not redefined for '", oriClass, "'")
+    if (!is(returnedObject, "Annotated")) {
+        warning("The show method was not redefined for '", 
+                oriClass, "'")
         return(FALSE)
     }
-    oriShow =  selectMethod("show", oriClass)
-    # the new method is created only if the environment of the original one is locked.
-    # this way the method will not be redefined over and over again when the BiocProject functon is called.
-    if(environmentIsLocked(environment(oriShow)))
-        setMethod("show", signature = oriClass, definition = function(object){
-            do.call(oriShow, list(object))
-            pep = getProject(object)
-            cat("\nmetadata: ")
-            selectMethod("show","Project")(pep)
-        }, where = parent.frame())
+    oriShow = selectMethod("show", 
+                           oriClass)
+    # the new method is created
+    # only if the environment of
+    # the original one is locked.
+    # this way the method will not
+    # be redefined over and over
+    # again when the BiocProject
+    # functon is called.
+    if (environmentIsLocked(environment(oriShow))) 
+        setMethod("show", signature = oriClass, 
+                  definition = function(object) {
+                      do.call(oriShow, 
+                              list(object))
+                      pep = getProject(object)
+                      cat("\nmetadata: ")
+                      selectMethod("show", 
+                                   "Project")(pep)
+                  }, where = parent.frame())
 }

@@ -49,22 +49,21 @@ c=function(arg) {
 testChar = "a"
 
 # Test --------------------------------------------------------------------
-context("Test .updateList utility function")
+context("Test .unionList utility function")
 
-test_that(".updateList returns correct object type", {
-  expect_is(.updateList(list(a=1),list(a=2,b=2)), 'list')
+test_that(".unionList returns correct object type", {
+    expect_is(.unionList(list(a=1),list(a=2,b=2)), 'list')
 })
 
-test_that(".updateList returns list of correct length", {
-    expect_equal(length(.updateList(list(a=1),list(a=2,b=2))), 2)
-    expect_equal(length(.updateList(list(a=1,c=3),list(a=2,b=2))), 3)
-    expect_equal(length(.updateList(list(a=1,b=3),list(c=2,d=2))), 4)
+test_that(".unionList returns list of correct length", {
+    expect_equal(length(.unionList(list(a=1),list(a=2,b=2))), 2)
+    expect_equal(length(.unionList(list(a=1,c=3),list(a=2,b=2))), 3)
+    expect_equal(length(.unionList(list(a=1,b=3),list(c=2,d=2))), 4)
 })
 
-test_that(".updateList throws errors", {
-    expect_error(.updateList(list(a=1),2))
+test_that(".unionList throws errors", {
+    expect_error(.unionList(list(a=1),2))
 })
-
 context("Test .makeAbsPath utility function")
 
 test_that(".makeAbsPath returns correct object", {
@@ -153,29 +152,29 @@ test_that("BiocProject function works with arguments", {
 
 test_that("BiocProject function returns Annotated when provided objects of 
           different class and thorows a warning", {
-    expect_warning(expect_is(BiocProject(configFile, func = function(x){
-        return("test")
-    }),"Annotated"))
-})
+              expect_warning(expect_is(BiocProject(configFile, func = function(x){
+                  return("test")
+              }),"Annotated"))
+          })
 
 test_that("BiocProject function returns a Project object 
           when autoload is set to FALSE", {
-    expect_is(BiocProject(file=configFile,autoLoad = FALSE),"Project")
-})
+              expect_is(BiocProject(file=configFile,autoLoad = FALSE),"Project")
+          })
 
 test_that("BiocProject function throws errors/warnings 
           when the arguments are inappropriate", {
-    expect_error(BiocProject(file=configFile,func = "2"))
-    expect_error(BiocProject(file = "test"))
-    expect_error(BiocProject(file = configFile,autoLoad = "test"))
-})
+              expect_error(BiocProject(file=configFile,func = "2"))
+              expect_error(BiocProject(file = "test"))
+              expect_error(BiocProject(file = configFile,autoLoad = "test"))
+          })
 
 test_that("BiocProject function catches errors in the user-provided 
           function returns the error message as Annotated", {
-    expect_is(BiocProject(file=configFile,func=function(x) {
-        stop("test")
-    }),"Annotated")
-})
+              expect_is(BiocProject(file=configFile,func=function(x) {
+                  stop("test")
+              }),"Annotated")
+          })
 
 test_that("BiocProject function catches errors when the function specified
           does not exist", {
@@ -184,13 +183,13 @@ test_that("BiocProject function catches errors when the function specified
 
 test_that("BiocProject function throws a warning and returns a Project object
           when no bioconductor section found",{
-    expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
-})
+              expect_warning(expect_is(BiocProject(configFileNoSection),"Project"))
+          })
 
 context("Test Annotated methods")
 
 test_that("samples returns a correct object", {
-    expect_is(samples(bp),"data.table")
+    expect_is(sampleTable(bp),"data.table")
 })
 
 test_that("config returns a correct object", {

@@ -4,3 +4,7 @@
 ^_pkgdown.yaml
 ^docs
 ^update_examples.sh
+^doc$
+^Meta$
+^\.github$
+long_vignettes

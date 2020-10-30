@@ -1,4 +1,3 @@
-
 #' Portable Encapsulated Project (PEP) for biological applications
 #'
 #' This function creates a \code{\link[pepr]{Project-class}} object, 
@@ -32,7 +31,7 @@
 #' The custom data processing function must take 
 #' the \code{\link[pepr]{Project-class}} as an argument since this object will 
 #' be passed to the function by default. However, if the function requires
-#' addtional arguments, ones can be provided with the \code{funcArgs} argument
+#' additional arguments, ones can be provided with the \code{funcArgs} argument
 #' in the \code{\link{BiocProject}} function call. 
 #' Besides, the \code{func} argument with the anonymous 
 #' function may serve similar possibility.
@@ -41,17 +40,18 @@
 #' If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 #' and empty \code{\link[pepr]{Project-class}} object will be returned.
 #' 
+#' @note The \code{bioconductor} section can be read from the project config 
+#' file or pipeline interface. The former is given the priority
 #' 
 #' @section Further reading: 
 #' Browse the 
 #' \href{http://code.databio.org/BiocProject/articles/index.html}{\code{BiocProject} package vignettes}
 #' for more detailed explanation with examples.
 #'
-#'
 #' @param file a character vector with a path to the PEP config file
-#' @param subproject a character vector with a name of the subproject
+#' @param amendments a character vector with a name of the amendments
 #' to be activated
-#' @param func a anonymous function that reads and/or processess the data, 
+#' @param func a anonymous function that reads and/or processes the data, 
 #' it must take 
 #' the \code{\link[pepr]{Project-class}} as an argument.
 #' See \code{Details} for more information
@@ -81,27 +81,30 @@
 #' @seealso \url{https://pepkit.github.io/}
 #' @import pepr
 #' @export BiocProject
-BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL, 
-                        funcArgs = NULL) {
-    p = pepr::Project(file=file, subproject=subproject)
+BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL, 
+                       funcArgs = NULL) {
+    p = pepr::Project(file=file, amendments = amendments)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
     if(is.null(funcArgs)){
         funcArgs = list()
     }else{
-        if (length(.findProjectInList(funcArgs)) > 0) 
+        if (length(.findProjectInList(funcArgs)) > 0) {
+            warning("Project object was found in the arguments list. 
+                    It will be removed.")
             funcArgs = funcArgs[-.findProjectInList(funcArgs)]
+        }
     }
     args = append(list(p), funcArgs)
-    if(pepr::checkSection(pepr::config(p), c(MAIN_SECTION, FUNCTION_ARGS))){
-        args = .updateList(config(p)[[MAIN_SECTION]][[FUNCTION_ARGS]],args)
+    cfg = pepr::config(p)
+    if(pepr::.checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
+        args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
         argsNames = append("",argsNames[-.findProjectInList(args)])
         args = append(list(p), args[[-.findProjectInList(args)]])
         names(args) = argsNames
     }
-    
     if (!is.null(func)) {
         # use the anonymous function if provided
         if (is.function(func)) {
@@ -113,17 +116,17 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
         }
     }else{
         # use config to find it
-        if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a logical, 
-                                    got '", class(autoLoad),"'")
+        if(!is.logical(autoLoad)) stop("'autoLoad' argument has to be a",
+                                       " logical, got '", class(autoLoad),"'")
         if (autoLoad) {
-            # check if the config consists of MAIN_SECTION section
-            if(!pepr::checkSection(pepr::config(p), MAIN_SECTION)){
+            # check if the config consists of BIOC_SECTION section
+            if(!pepr::.checkSection(cfg, BIOC_SECTION)){
                 message("No data was read. Returning a Project object")
                 warning("The config YAML is missing the '",
-                        MAIN_SECTION,"' section.")
+                        BIOC_SECTION,"' section.")
                 return(p)
             }    
-            funcName = pepr::config(p)[[MAIN_SECTION]][[FUNCTION_NAME]]
+            funcName = cfg[[BIOC_SECTION]][[FUNCTION_NAME]]
             # check if the function name was provided
             # and if it exists in the environment
             if (!is.null(funcName) && exists(funcName)) {
@@ -132,7 +135,8 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 message("Used function '", funcName, "' from the environment")
                 return(.insertPEP(readData, p))
             }else{
-                if (!is.null(funcName) && length(grep("(\\:){2,3}", funcName)) != 0) {
+                if (!is.null(funcName) && 
+                    length(grep("(\\:){2,3}", funcName)) != 0) {
                     # trying to access the function from the namespace that
                     # was specified in the config.yaml FUNCTION_NAME
                     splitted = strsplit(funcName, ":")[[1]]
@@ -147,16 +151,13 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                 # trying to source the file specified 
                 # in the config.yaml FUNCTION_PATH
                 funcPath = pepr::.expandPath(
-                    pepr::config(p)[[MAIN_SECTION]][[FUNCTION_PATH]])
+                    cfg[[BIOC_SECTION]][[FUNCTION_PATH]])
                 if (!is.null(funcPath)){
                     if (!file.exists(funcPath))
-                        funcPath = .makeAbsPath(funcPath,dirname(p@file))
+                        funcPath = .makeAbsPath(funcPath, dirname(p@file))
                     if (!file.exists(funcPath))
-                        stop(
-                            "The function does not exist in the environment and file '",
-                            funcPath,
-                            "' does not exist"
-                        )
+                        stop("The function does not exist in the environment", 
+                             " and file '", funcPath, "' does not exist")
                     # Load the sourced objects into a new environment, 
                     # so they are not in the .GlobalEnv after the BiocProject 
                     # function execution
@@ -170,19 +171,21 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
                     # check again for the specified funcion name, maybe it is 
                     # defined in the file which was just sourced
                     if (!is.null(funcName) && exists(funcName, where=e)) {
-                        message("Function '", funcName,"' read from file '", funcPath, "'")
+                        message("Function '", funcName,"' read from file '", 
+                                funcPath, "'")
                         readData = .callBiocFun(
                             getFunction(funcName, where=e,mustFind=TRUE), args)
                         return(.insertPEP(readData, p))
                     }
                     # the function indicated in FUNCTION_NAME was not found, 
                     # use the last one in FUNCTION_PATH
-                    message("Multiple functions found in '", funcPath, "'. Using the last one.")
+                    message("Multiple functions found in '", funcPath, 
+                            "'. Using the last one.")
                     readData = .callBiocFun(lastFun, args)
                     return(.insertPEP(readData, p))
                 }else{
-                    warning("Can't find function in the environment and the value for '"
-                            , FUNCTION_PATH,
+                    warning("Can't find function in the environment and the", 
+                            " value for '" , FUNCTION_PATH, 
                             "' key was not provided in the config YAML.")
                     message("No data was read. Returning a Project object")
                     return(p)
@@ -193,54 +196,4 @@ BiocProject = function(file, subproject = NULL, autoLoad = TRUE, func = NULL,
             return(p)
         }
     }
-}
-
-#' Insert a PEP metadata in a metadata slot of Annotated
-#' 
-#' This function inserts the PEP (\code{\link[pepr]{Project-class}}) 
-#' into the metadata slot of objects that 
-#' extend the \code{\link[S4Vectors]{Annotated-class}}
-#' 
-#' Additionally, if the object extends the 
-#' \code{\link[S4Vectors]{Annotated-class}} (or is a list that will be
-#' automatically converted to a \code{\link[S4Vectors]{List}}) the show method 
-#' for its class is redefined to display the \code{\link[pepr]{Project-class}} 
-#' as the metadata.
-#' 
-#' @param object an object of \code{\link[S4Vectors]{Annotated-class}}
-#' @param pep an object of class \code{\link[pepr]{Project-class}}
-#' 
-#' @return an object of the same class as the object argument but enriched
-#'  with the metadata from the pep argument
-#' 
-#' @examples 
-#' # If the object is of class Annotated
-#' object = S4Vectors::List(result="test")
-#' result = .insertPEP(object, pepr::Project())
-#' metadata(result)
-#' 
-#' # If the object is not of class Annotated
-#' object1 = "test"
-#' result1 = .insertPEP(object1, pepr::Project())
-#' metadata(result1)
-#' @import S4Vectors methods
-#' @export
-.insertPEP = function(object, pep) {
-    if(!methods::is(pep, "Project")) 
-        stop("the pep argument has to be of class 'Project', 
-            got '", class(pep),"'")
-    # do we throw a warning/message saying what happens in the next line?
-    if(methods::is(object, "list"))
-        object = S4Vectors::List(object)
-    if(methods::is(object, "Annotated")){
-        S4Vectors::metadata(object) = list(PEP=pep)
-    } else{
-        warning("BiocProject expects data loading functions to return an 'Annotated' object, but your function returned a '",
-                class(object),"' object. To use an Annotated, this returned object has been placed in the first slot of a List")
-        result = S4Vectors::List(result=object)
-        S4Vectors::metadata(result) = list(PEP=pep)
-        object = result
-    }
-    .setShowMethod(object)
-    object
 }

@@ -1,13 +1,14 @@
-language: R
-sudo: false
+language: r
+branches:
+  only:
+  - master
+  - dev
+r: bioc-release
+os:
+  - linux
 cache: packages
 warnings_are_errors: false
 r_packages: devtools
-r_github_packages: 
-  - pepkit/pepr
+r_github_packages:
   - databio/simpleCache
-bioc_packages: 
-  - GenomicRanges
-  - BiocStyle
-  - BiocFileCache
-
+  - pepkit/pepr

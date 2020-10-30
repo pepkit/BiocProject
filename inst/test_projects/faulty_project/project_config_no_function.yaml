@@ -1,7 +1,7 @@
 # This is a faulty PEP.
 # The readFunName and readFunPath values point to function that does not exist
-metadata:
-  sample_table: sample_table.csv
+pep_version: 2.0.0
+sample_table: sample_table.csv
 
 bioconductor:
   readFunName: readBedFiles_missing

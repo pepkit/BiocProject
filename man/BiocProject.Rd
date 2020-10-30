@@ -4,19 +4,24 @@
 \alias{BiocProject}
 \title{Portable Encapsulated Project (PEP) for biological applications}
 \usage{
-BiocProject(file, subproject = NULL, autoLoad = TRUE, func = NULL,
-  funcArgs = NULL)
+BiocProject(
+  file,
+  amendments = NULL,
+  autoLoad = TRUE,
+  func = NULL,
+  funcArgs = NULL
+)
 }
 \arguments{
 \item{file}{a character vector with a path to the PEP config file}
 
-\item{subproject}{a character vector with a name of the subproject
+\item{amendments}{a character vector with a name of the amendments
 to be activated}
 
 \item{autoLoad}{a logical indicating whether the data should be loaded
 automatically. See \code{Details} for more information.}
 
-\item{func}{a anonymous function that reads and/or processess the data, 
+\item{func}{a anonymous function that reads and/or processes the data, 
 it must take 
 the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
@@ -67,13 +72,18 @@ implementation. Consider the possibilities listed below:
 The custom data processing function must take 
 the \code{\link[pepr]{Project-class}} as an argument since this object will 
 be passed to the function by default. However, if the function requires
-addtional arguments, ones can be provided with the \code{funcArgs} argument
+additional arguments, ones can be provided with the \code{funcArgs} argument
 in the \code{\link{BiocProject}} function call. 
 Besides, the \code{func} argument with the anonymous 
 function may serve similar possibility.
 
+
 If the \code{autoLoad} is set to \code{FALSE} the data will not be loaded 
 and empty \code{\link[pepr]{Project-class}} object will be returned.
+}
+\note{
+The \code{bioconductor} section can be read from the project config 
+file or pipeline interface. The former is given the priority
 }
 \section{Further reading}{
  
