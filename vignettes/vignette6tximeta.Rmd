@@ -12,6 +12,8 @@ vignette: >
 
 # Introduction
 
+## Prerequisites
+
 This vignette demonstrates how to integrate BiocProject with the [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html) for a really slick start-to-finish analysis of RNA-seq data. We assume you're familiar with BiocProject; if not, please start with [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for basic instructions.
 
 ## Introduction to Tximeta
@@ -43,11 +45,11 @@ If we add BiocProject in to the tximeta workflow, then sample metadata from the 
 
 Let's show you how this work with a simple demo.
 
-# Demo of BiocProject + tximeta
+# Demo of the BiocProject + tximeta workflow
 
 ## Download example data
 
-First, let's download some RNA-seq quantification data from salmon, described in PEP format:
+First, let's download some RNA-seq counts from salmon, described in PEP format:
 
 
 ```r
@@ -61,7 +63,7 @@ abs_pep_path = file.path(getwd(), "tximeta_pep")
 abs_cfg_path = file.path(abs_pep_path, "project_config.yaml")
 ```
 
-Let's take a look at what we have here.
+Let's take a look at what we have here...
 
 ## Examine and load the PEP into R
 
@@ -83,18 +85,16 @@ The `Biocproject` + `tximeta` workflow requires a PEP. The example we just downl
       readFunPath: readTximeta.R
 ```
 
-As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable. This is just an optional step that allows this PEP to work in any computing environment without being changed, so you can share your sample metadata more easily. For this vignette, we need to set the variable so the paths are correct. Let's point to the output directory of Salmon:
+As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable to specify a file path. This is just an optional way to make this PEP work in any computing environment without being changed, so you can share your sample metadata more easily. For this vignette, we need to set the variable to the output directory where our downloaded results are stored:
 
 
 ```r
 Sys.setenv("TXIMPORTDATA"=file.path(abs_pep_path, "/tximportData"))
 ```
 
-Now we can load the file:
 
 
-
-This configuration file points to the second major part of a PEP: the 
+Now, look at the `sample_table` key in the configuration file. It points to the second major part of a PEP: the 
 sample table CSV file (`sample_table.csv`). Check out the contents of that file:
 
 <table>
@@ -112,11 +112,24 @@ sample table CSV file (`sample_table.csv`). Check out the contents of that file:
 </tbody>
 </table>
 
-Even though the required `files` column is still missing, this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`:
+This sample table lacks the `files` column required by tximeta -- but this file is sufficient, since BiocProject, or more specifically pepr, will take care of constructing the portable `files` sample attribute automatically via `sample_modifiers.derive`, where the config file above specifies the `files` attribute and its path. 
+
+Now we can load the file with BiocProject... but first, a short detour
+
+## Detour: the magic of PEP sample modifiers 
+
+Before we jump into using `BiocProject`, let's take a minute to demonstrate how using the PEP helps us out here. Let's read in our PEP using the the generic `Project` function from `pepr`:
+
 
 
 ```r
 p=Project(abs_cfg_path)
+```
+
+We now have our PEP project read in, and we can see what is found in the sample table:
+
+
+```r
 sampleTable(p)
 ```
 
@@ -127,11 +140,11 @@ sampleTable(p)
 ## 1: /home/nsheff/code/BiocProject/long_vignettes/tximeta_pep/tximportData/salmon_dm/SRR1197474/quant.sf
 ```
 
-*Note that the use of `Project` function in the chunk above is not required to complete this tutorial. It is used solely to present the effect of PEP metadata processing*
+See how our sample table has now been automatically updated with the `files` attribute? *That* is the magic of the PEP sample modifiers. It's that simple. Now, let's move on to demonstrate what `BiocProject` adds.
 
-## Data processing function
+## The BiocProject data processing function
 
-Another required component is the data processing function, which is simply a `tximeta` call that uses the PEP-managed processed sample table its input:
+If you look again at our configuration file above, you'll notice the `biconductor` section in the configuration file, which defines a function name and R script. These specify the BiocProject data processing function, which in this case, is simply a `tximeta` call that uses the PEP-managed processed sample table its input. Here's what that function looks like:
 
 
 ```
@@ -141,18 +154,22 @@ function(pep) {
 }
 ```
 
-And that's it, easy!
+## Loading in the data with BiocProject
 
-# Usage
-
-Once we have the PEP and a function that will be used to create the final `SummarizedExperiment` object we can call `BiocProject` function:
+We have everything we need: a salmon output file, a PEP that specifies a sample table and provides the `files` column, and a function that uses `tximeta` to create the final `SummarizedExperiment` object. Now, we can call `BiocProject` function:
 
 
 ```r
 require(tximeta)
 bp = BiocProject(abs_cfg_path)
 ```
-After successful import we can browse the resulting object. Since it is a `RangedSummarizedExperiment`, the methods defined in SummarizedExperiment package work:
+
+The output of `BiocProject` function, the `bp` object in our case, is magical. In one object, it supports the functionality of `SummarizedExperiment`, `tximeta`, and `pepr`. Observe:
+
+### The BiocProject output supports SummarizedExperiment functions 
+
+It is a `RangedSummarizedExperiment`, so it supports all methods defined in SummarizedExperiment package:
+
 
 ```r
 suppressPackageStartupMessages(library(SummarizedExperiment))
@@ -222,7 +239,9 @@ rowRanges(bp)
 ##   -------
 ##   seqinfo: 25 sequences (1 circular) from BDGP6.22 genome
 ```
+
 Naturally, we can use tximeta methods:
+
 
 ```r
 retrieveDb(bp)
@@ -244,7 +263,8 @@ retrieveDb(bp)
 ## | No. of transcripts: 34802.
 ## |Protein data available.
 ```
-And finally, note that the `PEP` metadata information has been attached to the metadata as well. Let's extract the `Project` object from the result with `getProject` method from this package:
+
+But wait, there's more! The `PEP` metadata information has been attached to the metadata as well. Let's extract the `Project` object from the result with `getProject` method:
 
 
 ```r
@@ -255,7 +275,7 @@ getProject(bp)
 ##   samples:  1
 ```
 
-The output of `BiocProject` function supports `Project` class methods, that provide an API for any R-based PEP processing tools:
+You can use the `pepr` API for any R-based PEP processing tools:
 
 
 ```r
