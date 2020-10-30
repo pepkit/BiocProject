@@ -12,18 +12,17 @@ vignette: >
 knitr::opts_chunk$set(collapse=FALSE, message=FALSE)
 ```
 
-Before you start see the 
-[Getting started with `BiocProject` vignette](./vignette1getStarted.html) for the basic information and installation instructions.
-
 # Introduction
 
-This vignette demonstrates how to integrate BiocProject with [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html) for a really slick start-to-finish analysis of RNA-seq data.
+This vignette demonstrates how to integrate BiocProject with the [tximeta Bioconductor package](https://www.bioconductor.org/packages/release/bioc/html/tximeta.html) for a really slick start-to-finish analysis of RNA-seq data. We assume you're familiar with BiocProject; if not, please start with [Getting started with `BiocProject` vignette](./vignette1getStarted.html) for basic instructions.
 
-Tximeta is a tool that automatically annotates RNA-seq samples during the import of transcript quantification files from the [salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. How it works, is that `salmon` records a unique identifier of the transcriptome it uses during quantification; when importing the transcript values into R, tximeta reads this identifier and looks up metadata about those sequences using a local database of known transcriptome identifiers. For more details, refer to the [tximeta GitHub repository](https://github.com/mikelove/tximeta) or [publication in PLoS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664).
+## Introduction to Tximeta
 
-The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to quantification results directory for each sample. The `tximeta` function reads the `*.sa` files and returns a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
+Tximeta is a package that imports transcript quantification files from the [salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. When importing, tximeta automatically annotates the data with the transcriptome used. How it works is that `salmon` records a unique identifier of the transcriptome it uses during quantification; then, tximeta reads this identifier and looks up metadata about those sequences using a local database of known transcriptome identifiers. For more details, refer to the [tximeta GitHub repository](https://github.com/mikelove/tximeta) or [publication in PLoS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664).
 
-Since `SummarizedExperiment` inherits from `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
+The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to a quantification results directory for each sample. The `tximeta` function reads the `*.sa` files and returns a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
+
+Since `SummarizedExperiment` inherits from the Bioconductor `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
 
 
 ```{r}
@@ -34,14 +33,19 @@ is(SummarizedExperiment(), "Annotated")
 
 ## Advantages of using BiocProject with tximeta
 
-If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in to the tximport workflow. For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/) or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
+If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in! For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/), or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
 
  - project portability, inherent to projects following PEP specification
- - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of `tximeta` function. It will be accessible with [pepr](http://code.databio.org/pepr/) API or `@PEP` in the `metadata` slot of `SummarizedExperiment`, just as any other metadata attached to the result by `tximeta` function.
+ - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of the `tximeta` function automatically. It will be accessible from within your R session using the [pepr](http://code.databio.org/pepr/) API, or with `@PEP` in the `metadata` slot of the `SummarizedExperiment` object, just as any other metadata attached to the result by `tximeta` function.
 
-# Setup
+Let's show you how this work with a simple demo.
 
-First, let's download some data that we'll import with `tximeta` function:
+# Demo of BiocProject + tximeta
+
+## Download example data
+
+First, let's download some RNA-seq quantification data from salmon, described in PEP format:
+
 ```{r, download-data, collapse=TRUE, comment=" "}
 if (basename(getwd()) != "long_vignettes") setwd("long_vignettes")
 pth = BiocFileCache::bfcrpath(
@@ -52,24 +56,29 @@ utils::untar(tarfile=pth)
 abs_pep_path = file.path(getwd(), "tximeta_pep")
 abs_cfg_path = file.path(abs_pep_path, "project_config.yaml")
 ```
-## PEP
 
-In order to use `tximeta` and `Biocproject` functions, we need a PEP. Let's use one that looks like this:
+Let's take a look at what we have here.
+
+## Examine and load the PEP into R
+
+The `Biocproject` + `tximeta` workflow requires a PEP. The example we just downloaded looks like this:
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE, collapse=TRUE, comment=" "}
 library(pepr)
 .printNestedList(yaml::read_yaml(abs_cfg_path))
 ```
 
-```{r eval=TRUE, include=FALSE}
-# Run some stuff we need for the vignette
-p=Project(abs_cfg_path)
-```
-
-As you can see in the PEP configuration file above `$TXIMPORTDATA` environment variable has been used to make the path portable. Therefore, we need to set it. Let's point to the output directory of Salmon:
+As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable. This is just an optional step that allows this PEP to work in any computing environment without being changed, so you can share your sample metadata more easily. For this vignette, we need to set the variable so the paths are correct. Let's point to the output directory of Salmon:
 
 ```{r}
 Sys.setenv("TXIMPORTDATA"=file.path(abs_pep_path, "/tximportData"))
+```
+
+Now we can load the file:
+
+```{r eval=TRUE, include=FALSE}
+# Run some stuff we need for the vignette
+p=Project(abs_cfg_path)
 ```
 
 This configuration file points to the second major part of a PEP: the 
