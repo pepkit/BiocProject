@@ -9,6 +9,7 @@ BiocProject(
   amendments = NULL,
   autoLoad = TRUE,
   func = NULL,
+  projectLevel = FALSE,
   funcArgs = NULL
 )
 }
@@ -25,6 +26,9 @@ automatically. See \code{Details} for more information.}
 it must take 
 the \code{\link[pepr]{Project-class}} as an argument.
 See \code{Details} for more information}
+
+\item{projectLevel}{logical indicating whether a only project-level pifaces 
+should be considered. Otherwise, only sample-level ones are.}
 
 \item{funcArgs}{a named list with arguments you want 
 to pass to the \code{func}.
