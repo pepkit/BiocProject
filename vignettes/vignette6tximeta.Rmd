@@ -20,7 +20,7 @@ This vignette demonstrates how to integrate BiocProject with the [tximeta Biocon
 
 Tximeta is a package that imports transcript quantification files from the [salmon](https://salmon.readthedocs.io/en/latest/salmon.html) transcript quantifier. When importing, tximeta automatically annotates the data with the transcriptome used. How it works is that `salmon` records a unique identifier of the transcriptome it uses during quantification; then, tximeta reads this identifier and looks up metadata about those sequences using a local database of known transcriptome identifiers. For more details, refer to the [tximeta GitHub repository](https://github.com/mikelove/tximeta) or [publication in PLoS Computational Biology](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007664).
 
-The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to a quantification results directory for each sample. The `tximeta` function reads the `*.sa` files and returns a single `SummarizedExperiment` object with the Salmon-generated metadata in the object `metadata` slot.
+The `tximeta::tximeta` function takes as input a `data.frame` (`coldata`) object that, for Salmon results, points to a quantification results directory for each sample. The `tximeta` function reads the `*.sf` files and returns a single `SummarizedExperiment` object with the various elements of metadata in the object's `rowRanges` and `metadata` slots. In addition, the `SummarizedExperiment` has pointers to local cached databases for subsequent annotation tasks.
 
 Since `SummarizedExperiment` inherits from the Bioconductor `Annotated` class, it fits perfectly into `BiocProject` output object class requirements. 
 
@@ -38,7 +38,7 @@ is(SummarizedExperiment(), "Annotated")
 
 ## Advantages of using BiocProject with tximeta
 
-If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in! For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/), or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximport` within `BiocProject` include: 
+If we add BiocProject in to the tximeta workflow, then sample metadata from the PEP project specification can be easily plugged in! For example, if a researcher used a PEP to run Salmon to quantify reads across multiple samples with PEP-compatible workflow management engine/job scatterer like [Snakemake](https://snakemake.github.io/), [CWL](https://www.commonwl.org/), or [looper](https://looper.databio.org/), the same PEP would be ready to use with tximeta as long as the samples had the `files` attribute defined. This could be done either via a `files` column in the sample table, or by using one of the sample modifiers provided by the PEP framework. The advantages of calling `tximeta` within `BiocProject` include: 
 
  - project portability, inherent to projects following PEP specification
  - single source of metadata from start of the analysis to finish -- all the PEP-defined metadata will be propagated to the output object of the `tximeta` function automatically. It will be accessible from within your R session using the [pepr](http://code.databio.org/pepr/) API, or with `@PEP` in the `metadata` slot of the `SummarizedExperiment` object, just as any other metadata attached to the result by `tximeta` function.
@@ -85,7 +85,7 @@ The `Biocproject` + `tximeta` workflow requires a PEP. The example we just downl
       readFunPath: readTximeta.R
 ```
 
-As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable to specify a file path. This is just an optional way to make this PEP work in any computing environment without being changed, so you can share your sample metadata more easily. For this vignette, we need to set the variable to the output directory where our downloaded results are stored:
+As you can see, this PEP configuration file uses a `$TXIMPORTDATA` environment variable to specify a file path. This is just an optional way to make this PEP work in any computing environment without being changed, so you can share your sample metadata more easily. (`tximportData` is a Bioconductor data package with various transcript quantification output, for unit testing of Bioconductor software packages.) For this vignette, we need to set the variable to the output directory where our downloaded results are stored:
 
 
 ```r
