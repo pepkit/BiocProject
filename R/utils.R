@@ -117,10 +117,7 @@ readSchema = function(path, parent = NULL) {
 # its index If it is not
 # present, returns integer(0)
 .findProjectInList = function(l) {
-    which(as.logical(lapply(l, 
-                            function(x) {
-                                is(x, "Project")
-                            })))
+    which(as.logical(lapply(l, function(x) { is(x, "Project") })))
 }
 
 # internal function that wraps the external function execution
