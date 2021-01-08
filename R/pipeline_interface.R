@@ -253,22 +253,38 @@ setMethod("getProjectOutputs",
 #' Populates schema values of type path and thumbnail path in the provided 
 #' output schema for each sample in the project
 #'
-#' @param schemaPath path to the schema to populate 
-#' @param p \code{\link[pepr]{Project-class}} object
+#' @param schema schema with value templates to populate 
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param projectContext whether the values for path templates populating 
+#' should be sourced from the project metadata. Otherwise metadata for 
+#' each sample is used
 #'
 #' @return a nested list of length equal to the number of results defined in 
-#' the schema with populated outputs for each sample within every element
-populateSchemaPaths <- function(schemaPath, p) {
+#' the schema with populated outputs for each sample within every element, 
+#' if projectContext=FALSE. Otherwise a one-level list is returned of length 
+#' equal to the number of results defined in the schema with populated outputs
+populateSchemaPaths <- function(schema, project, projectContext=FALSE) {
     ret = list()
-    schema = yaml::yaml.load_file(schemaPath)
     for(i in seq_along(schema)){
-        ret[[i]] = list()
-        for(sn in unlist(p@samples$sample_name)) {
+        if(projectContext){
             if("value" %in% names(schema[[i]])) {
                 if(is(schema[[i]][["value"]], "list")) {
-                    ret[[i]][[sn]] = iterateRecursively(schema[[i]][["value"]], p, sn)
+                    ret[[i]] = populateRecursively(
+                        schema[[i]][["value"]], project, NULL, TRUE)
                 } else {
-                    ret[[i]][[sn]] = schema[[i]][["value"]]
+                    ret[[i]] = schema[[i]][["value"]]
+                }
+            }            
+        } else {
+            ret[[i]] = list()
+            for(sn in unlist(project@samples$sample_name)) {
+                if("value" %in% names(schema[[i]])) {
+                    if(is(schema[[i]][["value"]], "list")) {
+                        ret[[i]][[sn]] = populateRecursively(
+                            schema[[i]][["value"]], project, sn, FALSE)
+                    } else {
+                        ret[[i]][[sn]] = schema[[i]][["value"]]
+                    }
                 }
             }
         }
@@ -283,15 +299,18 @@ populateSchemaPaths <- function(schemaPath, p) {
 #' @param p \code{\link[pepr]{Project-class}} object
 #' @param sn name of the sample
 #'
-#' @return list woith populate paths
-populateRecursively <- function(m, p, sn) {
+#' @return list with populate paths
+populateRecursively <- function(m, p, sn, projectContext=FALSE) {
     namesM = names(m)
+    if(projectContext) sn = NULL
     for(i in seq_along(m)) {
         if(is(m[[i]], "list")){
-            m[[i]] = populateRecursively(m[[i]], p, sn)
+            m[[i]] = populateRecursively(m[[i]], p, sn, projectContext)
         } else{
             if(namesM[i] == "path" || namesM[i] == "thumbnail_path") 
-                m[[i]] = .populateString(string=m[[i]], project=p, sampleName=sn)
+                m[[i]] = .populateString(
+                    string=m[[i]], project=p, sampleName=sn, 
+                    projectContext=projectContext)
         }
     }
     return(m)
