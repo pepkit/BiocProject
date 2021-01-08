@@ -105,46 +105,6 @@ setMethod("pipelineInterfacesBySample",
               return(invisible(NULL))
           })
 
-
-#' Get outputs from pipeline defined in an output schema
-#' 
-#' Extracts the output file templates defined for a given pipeline
-#'
-#' @param pipeline an object of \code{\link[pepr]{Config-class}} 
-#' @param parent a path to parent folder to use
-#' @param projectContext logical indicating whether a only project-level 
-#' pifaces should be considered. Otherwise, only sample-level ones are. 
-#'
-#' @return named list of output path templates, 
-#' like: \code{'aligned_{sample.genome}/{sample.sample_name}_sort.bam'}
-.getOutputs = function(pipeline, parent, projectContext = FALSE) {
-    if (!OUTPUT_SCHEMA_SECTION %in% 
-        names(pipeline)) 
-        return(invisible(NULL))
-    outputSchema = readSchema(pipeline[[OUTPUT_SCHEMA_SECTION]], parent)
-    sect = "properties"
-    if (!projectContext) 
-        sect = SCHEMA_SAMPLE_OUTS
-    if (!pepr::.checkSection(outputSchema, sect)) {
-        pipName = ifelse(is.null(pipeline[[PIP_NAME_KEY]]), 
-                         "provided", pipeline[[PIP_NAME_KEY]])
-        warning("There is no '", 
-                paste(sect, collapse = ":"), 
-                "' section in the ", 
-                pipName, " pipeline output schema.")
-        return(invisible(NULL))
-    }
-    outputs = outputSchema[[sect]]
-    if ("samples" %in% names(outputs)) 
-        outputs[["samples"]] = NULL
-    x = lapply(outputs, function(x) {
-        return(x[["path"]])
-    })
-    if (is.null(unlist(lapply(x, is.null)))) 
-        return(invisible(NULL))
-    return(x)
-}
-
 #' Populates and returns output files for a given sample
 #'
 #' Returns the pipeline outputs which are defined in the pipeline interface
@@ -193,9 +153,11 @@ setMethod("getOutputsBySample",
                       piface = yaml::yaml.load_file(pifaceSource)
                       if (!.checkPifaceType(piface, "sample")) 
                           return(invisible(NULL))
-                      outputs = .getOutputs(piface, parent = dirname(pifaceSource))
-                      sampleRet[[piface[[PIP_NAME_KEY]]]] = 
-                          .populateTemplates(project, outputs, sampleName)
+                      if(!OUTPUT_SCHEMA_SECTION %in% names(piface)) next
+                      schema = readSchema(
+                          piface[[OUTPUT_SCHEMA_SECTION]], dirname(pifaceSource))
+                      sampleRet[[piface[[PIP_NAME_KEY]]]] = .populateSchemaPaths(
+                          schema=schema, project=project, sampleName=sampleName)
                   }
                   ret[[sampleName]] = sampleRet
               }
@@ -239,11 +201,11 @@ setMethod("getProjectOutputs",
                   piface = yaml::yaml.load_file(pifaceSource)
                   if (!.checkPifaceType(piface, "project")) 
                       return(invisible(NULL))
-                  outputs = .getOutputs(piface, 
-                                        parent = dirname(pifaceSource), 
-                                        projectContext=TRUE)
-                  ret[[piface[[PIP_NAME_KEY]]]] = 
-                      .populateTemplates(project, outputs, projectContext=TRUE)
+                  if(!OUTPUT_SCHEMA_SECTION %in% names(piface)) next
+                  schema = readSchema(
+                      piface[[OUTPUT_SCHEMA_SECTION]], dirname(pifaceSource))
+                  ret[[piface[[PIP_NAME_KEY]]]] = .populateSchemaPaths(
+                      schema, project, NULL, projectContext = TRUE)
               }
               ret
           })
@@ -251,43 +213,34 @@ setMethod("getProjectOutputs",
 #' Populate values in output schema
 #' 
 #' Populates schema values of type path and thumbnail path in the provided 
-#' output schema for each sample in the project
+#' output schema for rthe selected sample or project
 #'
 #' @param schema schema with value templates to populate 
 #' @param project \code{\link[pepr]{Project-class}} object
 #' @param projectContext whether the values for path templates populating 
 #' should be sourced from the project metadata. Otherwise metadata for 
 #' each sample is used
+#' @param sampleName name of the sample to populate the outputs for. Required 
+#' if projectContext=FALSE
 #'
-#' @return a nested list of length equal to the number of results defined in 
-#' the schema with populated outputs for each sample within every element, 
-#' if projectContext=FALSE. Otherwise a one-level list is returned of length 
-#' equal to the number of results defined in the schema with populated outputs
-populateSchemaPaths <- function(schema, project, projectContext=FALSE) {
+#' @return a possibly nested list of length equal to the number of results defined in 
+#' the schema with populated outputs
+.populateSchemaPaths <- function(
+    schema, project, projectContext=FALSE, sampleName=NULL) {
     ret = list()
+    if(!projectContext && is.null(sampleName))
+        stop("Must specify sample to populate schema path templates for in no 
+             project context mode")
+    if(projectContext) sampleName = NULL
     for(i in seq_along(schema)){
-        if(projectContext){
-            if("value" %in% names(schema[[i]])) {
-                if(is(schema[[i]][["value"]], "list")) {
-                    ret[[i]] = populateRecursively(
-                        schema[[i]][["value"]], project, NULL, TRUE)
-                } else {
-                    ret[[i]] = schema[[i]][["value"]]
-                }
-            }            
-        } else {
-            ret[[i]] = list()
-            for(sn in unlist(project@samples$sample_name)) {
-                if("value" %in% names(schema[[i]])) {
-                    if(is(schema[[i]][["value"]], "list")) {
-                        ret[[i]][[sn]] = populateRecursively(
-                            schema[[i]][["value"]], project, sn, FALSE)
-                    } else {
-                        ret[[i]][[sn]] = schema[[i]][["value"]]
-                    }
-                }
+        if("value" %in% names(schema[[i]])) {
+            if(is(schema[[i]][["value"]], "list")) {
+                ret[[i]] = .populateRecursively(
+                    schema[[i]][["value"]], project, sampleName, projectContext)
+            } else {
+                ret[[i]] = schema[[i]][["value"]]
             }
-        }
+        }            
     }
     return(ret)
 }
@@ -295,25 +248,26 @@ populateSchemaPaths <- function(schema, project, projectContext=FALSE) {
 
 #' Recursively populate paths in results of type object
 #'
-#' @param m mapping to populate paths in
-#' @param p \code{\link[pepr]{Project-class}} object
-#' @param sn name of the sample
+#' @param l list to populate paths in
+#' @param project \code{\link[pepr]{Project-class}} object
+#' @param sampleName name of the sample
 #'
 #' @return list with populate paths
-populateRecursively <- function(m, p, sn, projectContext=FALSE) {
-    namesM = names(m)
-    if(projectContext) sn = NULL
-    for(i in seq_along(m)) {
-        if(is(m[[i]], "list")){
-            m[[i]] = populateRecursively(m[[i]], p, sn, projectContext)
+.populateRecursively <- function(l, project, sampleName, projectContext=FALSE) {
+    namesL = names(l)
+    if(projectContext) sampleName = NULL
+    for(i in seq_along(l)) {
+        if(is(l[[i]], "list")){
+            l[[i]] = .populateRecursively(
+                l[[i]], project, sampleName, projectContext)
         } else{
-            if(namesM[i] == "path" || namesM[i] == "thumbnail_path") 
-                m[[i]] = .populateString(
-                    string=m[[i]], project=p, sampleName=sn, 
+            if(namesL[i] == "path" || namesL[i] == "thumbnail_path") 
+                l[[i]] = .populateString(
+                    string=l[[i]], project=project, sampleName=sampleName, 
                     projectContext=projectContext)
         }
     }
-    return(m)
+    return(l)
 }
 
 
