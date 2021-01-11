@@ -107,11 +107,12 @@ setMethod("pipelineInterfacesBySample",
 
 #' Populates and returns output files for a given sample
 #'
-#' Returns the pipeline outputs which are defined in the pipeline interface
-#' indicated in the \code{\link[pepr]{Project-class}}
+#' Returns the sample level pipeline outputs which are defined in the output 
+#' schema indicated by the pipeline interface indicated in the 
+#' \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param ... other arguemnts
+#' @param ... other arguments
 #' 
 #' @return a list of output file paths. The order of the first level of the
 #' list corresponds to the order of the pipeline interface files, second level 
@@ -164,11 +165,11 @@ setMethod("getOutputsBySample",
               ret
           })
 
-#' Populates and returns output files for a
-#'  given \code{\link[pepr]{Project-class}}
+#' Populates and returns outputs for a given \code{\link[pepr]{Project-class}}
 #'
-#' Returns the pipeline outputs which are defined in the pipeline interface
-#' indicated in the \code{\link[pepr]{Project-class}}
+#' Returns the project level pipeline outputs which are defined in the output 
+#' schema indicated by the pipeline interface indicated in the 
+#' \code{\link[pepr]{Project-class}}
 #'
 #' @param project \code{\link[pepr]{Project-class}} object
 #'
@@ -205,7 +206,7 @@ setMethod("getProjectOutputs",
                   schema = readSchema(
                       piface[[OUTPUT_SCHEMA_SECTION]], dirname(pifaceSource))
                   ret[[piface[[PIP_NAME_KEY]]]] = .populateSchemaPaths(
-                      schema, project, NULL, projectContext = TRUE)
+                      schema, project, NULL, projectContext=TRUE)
               }
               ret
           })
@@ -213,15 +214,15 @@ setMethod("getProjectOutputs",
 #' Populate values in output schema
 #' 
 #' Populates schema values of type path and thumbnail path in the provided 
-#' output schema for rthe selected sample or project
+#' output schema for the selected sample or project
 #'
 #' @param schema schema with value templates to populate 
 #' @param project \code{\link[pepr]{Project-class}} object
 #' @param projectContext whether the values for path templates populating 
 #' should be sourced from the project metadata. Otherwise metadata for 
-#' each sample is used
+#' a selected sample is used
 #' @param sampleName name of the sample to populate the outputs for. Required 
-#' if projectContext=FALSE
+#' if \code{projectContext} set to \code{FALSE}
 #'
 #' @return a possibly nested list of length equal to the number of results defined in 
 #' the schema with populated outputs
@@ -250,7 +251,7 @@ setMethod("getProjectOutputs",
 #'
 #' @param l list to populate paths in
 #' @param project \code{\link[pepr]{Project-class}} object
-#' @param sampleName name of the sample
+#' @param sampleName name of the sample to populate the outputs for
 #'
 #' @return list with populate paths
 .populateRecursively <- function(l, project, sampleName, projectContext=FALSE) {

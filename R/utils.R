@@ -398,13 +398,15 @@ readSchema = function(path, parent = NULL) {
     # object to allow attribute
     # accession.
     samplesSubset = subset(sampleTable(project), sample_name == sampleName)
-    if (!projectContext && NROW(samplesSubset) < 1) 
-        return(invisible(NULL))
+    if (!projectContext && NROW(samplesSubset) < 1) return(invisible(NULL))
     if (projectContext) {
-        populatedStrings = with(config(project), glue(.pyToR(string)))
+        populatedStrings = with(
+            config(project), as.character(glue(.pyToR(string))))
     } else {
         populatedStrings = as.character(apply(
-            samplesSubset, 1, function(s) { with(s, glue(.pyToR(string)))}))
+            samplesSubset, 1, function(s) { 
+                with(s, as.character(glue(.pyToR(string))))
+                }))
     }
     if (!projectContext && length(populatedStrings) != 
         NROW(samplesSubset)) {

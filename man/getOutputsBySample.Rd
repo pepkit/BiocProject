@@ -12,7 +12,7 @@ getOutputsBySample(project, ...)
 \arguments{
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
-\item{...}{other arguemnts}
+\item{...}{other arguments}
 
 \item{sampleNames}{names of the samples}
 }
@@ -22,8 +22,9 @@ list corresponds to the order of the pipeline interface files, second level
 is a named list of file paths populated by the samples
 }
 \description{
-Returns the pipeline outputs which are defined in the pipeline interface
-indicated in the \code{\link[pepr]{Project-class}}
+Returns the sample level pipeline outputs which are defined in the output 
+schema indicated by the pipeline interface indicated in the 
+\code{\link[pepr]{Project-class}}
 }
 \section{Methods (by class)}{
 \itemize{
