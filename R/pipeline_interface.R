@@ -243,6 +243,7 @@ setMethod("getProjectOutputs",
             }
         }            
     }
+    names(ret) = names(schema)
     return(ret)
 }
 
