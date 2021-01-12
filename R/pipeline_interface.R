@@ -263,7 +263,7 @@ setMethod("getProjectOutputs",
             l[[i]] = .populateRecursively(
                 l[[i]], project, sampleName, projectContext)
         } else{
-            if(namesL[i] == "path" || namesL[i] == "thumbnail_path") 
+            if(namesL[i] %in% PATH_LIKE_KEYS) 
                 l[[i]] = .populateString(
                     string=l[[i]], project=project, sampleName=sampleName, 
                     projectContext=projectContext)

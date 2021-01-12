@@ -17,4 +17,5 @@ LOOPER_SECTION = "looper"
 PIP_IFACE_NAME = "pipeline_interfaces"
 PIP_IFACE_KEY = "pipeline_interfaces_key"
 SCHEMA_SAMPLE_OUTS = c("properties", "samples", "items", "properties")
+PATH_LIKE_KEYS = c("path", "thumbnail_path")
 PIP_IFACE_SECTION = c(LOOPER_SECTION, PIP_IFACE_NAME)
