@@ -1,0 +1,128 @@
+---
+title: "Using a pipeline interface in your project"
+author: "Michał Stolarczyk"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Using a pipeline interface in your project}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+    
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Pipeline interface tells the pipeline submission engine (such as [`looper`](http://looper.databio.org/en/latest/)) how to interact with your 
+project and pipelines. In brief, it is just a `yaml` file with three required
+sections:
+    
+* `pipeline_name` - A string identifying the pipeline,
+* `pipeline_type` - A string indicating a pipeline type: "sample" (for run) 
+or "project" (for runp),
+* `command_template`- A [Jinja2](https://jinja.palletsprojects.com/en/2.11.x/) template used to construct a pipeline command to run.
+
+Follow the pipeline interface [specification](http://looper.databio.org/en/latest/pipeline-interface-specification/) 
+to learn more about all the features that `looper` provides via that file.
+
+# Relevant features
+
+The only two sections of the pipeline interface relevant from the BiocProject perspective are:
+
+1. `bioconductor` -- used to specify the data processing function name and/or path
+2. `output_schema` -- used to specify a path to a pipeline output schema that describes the outputs of the pipeline
+
+
+Let's consider the examples below that illustrate the pipeline interface-related
+functionality of `BiocProject` package. 
+
+## Specify `bioconductor` section in the pipeline interface
+
+The first advantage of pipeline interface concept is the possibility to declare 
+the data processing function in the pipeline interface itself. Since the data 
+processing function is pipeline specific rather than project specific, it is 
+much more sensible to place the `bioconductor` section in the pipeline 
+interface file -- the code that will be used to preprocess the output of the pipeline depends of the pipeline (defined by pipeline interface), not the data (defined by the PEP).
+
+```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
+library(BiocProject)
+branch = "master"
+configFile = system.file(
+    "extdata",
+    paste0("example_peps-", branch),
+    "example_piface",
+    "project_config.yaml",
+    package = "BiocProject"
+)
+p=pepr::Project(file = configFile)
+.printNestedList(yaml::read_yaml(pipelineInterfacesBySample(p)[[1]][1]))
+```
+
+## Get output file paths
+
+Pipeline outputs can be defined in a schema. As shown in the example above, 
+pipeline interface specifies a path to a schema in a top-level `output_schema` 
+section. 
+Example of a schema defining pipeline outputs:
+```{r echo=F,message=FALSE, collapse=TRUE, comment=" "}
+pifaceSource = pipelineInterfacesBySample(p)[[1]][1]
+piface = yaml::read_yaml(pifaceSource)
+schemaPath = file.path(dirname(pifaceSource), piface$output_schema)
+.printNestedList(yaml::read_yaml(schemaPath))
+```
+
+The output schema has to follow the [pipestat schema specification](http://pipestat.databio.org/en/latest/pipestat_specification/#pipestat-schema). Additionally, if the schema lists any path-like outputs, i.e. type `file` or `image` it is beneficial to add a `values` section that include path templates to populate.
+
+Check out the [looper documentation on output schema](http://looper.databio.org/en/latest/pipeline-interface-specification/#output_schema) to learn more.
+
+### Sample-level
+
+Pipeline interface system divides pipelines (and their outputs) into project- 
+and sample-level. 
+
+In order to list the outputs for a sample, or all the samples use 
+`getOutputsBySample` method. If you indicate a specific sample name, only outputs for this sample will be returned.
+```{r}
+getOutputsBySample(p, sampleNames=c("sample1"))
+```
+
+### Project-level
+
+In order to list project-level outputs, use `getProjectOutputs` method:
+
+```{r}
+getProjectOutputs(p)
+```
+
+# Use case
+
+This functionality provides a convenient way to process the files produced by 
+the pipeline, when used in the data processing function indicated in the 
+`bioconductor` section of the pipeline interface file. See the example function
+below that demonstrates the application of the `getSampleOutputs` function.
+
+```{r echo=FALSE, eval=TRUE, comment=""}
+branch = "master"
+processFunction = system.file(
+  "extdata",
+  paste0("example_peps-", branch),
+  "example_piface",
+  "readData.R",
+  package = "BiocProject"
+)
+source(processFunction)
+piface = yaml::read_yaml(pipelineInterfacesBySample(p)[[1]][1])
+get(piface$bioconductor$readFunName)
+```
+Such a link between the project and the outputs 
+(declared in the pipeline interface) makes it possible to read and process 
+the pipeline results with just a line of code:
+
+```r
+bp = BiocProject(configFile)
+```

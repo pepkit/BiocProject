@@ -1,4 +1,42 @@
-# internal function used for wrapping the user-supplied function meessages 
+#' Determine whether the string is a valid URL
+#'
+#' @param str string to inspect
+#'
+#' @return logical indicating whether a string is a valid URL
+.isValidUrl = function(str) {
+    ans = FALSE
+    if (grepl("www.|http:|https:", 
+              str)) {
+        ans = RCurl::url.exists(str)
+    }
+    ans
+}
+
+#' Read a YAML-formatted schema
+#' 
+#' Remote or local schemas are supported
+#'
+#' @param path path to a local schema or URL pointing to a remote one 
+#' @param parent a path to parent folder to use
+#' @return list read schema
+#' @export
+#' @importFrom RCurl getURLContent
+#' @examples
+#' readSchema('https://schema.databio.org/pep/2.0.0.yaml')
+readSchema = function(path, parent = NULL) {
+    if (.isValidUrl(path)) 
+        return(yaml::yaml.load(getURLContent(path)))
+    file = pepr::.makeAbsPath(path, 
+                              parent)
+    if (file.exists(file)) {
+        return(yaml::read_yaml(file))
+    }
+    stop(paste0("Schema has to be either a valid URL or an existing path. ", 
+                "Got: ", path))
+}
+
+
+# internal function used for wrapping the user-supplied function messages 
 # in a box
 .wrapFunMessages = function(messages, type) {
     n = options("width")[[1]]
@@ -79,10 +117,7 @@
 # its index If it is not
 # present, returns integer(0)
 .findProjectInList = function(l) {
-    which(as.logical(lapply(l, 
-                            function(x) {
-                                is(x, "Project")
-                            })))
+    which(as.logical(lapply(l, function(x) { is(x, "Project") })))
 }
 
 # internal function that wraps the external function execution
@@ -113,6 +148,70 @@
         .wrapFunMessages(.warnings,"warning")
     }
     return(res)
+}
+
+
+#' Get the preferred source of the bioconductor section
+#'
+#' @param p \code{\link[pepr]{Project-class}} object
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
+#'
+#' @return a list with the selected config
+#' @importFrom pepr checkSection config
+#' @importFrom methods new
+.getBiocConfig = function(p, projectLevel = FALSE) {
+    if (checkSection(config(p), BIOC_SECTION)) {
+        # if the BIOC_SECTION section is found in the project
+        # config, override any other locations
+        message("The '", BIOC_SECTION, 
+                "' key found in the Project config")
+        return(config(p))
+    }
+    # check for BIOC_SECTION in pipeline interfaces
+    pifaceSource = gatherPipelineInterfaces(p, projectLevel=projectLevel)
+    if (length(pifaceSource) > 0) {
+        if (length(pifaceSource) > 1)
+            message(length(pifaceSource), " pipeline interface sources matched. ", 
+                    "Using the first one: ", pifaceSource)
+        pifaceSource = pifaceSource[1]
+    }
+    
+    if (!is.null(pifaceSource)) {
+        piface = yaml::read_yaml(pifaceSource)
+        if (pepr::.checkSection(piface, BIOC_SECTION)) {
+            message("The '", BIOC_SECTION, "' key found in the pipeline interface")
+            return(.makeReadFunPathAbs(piface, parent=dirname(pifaceSource)))
+        } else {
+            warning("The '", BIOC_SECTION, 
+                    "' key is missing in Project config and pipeline interface")
+            return(invisible(NULL))
+        }
+    } else {
+        warning("The '", BIOC_SECTION, 
+                "' key is missing in Project config and pipeline interface")
+        return(invisible(NULL))
+    }
+}
+
+#' Make readFunPath absolute
+#' 
+#' Uses the absolute pipeline interface path in the config to determine the
+#' absolute path to the readFunPath file that consists of the data 
+#' processing function
+#'
+#' @param piface \code{\link[pepr]{Config-class}}/list with a pipeline interface
+#' @param parent a path to parent folder to use
+#'
+#' @return piface \code{\link[pepr]{Config-class}} pipeline interface with 
+#' the readFunPath made absolute
+.makeReadFunPathAbs = function(piface, parent) {
+    pth = piface[[BIOC_SECTION]][[FUNCTION_PATH]]
+    absReadFunPath = .makeAbsPath(pth, parent)
+    if (!.isAbsolute(absReadFunPath)) 
+        stop("Failed to make the readFunPath absolute: ", absReadFunPath)
+    piface[[BIOC_SECTION]][[FUNCTION_PATH]] = absReadFunPath
+    piface
 }
 
 # Create an absolute path from a primary target and a parent candidate.
@@ -248,4 +347,116 @@
                       selectMethod("show", 
                                    "Project")(pep)
                   }, where = parent.frame())
+}
+
+#' Switch from python to R list accession syntax
+#' 
+#' Python uses a dot to access attributes, while R uses \code{$}; this function
+#' converts the python style into R so that we can use R code to populate
+#' variables with R lists. From this: '\code{{sample.name}}' 
+#' to this: '\code{{sample$name}}'
+#' @param str String to recode
+#' @return string with the recoded accession syntax
+#' @export
+#' @examples 
+#' .pyToR('{sample.genome}/{sample.read_type}/test')
+.pyToR = function(str) {
+    # This is the regex where the
+    # magic happens
+    pytor = function(str) gsub("(\\{[^\\.\\}]+)\\.", 
+                               "\\1$", str)
+    # This loop allows multi-layer
+    # accession
+    res = str
+    prev = ""
+    while (prev != res) {
+        prev = res
+        res = pytor(res)
+    }
+    return(res)
+}
+
+#' Populate a variable-encoded string with sample/project variables
+#' 
+#' Given a string and a project this function will go through samples and 
+#' populate the variables. Used to return real files for each sample from an 
+#' output variable in the pipeline interface
+#' 
+#' @param string Variable-encoded string to populate
+#' @param project \code{\link[pepr]{Project-class}} object with values 
+#'  to draw from
+#' @param sampleName string, name of the sample to use
+#' @param projectContext logical indicating whether project context should be 
+#' applied for string formatting. Default: sample
+#' 
+#' @return a named list of populated strings
+#' @importFrom glue glue
+.populateString = function(string, project, sampleName = NULL, projectContext = FALSE) {
+    # Apply this glue function on
+    # each row in the samples
+    # table, coerced to a list
+    # object to allow attribute
+    # accession.
+    samplesSubset = subset(sampleTable(project), sample_name == sampleName)
+    if (!projectContext && NROW(samplesSubset) < 1) return(invisible(NULL))
+    if (projectContext) {
+        populatedStrings = with(
+            config(project), as.character(glue(.pyToR(string))))
+    } else {
+        populatedStrings = as.character(apply(
+            samplesSubset, 1, function(s) { 
+                with(s, as.character(glue(.pyToR(string))))
+                }))
+    }
+    if (!projectContext && length(populatedStrings) != 
+        NROW(samplesSubset)) {
+        warning("Paths templates populating problem: number of paths (", 
+                length(populatedStrings), 
+                ") does not correspond to the number of samples (", 
+                NROW(samplesSubset), 
+                "). Path template '", 
+                string, "' will not be populated")
+        return(invisible(NULL))
+    }
+    return(populatedStrings)
+}
+
+
+#' Populate list of path templates
+#'
+#' @param project an object of \code{\link[pepr]{Config-class}} 
+#' @param templList list of strings, 
+#' like: 'aligned_{sample.genome}/{sample.sample_name}_sort.bam'
+#' @param sampleName string, name of the protocol to select the samples
+#' @param projectContext logical indicating whether project context 
+#' should be applied. Default: sample
+#'
+#' @return list of strings
+.populateTemplates = function(project, templList, sampleName = NULL, 
+                              projectContext = FALSE) {
+    if (!projectContext && is.null(sampleName)) 
+        stop("Must specify the sample to populate templates for")
+    expandedTemplList = lapply(templList, pepr::.expandPath)
+    x=lapply(expandedTemplList, .populateString, project, sampleName, projectContext)
+    return(x)
+}
+
+
+#' Validate type of the pipeline interface
+#'
+#' @param piface pipeline interface to inspect
+#' @param type string, type of the pipeline interface, either "sample" or "project"
+#'
+#' @return a logical indicating whether the pipeline interface matches the specified type 
+.checkPifaceType <- function(piface, type) {
+    if(!.checkSection(piface, PIP_NAME_KEY))
+        stop(PIP_NAME_KEY, " section missing in pipeline interface")
+    if (!pepr::.checkSection(piface, PIP_TYPE_KEY) || 
+        piface[[PIP_TYPE_KEY]] != type) {
+        warning(sprintf(
+            "%s pipeline interface has to specify '%s' pipeline type in '%s'", 
+            type, type, PIP_TYPE_KEY))
+        return(FALSE)
+    }
+    return(TRUE)
 }

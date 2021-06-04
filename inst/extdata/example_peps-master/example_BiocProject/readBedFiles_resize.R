@@ -1,5 +1,6 @@
-readBedFiles_resize = function(project, resize.width) {
+readBedFiles_resize = function(project, resize.width, test.arg) {
   cwd = getwd()
+  print(paste0("this is the test arg: ", test.arg))
   paths = pepr::sampleTable(project)$file_path
   sampleNames = pepr::sampleTable(project)$sample_name
   setwd(dirname(project@file))

@@ -63,6 +63,8 @@
 #'  the \code{bioconductor} section in the config file.
 #' @param autoLoad a logical indicating whether the data should be loaded
 #'  automatically. See \code{Details} for more information.
+#' @param projectLevel logical indicating whether a only project-level pifaces 
+#'  should be considered. Otherwise, only sample-level ones are. 
 #'
 #' @return an object of \code{\link[S4Vectors]{Annotated-class}} that is 
 #' returned by the user provided function with 
@@ -81,8 +83,8 @@
 #' @seealso \url{https://pepkit.github.io/}
 #' @import pepr
 #' @export BiocProject
-BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL, 
-                       funcArgs = NULL) {
+BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
+                       projectLevel = FALSE, funcArgs = NULL) {
     p = pepr::Project(file=file, amendments = amendments)
     # prevent PEP (Project object) input. This prevents BiocProject object
     # failing when the user provides the Project object
@@ -96,13 +98,15 @@ BiocProject = function(file, amendments = NULL, autoLoad = TRUE, func = NULL,
         }
     }
     args = append(list(p), funcArgs)
-    cfg = pepr::config(p)
+    cfg = .getBiocConfig(p, projectLevel)
+    if(is.null(cfg))
+        cfg = pepr::config(p)
     if(pepr::.checkSection(cfg, c(BIOC_SECTION, FUNCTION_ARGS))){
-        args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]],args)
+        args = .unionList(config(p)[[BIOC_SECTION]][[FUNCTION_ARGS]], args)
         argsNames = names(args)
         project = args[[.findProjectInList(args)]]
         argsNames = append("",argsNames[-.findProjectInList(args)])
-        args = append(list(p), args[[-.findProjectInList(args)]])
+        args = append(list(p), args[-.findProjectInList(args)])
         names(args) = argsNames
     }
     if (!is.null(func)) {
