@@ -59,7 +59,7 @@ configFile = system.file(
     "project_config.yaml",
     package = "BiocProject"
 )
-p=pepr::Project(configFile)
+p=pepr::Project(file = configFile)
 .printNestedList(yaml::read_yaml(pipelineInterfacesBySample(p)[[1]][1]))
 ```
 

@@ -253,6 +253,7 @@ setMethod("getProjectOutputs",
 #' @param l list to populate paths in
 #' @param project \code{\link[pepr]{Project-class}} object
 #' @param sampleName name of the sample to populate the outputs for
+#' @param projectContext a logical indicating whether project level attributes should be used
 #'
 #' @return list with populate paths
 .populateRecursively <- function(l, project, sampleName, projectContext=FALSE) {

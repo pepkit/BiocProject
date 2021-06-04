@@ -12,6 +12,8 @@
 \item{project}{\code{\link[pepr]{Project-class}} object}
 
 \item{sampleName}{name of the sample to populate the outputs for}
+
+\item{projectContext}{a logical indicating whether project level attributes should be used}
 }
 \value{
 list with populate paths
